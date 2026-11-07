@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>בונה דמויות – פינת המשחקים</title>
+<meta name="description" content="בונים דמות משלכם: עור, שיער, עיניים, פה, בגדים, כתר, גלימה ועוד. יש כפתור הפתעה, נותנים לדמות שם ומורידים אותה כתמונה.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/characters.html">
+<meta property="og:title" content="בונה דמויות – פינת המשחקים">
+<meta property="og:description" content="בונים דמות משלכם: עור, שיער, עיניים, פה, בגדים, כתר, גלימה ועוד. יש כפתור הפתעה, נותנים לדמות שם ומורידים אותה כתמונה.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/characters.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: the character on one side, the wardrobe (tabs + choices) on the other; stacks with the character on top on phones. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28; --blue:#2B7DE9;
+  --teal:#1E9E8A; --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);min-height:100vh;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px}
+[hidden]{display:none!important}
+main{max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:clamp(26px,5vw,38px);margin:0;color:var(--sun)}
+.homelink{background:var(--sun);color:#1F2A44;padding:8px 14px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:18px;align-items:start}
+@media (max-width:820px){.layout{grid-template-columns:minmax(0,1fr)}}
+.stageCol{display:flex;flex-direction:column;gap:12px;align-items:center;position:sticky;top:12px}
+@media (max-width:820px){.stageCol{position:static}}
+.char{width:min(100%,400px,calc(100vh - 260px));aspect-ratio:4/5;border-radius:24px;overflow:hidden;box-shadow:0 14px 40px #0009;background:#fff}
+.char svg{width:100%;height:100%;display:block}
+.char.pop{animation:pop .35s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{50%{transform:scale(1.04)}}
+.nameRow{display:flex;gap:8px;width:min(100%,400px)}
+.nameRow input{flex:1;min-width:0;font:700 18px var(--body);border-radius:12px;border:2px solid var(--line);background:var(--paper);color:#1F2A44;padding:9px 12px;text-align:center}
+.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.big{font-family:var(--display);font-weight:700;font-size:19px;border:0;border-radius:99px;padding:11px 22px;background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 5px 0 #a85c12}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #a85c12}
+.ghost{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:99px;padding:9px 16px;font:600 15px var(--body);cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.wardrobe{background:var(--card);border-radius:22px;padding:clamp(14px,3vw,22px);display:flex;flex-direction:column;gap:14px;min-width:0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:0;border-radius:12px;padding:9px 12px;font:600 15px var(--body);cursor:pointer;background:#26314F;color:var(--paper)}
+.tab[aria-selected="true"]{background:var(--sun);color:#1F2A44}
+.sect{display:flex;flex-direction:column;gap:8px}
+.sect>span{font-weight:600;color:var(--muted);font-size:14px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{border:3px solid transparent;background:#26314F;color:var(--paper);border-radius:14px;padding:8px 12px;font:600 15px var(--body);cursor:pointer;min-height:44px}
+.opt[aria-pressed="true"]{border-color:var(--sun);background:#33416A}
+.sw{width:44px;height:44px;border-radius:50%;border:3px solid #ffffff33;cursor:pointer;padding:0}
+.sw[aria-pressed="true"]{border-color:var(--sun);box-shadow:0 0 0 3px var(--sun)}
+.note{color:var(--muted);font-size:13px;text-align:center;margin:0;line-height:1.6}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--teal);color:var(--paper);padding:10px 18px;border-radius:10px;font-weight:600;z-index:9;max-width:92vw;text-align:center}
+@media (prefers-reduced-motion:reduce){.char.pop{animation:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <h1>בונה דמויות</h1>
+    <a class="homelink" href="index.html">🏠 דף הבית</a>
+  </div>
+  <div class="layout">
+    <div class="stageCol">
+      <div class="char" id="char"></div>
+      <div class="nameRow"><input id="name" maxlength="18" placeholder="איך קוראים לדמות?" aria-label="שם הדמות"></div>
+      <div class="actions">
+        <button class="big" id="random" type="button">🎲 הפתעה!</button>
+        <button class="ghost" id="dl" type="button">⬇ הורדה כתמונה</button>
+        <button class="ghost" id="reset" type="button">↺ להתחיל מחדש</button>
+      </div>
+      <p class="note">אפשר גם ללחוץ לחיצה ארוכה או קליק ימני על הדמות כדי לשמור אותה.</p>
+    </div>
+    <div class="wardrobe">
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <div id="panel"></div>
+    </div>
+  </div>
+</main>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const SKIN=['#ffe0bd','#f6c9a0','#e8b48a','#c98e62','#a06a43','#6e4a2e'];
+const HAIRC=['#2b1d14','#5a3a22','#a5682a','#e9c46a','#f2e8cf','#d64545','#ff8fc8','#4aa3ff','#7a5cff','#3fbf7f'];
+const CLOTHC=['#ff5a3c','#F28C28','#FFC94A','#2ecc71','#3ec7ff','#2B7DE9','#8b5cf6','#ec4899','#1F2A44','#ffffff'];
+const PANTSC=['#2B4C8C','#1F2A44','#5a3a22','#3fbf7f','#8b5cf6','#c9c2b0'];
+const BG=[['sky','☁️ שמיים'],['space','🚀 חלל'],['sea','🌊 ים'],['forest','🌳 יער'],['party','🎉 מסיבה'],['plain','⬜ פשוט']];
+const PARTS={
+  hair:[['short','קצר'],['long','ארוך'],['pony','קוקו'],['curly','תלתלים'],['spiky','קוצים'],['braids','צמות'],['bun','פקעת'],['bald','קרחת']],
+  eyes:[['dots','רגילות'],['big','גדולות'],['happy','שמחות'],['wink','קורצות'],['sleepy','מנומנמות'],['stars','כוכבים']],
+  mouth:[['smile','חיוך'],['laugh','צחוק'],['tongue','לשון'],['wow','וואו!'],['calm','שקט'],['teeth','חיוך שיניים']],
+  top:[['tee','חולצת טי'],['stripes','פסים'],['hoodie','קפוצ׳ון'],['dress','שמלה'],['hero','גיבור על'],['suit','חליפה']],
+  acc:[['none','בלי'],['glasses','משקפיים'],['sunglasses','משקפי שמש'],['cap','כובע מצחייה'],['crown','כתר'],['headphones','אוזניות'],['wizard','כובע קוסם'],['bow','פפיון בשיער'],['mask','מסכת גיבור'],['cape','גלימה']]
+};
+const DEF={skin:0,hair:'short',hairC:0,eyes:'dots',mouth:'smile',blush:true,top:'tee',topC:4,pantsC:0,acc:[],bg:'sky',name:''};
+let S=JSON.parse(JSON.stringify(DEF));
+try{const v=JSON.parse(localStorage.getItem('char')||'null');if(v)S=Object.assign(S,v)}catch(e){}
+const save=()=>{try{localStorage.setItem('char',JSON.stringify(S))}catch(e){}};
+
+/* ---------- drawing the character (all shapes, no pictures, so it can be saved as an image) ---------- */
+function shade(hex,f){if(hex==='#ffffff')return'#d9d9d9';const n=parseInt(hex.slice(1),16);return`rgb(${Math.round((n>>16&255)*f)},${Math.round((n>>8&255)*f)},${Math.round((n&255)*f)})`}
+function bg(){
+  switch(S.bg){
+    case'space':return`<rect width="400" height="500" fill="#1d1f4a"/>${[...Array(28)].map((_,i)=>`<circle cx="${(i*73)%400}" cy="${(i*41)%330}" r="${1+i%3}" fill="#fff" opacity=".8"/>`).join('')}<circle cx="330" cy="80" r="34" fill="#F28C28"/><ellipse cx="330" cy="80" rx="56" ry="12" fill="none" stroke="#FFC94A" stroke-width="5"/>`;
+    case'sea':return`<rect width="400" height="500" fill="#8fd8ff"/><rect y="330" width="400" height="170" fill="#2B7DE9"/><path d="M0 330 Q25 315 50 330 T100 330 T150 330 T200 330 T250 330 T300 330 T350 330 T400 330 V345 H0Z" fill="#5fb4ff"/><circle cx="70" cy="70" r="32" fill="#FFE27A"/>`;
+    case'forest':return`<rect width="400" height="500" fill="#c9f0d5"/><rect y="380" width="400" height="120" fill="#6cc070"/>${[30,110,300,370].map((x,i)=>`<rect x="${x-6}" y="${280+i%2*20}" width="12" height="100" fill="#8a5a3b"/><circle cx="${x}" cy="${260+i%2*20}" r="42" fill="${i%2?'#2f7d3a':'#3fae5a'}"/>`).join('')}`;
+    case'party':return`<rect width="400" height="500" fill="#ffe9f3"/>${[...Array(30)].map((_,i)=>`<rect x="${(i*67)%400}" y="${(i*53)%480}" width="10" height="5" fill="${CLOTHC[i%8]}" transform="rotate(${i*37} ${(i*67)%400} ${(i*53)%480})"/>`).join('')}<path d="M0 30 Q100 70 200 30 T400 30" fill="none" stroke="#1F2A44" stroke-width="2"/>${[...Array(9)].map((_,i)=>`<path d="M${20+i*45} ${40+Math.sin(i)*8} l14 0 l-7 18z" fill="${CLOTHC[i%8]}"/>`).join('')}`;
+    case'plain':return`<rect width="400" height="500" fill="#f4efe6"/>`;
+    default:return`<rect width="400" height="500" fill="#bfe6ff"/><g fill="#fff"><circle cx="70" cy="80" r="22"/><circle cx="95" cy="72" r="28"/><circle cx="122" cy="82" r="20"/><circle cx="300" cy="130" r="18"/><circle cx="322" cy="122" r="24"/><circle cx="346" cy="132" r="16"/></g><rect y="420" width="400" height="80" fill="#a8e0a0"/>`;
+  }
+}
+function hairBack(c){
+  if(S.hair==='long')return`<path d="M110 160 Q100 300 130 330 L270 330 Q300 300 290 160 Z" fill="${c}"/>`;
+  if(S.hair==='pony')return`<path d="M280 150 Q340 170 320 260 Q300 300 290 240 Q300 190 270 175Z" fill="${c}"/>`;
+  if(S.hair==='braids')return`${[118,282].map(x=>`<g fill="${c}">${[0,1,2,3].map(i=>`<ellipse cx="${x}" cy="${215+i*28}" rx="14" ry="16"/>`).join('')}</g><circle cx="${x}" cy="${330}" r="7" fill="#ff5a3c"/>`).join('')}`;
+  if(S.hair==='curly')return`<g fill="${c}">${[...Array(12)].map((_,i)=>{const a=Math.PI*.95+i/11*Math.PI*1.1;return`<circle cx="${200+Math.cos(a)*92}" cy="${170+Math.sin(a)*86}" r="24"/>`}).join('')}</g>`;
+  return'';
+}
+function hairFront(c){
+  switch(S.hair){
+    case'short':return`<path d="M118 160 Q118 80 200 78 Q282 80 282 160 Q262 118 200 116 Q140 118 118 160Z" fill="${c}"/>`;
+    case'long':case'braids':return`<path d="M116 175 Q110 78 200 76 Q290 78 284 175 Q270 120 230 112 Q200 140 160 116 Q128 128 116 175Z" fill="${c}"/>`;
+    case'pony':return`<path d="M118 160 Q118 80 200 78 Q282 80 282 160 Q250 110 200 112 Q150 110 118 160Z" fill="${c}"/><circle cx="282" cy="160" r="8" fill="#ff5a3c"/>`;
+    case'curly':return`<g fill="${c}">${[...Array(9)].map((_,i)=>`<circle cx="${130+i*17.5}" cy="${100+Math.abs(i-4)*6}" r="20"/>`).join('')}</g>`;
+    case'spiky':return`<path d="M120 150 L128 92 L150 120 L160 74 L182 112 L200 66 L218 112 L240 74 L250 120 L272 92 L280 150 Q240 118 200 118 Q160 118 120 150Z" fill="${c}"/>`;
+    case'bun':return`<circle cx="200" cy="74" r="30" fill="${c}"/><path d="M118 160 Q118 86 200 84 Q282 86 282 160 Q250 116 200 118 Q150 116 118 160Z" fill="${c}"/>`;
+    default:return`<ellipse cx="185" cy="118" rx="22" ry="9" fill="#ffffff55"/>`; // bald: just a shine
+  }
+}
+function eyes(){
+  const L=165,R=235,Y=172,dark='#1F2A44';
+  switch(S.eyes){
+    case'big':return[L,R].map(x=>`<circle cx="${x}" cy="${Y}" r="17" fill="#fff"/><circle cx="${x+2}" cy="${Y+2}" r="10" fill="${dark}"/><circle cx="${x+6}" cy="${Y-3}" r="4" fill="#fff"/>`).join('');
+    case'happy':return[L,R].map(x=>`<path d="M${x-12} ${Y+4} Q${x} ${Y-12} ${x+12} ${Y+4}" fill="none" stroke="${dark}" stroke-width="6" stroke-linecap="round"/>`).join('');
+    case'wink':return`<circle cx="${L}" cy="${Y}" r="8" fill="${dark}"/><circle cx="${L+3}" cy="${Y-3}" r="2.5" fill="#fff"/><path d="M${R-12} ${Y} Q${R} ${Y+8} ${R+12} ${Y}" fill="none" stroke="${dark}" stroke-width="6" stroke-linecap="round"/>`;
+    case'sleepy':return[L,R].map(x=>`<path d="M${x-13} ${Y} Q${x} ${Y+10} ${x+13} ${Y}" fill="none" stroke="${dark}" stroke-width="5" stroke-linecap="round"/><path d="M${x-13} ${Y-3} L${x+13} ${Y-3}" stroke="${dark}" stroke-width="3" stroke-linecap="round"/>`).join('');
+    case'stars':return[L,R].map(x=>`<path d="${starPath(x,Y,15,7)}" fill="#FFC94A" stroke="#c98a12" stroke-width="2"/>`).join('');
+    default:return[L,R].map(x=>`<circle cx="${x}" cy="${Y}" r="9" fill="${dark}"/><circle cx="${x+3}" cy="${Y-3}" r="3" fill="#fff"/>`).join('');
+  }
+}
+function starPath(cx,cy,R,r){let d='';for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rad=i%2?r:R;d+=(i?'L':'M')+(cx+Math.cos(a)*rad).toFixed(1)+' '+(cy+Math.sin(a)*rad).toFixed(1)}return d+'Z'}
+function mouth(){
+  const Y=212;
+  switch(S.mouth){
+    case'laugh':return`<path d="M172 ${Y-6} Q200 ${Y+34} 228 ${Y-6} Z" fill="#7a1f1f"/><path d="M182 ${Y+10} Q200 ${Y+22} 218 ${Y+10} Q200 ${Y+30} 182 ${Y+10}" fill="#ff7b7b"/>`;
+    case'tongue':return`<path d="M178 ${Y} Q200 ${Y+16} 222 ${Y}" fill="none" stroke="#1F2A44" stroke-width="5" stroke-linecap="round"/><path d="M196 ${Y+8} q4 18 14 0" fill="#ff7b7b" stroke="#c94a4a" stroke-width="2"/>`;
+    case'wow':return`<ellipse cx="200" cy="${Y+6}" rx="11" ry="14" fill="#7a1f1f"/>`;
+    case'calm':return`<path d="M186 ${Y+4} L214 ${Y+4}" stroke="#1F2A44" stroke-width="5" stroke-linecap="round"/>`;
+    case'teeth':return`<path d="M172 ${Y-4} Q200 ${Y+28} 228 ${Y-4} Z" fill="#fff" stroke="#1F2A44" stroke-width="4" stroke-linejoin="round"/><path d="M186 ${Y-1} V${Y+12} M200 ${Y} V${Y+15} M214 ${Y-1} V${Y+12}" stroke="#d9d9d9" stroke-width="2"/>`;
+    default:return`<path d="M176 ${Y} Q200 ${Y+24} 224 ${Y}" fill="none" stroke="#1F2A44" stroke-width="6" stroke-linecap="round"/>`;
+  }
+}
+function body(skin){
+  const c=CLOTHC[S.topC],d=shade(c,.78),p=PANTSC[S.pantsC];
+  // legs + shoes
+  let s=`<rect x="160" y="400" width="34" height="80" rx="12" fill="${S.top==='dress'?skin:p}"/><rect x="206" y="400" width="34" height="80" rx="12" fill="${S.top==='dress'?skin:p}"/>
+  <ellipse cx="174" cy="484" rx="24" ry="12" fill="#1F2A44"/><ellipse cx="226" cy="484" rx="24" ry="12" fill="#1F2A44"/>`;
+  // arms
+  s+=`<rect x="100" y="282" width="34" height="110" rx="17" fill="${S.top==='tee'||S.top==='stripes'||S.top==='dress'?skin:c}" transform="rotate(12 117 282)"/>
+  <rect x="266" y="282" width="34" height="110" rx="17" fill="${S.top==='tee'||S.top==='stripes'||S.top==='dress'?skin:c}" transform="rotate(-12 283 282)"/>
+  <circle cx="104" cy="392" r="17" fill="${skin}"/><circle cx="296" cy="392" r="17" fill="${skin}"/>`;
+  if(S.top==='tee'||S.top==='stripes')s+=`<path d="M108 300 L134 270 L134 320 Z" fill="${c}"/><path d="M292 300 L266 270 L266 320 Z" fill="${c}"/>`;
+  // torso
+  if(S.top==='dress')s+=`<path d="M140 268 Q200 252 260 268 L292 420 Q200 440 108 420 Z" fill="${c}"/><path d="M150 330 Q200 345 250 330" stroke="${d}" stroke-width="6" fill="none"/>`;
+  else s+=`<rect x="134" y="262" width="132" height="150" rx="34" fill="${c}"/>`;
+  if(S.top==='stripes')s+=[300,330,360,390].map(y=>`<rect x="136" y="${y}" width="128" height="12" fill="${d}"/>`).join('');
+  if(S.top==='hoodie')s+=`<path d="M150 266 Q200 300 250 266" fill="none" stroke="${d}" stroke-width="10"/><rect x="168" y="340" width="64" height="34" rx="10" fill="${d}"/><path d="M186 290 v30 M214 290 v30" stroke="#fff" stroke-width="4" stroke-linecap="round"/>`;
+  if(S.top==='hero')s+=`<circle cx="200" cy="326" r="28" fill="#FFC94A"/><path d="${starPath(200,326,20,9)}" fill="${c}"/><rect x="134" y="384" width="132" height="14" fill="#FFC94A"/>`;
+  if(S.top==='suit')s+=`<path d="M200 266 L176 266 L200 330 L224 266 Z" fill="#fff"/><path d="M200 278 l-8 10 8 34 8-34z" fill="#ff5a3c"/><path d="M176 266 L200 380 M224 266 L200 380" stroke="${d}" stroke-width="6"/><circle cx="200" cy="350" r="4" fill="${d}"/>`;
+  if(S.top==='tee')s+=`<path d="M176 264 Q200 286 224 264" fill="none" stroke="${d}" stroke-width="6"/>`;
+  return s;
+}
+function accBack(){return S.acc.includes('cape')?`<path d="M136 270 L90 470 Q200 495 310 470 L264 270 Z" fill="#d6304a"/><path d="M136 270 L110 470" stroke="#a31f35" stroke-width="5"/>`:''}
+function accFront(hairC){
+  let s='';const a=S.acc;
+  if(a.includes('glasses'))s+=`<g fill="none" stroke="#1F2A44" stroke-width="5"><circle cx="165" cy="172" r="20"/><circle cx="235" cy="172" r="20"/><path d="M185 170 Q200 162 215 170 M145 168 L122 160 M255 168 L278 160"/></g>`;
+  if(a.includes('sunglasses'))s+=`<g fill="#1F2A44"><rect x="140" y="158" width="50" height="30" rx="12"/><rect x="210" y="158" width="50" height="30" rx="12"/></g><path d="M190 168 L210 168 M140 166 L120 158 M260 166 L280 158" stroke="#1F2A44" stroke-width="5"/><path d="M150 166 l14 0" stroke="#ffffff88" stroke-width="4" stroke-linecap="round"/>`;
+  if(a.includes('mask'))s+=`<path d="M128 160 Q165 140 200 158 Q235 140 272 160 Q268 192 236 190 Q215 188 200 176 Q185 188 164 190 Q132 192 128 160Z" fill="#1F2A44"/><ellipse cx="165" cy="170" rx="11" ry="8" fill="#fff"/><ellipse cx="235" cy="170" rx="11" ry="8" fill="#fff"/>`;
+  if(a.includes('cap'))s+=`<path d="M116 140 Q118 72 200 70 Q282 72 284 140 Z" fill="#ff5a3c"/><path d="M200 132 Q290 128 320 146 Q300 154 200 146 Z" fill="#c9381f"/><circle cx="200" cy="74" r="7" fill="#c9381f"/>`;
+  if(a.includes('crown'))s+=`<path d="M138 104 L146 52 L172 82 L200 40 L228 82 L254 52 L262 104 Z" fill="#FFC94A" stroke="#c98a12" stroke-width="4" stroke-linejoin="round"/><circle cx="200" cy="80" r="7" fill="#ff5a3c"/><circle cx="160" cy="92" r="5" fill="#3ec7ff"/><circle cx="240" cy="92" r="5" fill="#3ec7ff"/>`;
+  if(a.includes('wizard'))s+=`<path d="M126 130 L214 0 L274 130 Z" fill="#5b36b8"/><ellipse cx="200" cy="130" rx="96" ry="16" fill="#4a2a9a"/><path d="${starPath(212,60,14,6)}" fill="#FFC94A"/><circle cx="180" cy="100" r="5" fill="#FFC94A"/>`;
+  if(a.includes('headphones'))s+=`<path d="M112 170 Q112 70 200 68 Q288 70 288 170" fill="none" stroke="#1F2A44" stroke-width="12"/><rect x="96" y="150" width="30" height="50" rx="12" fill="#2B7DE9"/><rect x="274" y="150" width="30" height="50" rx="12" fill="#2B7DE9"/>`;
+  if(a.includes('bow'))s+=`<g transform="translate(262 104) rotate(20)"><path d="M0 0 L-26 -16 L-26 16 Z M0 0 L26 -16 L26 16 Z" fill="#ff5fa2"/><circle r="7" fill="#e0407f"/></g>`;
+  return s;
+}
+function svg(){
+  const skin=SKIN[S.skin],hc=HAIRC[S.hairC];
+  const name=S.name?`<rect x="70" y="440" width="260" height="46" rx="23" fill="#1F2A44" opacity=".85"/><text x="200" y="471" text-anchor="middle" font-family="Rubik, Arial, sans-serif" font-weight="700" font-size="24" fill="#FFF8EC">${esc(S.name)}</text>`:'';
+  return`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" role="img" aria-label="הדמות שלך">
+  ${bg()}${accBack()}${body(skin)}
+  <rect x="182" y="240" width="36" height="34" fill="${skin}"/>
+  ${hairBack(hc)}
+  <circle cx="122" cy="178" r="16" fill="${skin}"/><circle cx="278" cy="178" r="16" fill="${skin}"/>
+  <ellipse cx="200" cy="175" rx="80" ry="84" fill="${skin}"/>
+  ${S.blush?`<ellipse cx="148" cy="200" rx="13" ry="8" fill="#ff8f8f" opacity=".45"/><ellipse cx="252" cy="200" rx="13" ry="8" fill="#ff8f8f" opacity=".45"/>`:''}
+  ${eyes()}<path d="M196 188 Q200 196 204 188" fill="none" stroke="${shade(skin,.7)}" stroke-width="4" stroke-linecap="round"/>${mouth()}
+  ${hairFront(hc)}${accFront(hc)}${name}</svg>`;
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function draw(popIt){const c=$('char');c.innerHTML=svg();if(popIt){c.classList.remove('pop');void c.offsetWidth;c.classList.add('pop')}}
+
+/* ---------- wardrobe ---------- */
+const TABS=[['face','😊 פנים'],['hair','💇 שיער'],['clothes','👕 בגדים'],['acc','🎩 אביזרים'],['bg','🖼️ רקע']];
+let tab='face';
+function renderTabs(){$('tabs').innerHTML=TABS.map(([k,n])=>`<button class="tab" role="tab" type="button" data-t="${k}" aria-selected="${k===tab}">${n}</button>`).join('')}
+$('tabs').addEventListener('click',e=>{const b=e.target.closest('.tab');if(!b)return;tab=b.dataset.t;renderTabs();renderPanel()});
+function sw(list,key,label){return`<div class="sect"><span>${label}</span><div class="opts">${list.map((c,i)=>`<button class="sw" type="button" style="background:${c}" data-k="${key}" data-v="${i}" aria-label="${label} ${i+1}" aria-pressed="${S[key]===i}"></button>`).join('')}</div></div>`}
+function op(list,key,label,multi){return`<div class="sect"><span>${label}</span><div class="opts">${list.map(([v,n])=>`<button class="opt" type="button" data-k="${key}" data-v="${v}" ${multi?'data-multi="1"':''} aria-pressed="${multi?(v==='none'?S.acc.length===0:S.acc.includes(v)):S[key]===v}">${n}</button>`).join('')}</div></div>`}
+function renderPanel(){
+  const P=$('panel');let h='';
+  if(tab==='face')h=sw(SKIN,'skin','צבע עור')+op(PARTS.eyes,'eyes','עיניים')+op(PARTS.mouth,'mouth','פה')+`<div class="sect"><span>לחיים ורודות</span><div class="opts"><button class="opt" type="button" data-k="blush" data-v="1" aria-pressed="${S.blush}">כן 😊</button><button class="opt" type="button" data-k="blush" data-v="0" aria-pressed="${!S.blush}">לא</button></div></div>`;
+  if(tab==='hair')h=op(PARTS.hair,'hair','תסרוקת')+sw(HAIRC,'hairC','צבע שיער');
+  if(tab==='clothes')h=op(PARTS.top,'top','בגדים')+sw(CLOTHC,'topC','צבע הבגדים')+(S.top==='dress'?'':sw(PANTSC,'pantsC','צבע המכנסיים'));
+  if(tab==='acc')h=op(PARTS.acc,'acc','אביזרים (אפשר כמה ביחד)',true);
+  if(tab==='bg')h=op(BG,'bg','רקע');
+  P.innerHTML=h;
+}
+$('panel').addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(!b)return;const k=b.dataset.k,v=b.dataset.v;
+  if(b.dataset.multi){if(v==='none')S.acc=[];else{const i=S.acc.indexOf(v);if(i>=0)S.acc.splice(i,1);else{
+      // only one hat at a time, and only one thing on the eyes
+      const hats=['cap','crown','wizard','headphones'],eyesA=['glasses','sunglasses','mask'];
+      [hats,eyesA].forEach(grp=>{if(grp.includes(v))S.acc=S.acc.filter(x=>!grp.includes(x))});S.acc.push(v)}}}
+  else if(k==='blush')S.blush=v==='1';
+  else if(['skin','hairC','topC','pantsC'].includes(k))S[k]=+v;else S[k]=v;
+  save();draw(false);renderPanel();click()});
+$('name').value=S.name||'';$('name').addEventListener('input',()=>{S.name=$('name').value.trim();save();draw(false)});
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+$('random').onclick=()=>{
+  S.skin=Math.floor(Math.random()*SKIN.length);S.hair=pick(PARTS.hair)[0];S.hairC=Math.floor(Math.random()*HAIRC.length);S.eyes=pick(PARTS.eyes)[0];S.mouth=pick(PARTS.mouth)[0];
+  S.blush=Math.random()<.6;S.top=pick(PARTS.top)[0];S.topC=Math.floor(Math.random()*CLOTHC.length);S.pantsC=Math.floor(Math.random()*PANTSC.length);S.bg=pick(BG)[0];
+  S.acc=[];if(Math.random()<.6)S.acc.push(pick(['cap','crown','wizard','headphones','bow']));if(Math.random()<.35)S.acc.push(pick(['glasses','sunglasses','mask']));if(Math.random()<.2)S.acc.push('cape');
+  save();draw(true);renderPanel();magic()};
+$('reset').onclick=()=>{const n=S.name;S=JSON.parse(JSON.stringify(DEF));S.name=n;save();draw(true);renderPanel()};
+
+/* ---------- save as picture ---------- */
+function plainDownload(name,blob){if(window.claude)return false;try{const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);return true}catch(e){return false}}
+let dl=null;
+async function getDl(){if(dl)return dl;try{if(window.claude&&window.claude.use)dl=await window.claude.use('downloads')}catch(e){dl=null}return dl}
+function toast(t){const el=$('toast');el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2800)}
+function toPng(){return new Promise((res,rej)=>{const url=URL.createObjectURL(new Blob([svg()],{type:'image/svg+xml'}));const im=new Image();
+  im.onload=()=>{const c=document.createElement('canvas');c.width=800;c.height=1000;c.getContext('2d').drawImage(im,0,0,800,1000);URL.revokeObjectURL(url);c.toBlob(b=>b?res(b):rej(),'image/png')};
+  im.onerror=()=>{URL.revokeObjectURL(url);rej()};im.src=url})}
+$('dl').onclick=async()=>{
+  let blob;try{blob=await toPng()}catch(e){toast('לא הצלחנו ליצור תמונה. אפשר ללחוץ לחיצה ארוכה על הדמות כדי לשמור אותה.');return}
+  const d=await getDl();if(!d){if(plainDownload(`${(S.name||'הדמות שלי').replace(/[\\/:*?"<>|]/g,'')}.png`,blob)){toast('התמונה ירדה ✓');return}toast('ההורדה לא זמינה כאן. לחצו לחיצה ארוכה או קליק ימני על הדמות כדי לשמור אותה.');return}
+  try{await d.save({filename:`${(S.name||'הדמות שלי').replace(/[\\/:*?"<>|]/g,'')}.png`,data:blob});toast('התמונה נשמרה ✓')}
+  catch(e){if(e&&e.code==='declined')return;toast('לא הצלחנו לשמור. אפשר ללחוץ לחיצה ארוכה על הדמות כדי לשמור אותה.')}};
+
+/* ---------- sound ---------- */
+let ac=null;
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}return ac}
+function tone(f,t,d,type='sine',v=.05){const a=audio();if(!a)return;const o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+t;
+  o.type=type;o.frequency.value=f;gn.gain.setValueAtTime(.0001,s);gn.gain.exponentialRampToValueAtTime(v,s+.01);gn.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(gn).connect(a.destination);o.start(s);o.stop(s+d+.05)}
+const click=()=>tone(700,0,.05),magic=()=>[660,880,1100,1320].forEach((f,i)=>tone(f,i*.06,.15,'triangle',.06));
+
+renderTabs();renderPanel();draw(false);
+})();
+</script>
+</body>
+</html>

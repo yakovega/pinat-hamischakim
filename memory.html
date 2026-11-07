@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>משחק זיכרון – פינת המשחקים</title>
+<meta name="description" content="הופכים קלפים ומחפשים זוגות: חיות, פירות, מילה ותמונה, תרגיל ותשובה או לוח הכפל.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/memory.html">
+<meta property="og:title" content="משחק זיכרון – פינת המשחקים">
+<meta property="og:description" content="הופכים קלפים ומחפשים זוגות: חיות, פירות, מילה ותמונה, תרגיל ותשובה או לוח הכפל.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/memory.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: setup card, then a status strip above a grid of flip cards that fits the screen; win card floats on top. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28; --blue:#2B7DE9;
+  --teal:#1E9E8A; --red:#ff5a3c; --pink:#ec4899; --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{min-height:100%}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px}
+[hidden]{display:none!important}
+main{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:clamp(26px,5vw,38px);margin:0;color:var(--sun)}
+.homelink{background:var(--sun);color:#1F2A44;padding:8px 14px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px}
+.panel{background:var(--card);border-radius:22px;padding:clamp(18px,4vw,28px);display:flex;flex-direction:column;gap:16px}
+.panel h2{font-family:var(--display);font-size:24px;margin:0}
+.group{display:flex;flex-direction:column;gap:8px}
+.group>span{font-weight:600;color:var(--muted);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:12px;padding:10px 14px;font:600 16px var(--body);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--sun);border-color:var(--sun);color:#1F2A44}
+.chip small{display:block;font-weight:400;font-size:12px;opacity:.8}
+.big{font-family:var(--display);font-weight:700;font-size:24px;border:0;border-radius:99px;padding:12px 40px;background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 5px 0 #a85c12;align-self:center}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #a85c12}
+.ghost{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:10px;padding:8px 14px;font:600 14px var(--body);cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.names{display:flex;gap:8px;flex-wrap:wrap}
+.names input{flex:1;min-width:140px;font:600 16px var(--body);border-radius:10px;border:2px solid var(--line);background:var(--paper);color:#1F2A44;padding:8px 12px}
+.best{color:var(--muted);font-size:14px;text-align:center;margin:0}
+/* play */
+.status{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{background:var(--card);border-radius:12px;padding:6px 12px;display:flex;align-items:baseline;gap:6px;font-variant-numeric:tabular-nums;border:3px solid transparent;transition:border-color .2s}
+.pill span{color:var(--muted);font-size:13px;font-weight:600}
+.pill b{font-family:var(--display);font-size:22px}
+.pill.turn{border-color:var(--sun)}
+.pill.p0 b{color:var(--orange)} .pill.p1 b{color:#3ec7ff}
+.grid{display:grid;gap:clamp(6px,1.5vw,12px);margin:0 auto;width:100%}
+.cardx{aspect-ratio:3/4;perspective:800px;border:0;padding:0;background:none;cursor:pointer;border-radius:14px;min-width:0}
+.inner{position:relative;width:100%;height:100%;transition:transform .45s cubic-bezier(.3,1.3,.5,1);transform-style:preserve-3d}
+.cardx.up .inner,.cardx.done .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:14px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:grid;place-items:center;overflow:hidden}
+.back{background:var(--blue);box-shadow:inset 0 0 0 4px #ffffff33,0 4px 0 #1d5fb8;
+  background-image:radial-gradient(circle at 25% 25%,#ffffff22 0 12%,transparent 13%),radial-gradient(circle at 75% 75%,#ffffff22 0 12%,transparent 13%);background-size:40px 40px}
+.back::after{content:"?";font-family:var(--display);font-weight:700;font-size:clamp(24px,5vw,44px);color:#ffffffcc}
+.front{background:var(--paper);color:#1F2A44;transform:rotateY(180deg);box-shadow:0 4px 0 #d8ccb4;padding:6%;text-align:center}
+.front .em{font-size:clamp(28px,7vw,58px);line-height:1}
+.front .tx{font-family:var(--display);font-weight:700;font-size:clamp(16px,3.6vw,30px);line-height:1.1;direction:ltr}
+.front .he{direction:rtl}
+.cardx.done .front{background:#dff5ea;box-shadow:0 4px 0 #9bd3b6}
+.cardx.done.by1 .front{background:#dff1fb;box-shadow:0 4px 0 #9cc9e6}
+.cardx.done .inner{animation:yay .5s ease-out}
+.cardx.wrong .inner{animation:no .4s}
+@keyframes yay{50%{transform:rotateY(180deg) scale(1.1)}}
+@keyframes no{25%{transform:rotateY(180deg) translateX(-6px)}75%{transform:rotateY(180deg) translateX(6px)}}
+.cardx:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.win{position:fixed;inset:0;display:grid;place-items:center;background:#0b1020cc;z-index:5;padding:16px}
+.win .box{background:var(--paper);color:#1F2A44;border-radius:22px;padding:24px 28px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center;width:min(100%,440px);animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+.win b.t{font-family:var(--display);font-size:clamp(32px,7vw,48px);color:var(--orange);line-height:1.1}
+.win .stars{font-size:38px;letter-spacing:4px}
+.win .ghost{color:#1F2A44;border-color:#d8ccb4}
+.win .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+@keyframes pop{from{transform:scale(.5);opacity:0}to{transform:none;opacity:1}}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:6;width:100%;height:100%}
+@media (prefers-reduced-motion:reduce){.inner{transition:none}.cardx.done .inner,.cardx.wrong .inner,.win .box{animation:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <h1>משחק זיכרון</h1>
+    <a class="homelink" href="index.html">🏠 דף הבית</a>
+  </div>
+
+  <section class="panel" id="setup">
+    <h2>בוחרים איך לשחק</h2>
+    <div class="group"><span>אילו קלפים?</span>
+      <div class="chips" data-name="theme">
+        <button class="chip" type="button" data-v="animals">🐶 חיות<small>שתי חיות זהות</small></button>
+        <button class="chip" type="button" data-v="fruit">🍓 פירות וממתקים<small>שתי תמונות זהות</small></button>
+        <button class="chip" type="button" data-v="words">🔤 מילה ותמונה<small>"כלב" עם 🐶</small></button>
+        <button class="chip" type="button" data-v="math">➕ תרגיל ותשובה<small>"3+4" עם 7</small></button>
+        <button class="chip" type="button" data-v="times">✖️ לוח הכפל<small>"6×7" עם 42</small></button>
+      </div>
+    </div>
+    <div class="group"><span>כמה זוגות?</span>
+      <div class="chips" data-name="size">
+        <button class="chip" type="button" data-v="6">6 זוגות<small>קל</small></button>
+        <button class="chip" type="button" data-v="8">8 זוגות<small>בינוני</small></button>
+        <button class="chip" type="button" data-v="12">12 זוגות<small>קשה</small></button>
+      </div>
+    </div>
+    <div class="group"><span>כמה משחקים?</span>
+      <div class="chips" data-name="players">
+        <button class="chip" type="button" data-v="1">🙋 שחקן אחד</button>
+        <button class="chip" type="button" data-v="2">👫 שני שחקנים</button>
+      </div>
+      <div class="names" id="names" hidden>
+        <input id="n0" maxlength="14" placeholder="שם שחקן 1" aria-label="שם שחקן 1">
+        <input id="n1" maxlength="14" placeholder="שם שחקן 2" aria-label="שם שחקן 2">
+      </div>
+    </div>
+    <button class="big" id="start" type="button">מתחילים!</button>
+    <p class="best" id="best"></p>
+  </section>
+
+  <section id="play" hidden style="display:flex;flex-direction:column;gap:12px">
+    <div class="status">
+      <div class="pills" id="pills"></div>
+      <div class="pills"><button class="ghost" id="restart" type="button">↻ לערבב מחדש</button><button class="ghost" id="back" type="button">⚙ הגדרות</button></div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+</main>
+
+<div class="win" id="win" hidden>
+  <div class="box" role="dialog">
+    <b class="t" id="winT"></b>
+    <div class="stars" id="winS"></div>
+    <p id="winP" style="margin:0"></p>
+    <div class="row">
+      <button class="big" id="again" type="button">עוד משחק</button>
+      <button class="ghost" id="settings" type="button">לשנות הגדרות</button>
+    </div>
+  </div>
+</div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const rnd=n=>Math.floor(Math.random()*n);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+
+const ANIMALS='🐶 🐱 🐭 🐰 🦊 🐻 🐼 🐨 🐯 🦁 🐮 🐷 🐸 🐵 🐔 🐧 🦄 🐢 🐙 🐬 🦒 🐘 🦋 🐞'.split(' ');
+const FRUIT='🍎 🍌 🍇 🍓 🍉 🍒 🍍 🥝 🍑 🍋 🥥 🥕 🌽 🍕 🍔 🍟 🍩 🍪 🍦 🧁 🍫 🍭 🥨 🍿'.split(' ');
+const WORDS=[['כלב','🐶'],['חתול','🐱'],['פרה','🐮'],['דג','🐟'],['ציפור','🐦'],['סוס','🐴'],['שמש','☀️'],['ירח','🌙'],['בית','🏠'],['עץ','🌳'],['פרח','🌸'],['תפוח','🍎'],['בננה','🍌'],['כדור','⚽'],['ספר','📘'],['מכונית','🚗'],['אוטובוס','🚌'],['מטוס','✈️'],['שעון','⏰'],['נעל','👟'],['כובע','🧢'],['גלידה','🍦'],['עוגה','🎂'],['מטריה','☂️'],['פיל','🐘'],['צב','🐢']];
+
+const cfg={theme:'animals',size:'8',players:'1'};
+try{Object.assign(cfg,JSON.parse(localStorage.getItem('memory-cfg')||'{}'))}catch(e){}
+try{const n=JSON.parse(localStorage.getItem('memory-names')||'[]');$('n0').value=n[0]||'';$('n1').value=n[1]||''}catch(e){}
+
+document.querySelectorAll('.chips').forEach(g=>{
+  const name=g.dataset.name;
+  const sync=()=>{g.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',cfg[name]===c.dataset.v));$('names').hidden=cfg.players!=='2';showBest()};
+  g.addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;cfg[name]=c.dataset.v;try{localStorage.setItem('memory-cfg',JSON.stringify(cfg))}catch(e){};sync()});
+  sync();
+});
+const bestKey=()=>`memory-best-${cfg.theme}-${cfg.size}`;
+function showBest(){let b=null;try{b=JSON.parse(localStorage.getItem(bestKey())||'null')}catch(e){}
+  $('best').textContent=b&&cfg.players==='1'?`השיא שלך בהגדרות האלה: ${b.moves} ניסיונות, ${b.secs} שניות`:''}
+
+/* ---------- deck ---------- */
+function makePairs(theme,n){
+  const out=[];
+  if(theme==='animals'||theme==='fruit'){shuffle((theme==='animals'?ANIMALS:FRUIT).slice()).slice(0,n).forEach((e,i)=>{out.push({id:i,em:e},{id:i,em:e})})}
+  else if(theme==='words'){shuffle(WORDS.slice()).slice(0,n).forEach(([w,e],i)=>{out.push({id:i,he:w},{id:i,em:e})})}
+  else{
+    const seen=new Set();let i=0;
+    while(out.length<n*2){
+      let a,b,op,ans;
+      if(theme==='math'){op=Math.random()<.6?'+':'−';a=1+rnd(10);b=1+rnd(10);if(op==='−'){if(b>a)[a,b]=[b,a];ans=a-b}else ans=a+b}
+      else{op='×';a=2+rnd(9);b=2+rnd(9);ans=a*b}
+      if(seen.has(ans))continue; // every answer appears once, so each exercise has one match
+      seen.add(ans);out.push({id:i,tx:`${a}${op}${b}`},{id:i,tx:String(ans)});i++;
+    }
+  }
+  return shuffle(out);
+}
+
+/* ---------- game ---------- */
+let deck=[],open=[],lock=false,moves=0,found=0,turn=0,pts=[0,0],t0=0,timerT=null,names=['',''];
+function cols(n){const w=innerWidth;if(n<=12)return w<520?3:4;if(n<=16)return 4;return w<520?4:6}
+function start(){
+  names=[$('n0').value.trim()||'שחקן 1',$('n1').value.trim()||'שחקן 2'];
+  try{localStorage.setItem('memory-names',JSON.stringify(names))}catch(e){}
+  deck=makePairs(cfg.theme,+cfg.size);open=[];lock=false;moves=0;found=0;turn=0;pts=[0,0];
+  const g=$('grid');g.innerHTML='';
+  const c=cols(deck.length),rows=Math.ceil(deck.length/c);
+  g.style.gridTemplateColumns=`repeat(${c},minmax(0,1fr))`;
+  // keep the whole board on one screen
+  g.style.maxWidth=`min(100%, calc((100vh - 200px) / ${rows} * ${c} * 0.75 + ${c*10}px))`;
+  deck.forEach((d,i)=>{
+    const b=document.createElement('button');b.className='cardx';b.type='button';b.setAttribute('aria-label','קלף מספר '+(i+1));
+    const content=d.em?`<span class="em">${d.em}</span>`:d.he?`<span class="tx he">${d.he}</span>`:`<span class="tx">${d.tx}</span>`;
+    b.innerHTML=`<div class="inner"><div class="face back"></div><div class="face front">${content}</div></div>`;
+    b.onclick=()=>flip(i,b);g.appendChild(b);d.el=b;
+  });
+  $('setup').hidden=true;$('play').hidden=false;$('win').hidden=true;
+  t0=performance.now();clearInterval(timerT);timerT=setInterval(pills,1000);pills();
+}
+function pills(){
+  const secs=Math.floor((performance.now()-t0)/1000),n=deck.length/2;
+  if(cfg.players==='1')$('pills').innerHTML=`<div class="pill"><span>זוגות</span><b>${found}/${n}</b></div><div class="pill"><span>ניסיונות</span><b>${moves}</b></div><div class="pill"><span>זמן</span><b>${secs}</b></div>`;
+  else{$('pills').innerHTML=[0,1].map(i=>`<div class="pill p${i} ${turn===i?'turn':''}"><span></span><b>${pts[i]}</b></div>`).join('');
+    $('pills').querySelectorAll('.pill span').forEach((s,i)=>s.textContent=(turn===i?'👉 ':'')+names[i])}
+}
+function flip(i,b){
+  const d=deck[i];
+  if(lock||d.done||open.includes(i))return;
+  b.classList.add('up');open.push(i);tick();
+  if(open.length<2)return;
+  moves++;lock=true;
+  const[a,c]=open.map(k=>deck[k]);
+  if(a.id===c.id){
+    setTimeout(()=>{[a,c].forEach(x=>{x.done=true;x.el.classList.remove('up');x.el.classList.add('done');if(cfg.players==='2'&&turn===1)x.el.classList.add('by1');x.el.setAttribute('aria-label','נמצא זוג')});
+      found++;pts[turn]++;open=[];lock=false;good();pills();
+      if(found===deck.length/2)setTimeout(finish,500)},450);
+  }else{
+    setTimeout(()=>{[a,c].forEach(x=>x.el.classList.add('wrong'))},500);
+    setTimeout(()=>{[a,c].forEach(x=>x.el.classList.remove('up','wrong'));open=[];lock=false;if(cfg.players==='2')turn=1-turn;pills()},1150);
+  }
+  pills();
+}
+function finish(){
+  clearInterval(timerT);
+  const secs=Math.floor((performance.now()-t0)/1000),n=deck.length/2;
+  if(cfg.players==='1'){
+    const ratio=moves/n,st=ratio<=1.6?3:ratio<=2.3?2:1;
+    $('winT').textContent='מצאת את כל הזוגות! 🎉';$('winS').textContent='★'.repeat(st)+'☆'.repeat(3-st);
+    let prev=null;try{prev=JSON.parse(localStorage.getItem(bestKey())||'null')}catch(e){}
+    const better=!prev||moves<prev.moves||(moves===prev.moves&&secs<prev.secs);
+    if(better)try{localStorage.setItem(bestKey(),JSON.stringify({moves,secs}))}catch(e){}
+    $('winP').textContent=`${moves} ניסיונות ו־${secs} שניות.`+(better&&prev?' שיא חדש! 🏆':'');
+  }else{
+    $('winS').textContent='';
+    if(pts[0]===pts[1]){$('winT').textContent='תיקו! 🤝';$('winP').textContent=`לשניכם ${pts[0]} זוגות`}
+    else{const w=pts[0]>pts[1]?0:1;$('winT').textContent=`${names[w]} ניצח/ה! 🎉`;$('winP').textContent=`${names[0]}: ${pts[0]} זוגות · ${names[1]}: ${pts[1]} זוגות`}
+  }
+  $('win').hidden=false;$('again').focus({preventScroll:true});confetti();fanfare();showBest();
+}
+$('start').onclick=start;$('again').onclick=start;$('restart').onclick=start;
+const toSetup=()=>{clearInterval(timerT);$('win').hidden=true;$('play').hidden=true;$('setup').hidden=false;showBest()};
+$('back').onclick=toSetup;$('settings').onclick=toSetup;
+
+/* ---------- sound & confetti ---------- */
+let ac=null;
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}return ac}
+function tone(f,t,d,type='triangle',v=.1){const a=audio();if(!a)return;const o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+t;
+  o.type=type;o.frequency.value=f;gn.gain.setValueAtTime(.0001,s);gn.gain.exponentialRampToValueAtTime(v,s+.01);gn.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(gn).connect(a.destination);o.start(s);o.stop(s+d+.05)}
+const tick=()=>tone(520,0,.06,'sine',.06);
+const good=()=>{tone(660,0,.12);tone(990,.09,.2)};
+const fanfare=()=>[523,659,784,1046].forEach((f,k)=>tone(f,k*.12,.35));
+const cc=$('confetti'),cx=cc.getContext('2d'),COLS=['#F28C28','#2B7DE9','#FFC94A','#1E9E8A','#ff5a3c','#3ec7ff'];
+function confetti(){if(still)return;cc.width=innerWidth;cc.height=innerHeight;
+  const ps=Array.from({length:180},()=>({x:innerWidth/2,y:innerHeight/3,vx:(Math.random()-.5)*16,vy:-Math.random()*14-4,r:Math.random()*6+4,c:COLS[rnd(6)],a:Math.random()*6,va:(Math.random()-.5)*.3}));
+  let f=0;(function t(){cx.clearRect(0,0,cc.width,cc.height);ps.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillStyle=p.c;cx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);cx.restore()});
+    if(++f<150)requestAnimationFrame(t);else cx.clearRect(0,0,cc.width,cc.height)})()}
+})();
+</script>
+</body>
+</html>

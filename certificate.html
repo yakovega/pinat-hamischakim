@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>תעודת הצטיינות – פינת המשחקים</title>
+<meta name="description" content="כותבים שם וסיבה, בוחרים סגנון (קלאסי, שמח, חלל, כדורגל או טבע), ומורידים תעודה מעוצבת להדפסה.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/certificate.html">
+<meta property="og:title" content="תעודת הצטיינות – פינת המשחקים">
+<meta property="og:description" content="כותבים שם וסיבה, בוחרים סגנון (קלאסי, שמח, חלל, כדורגל או טבע), ומורידים תעודה מעוצבת להדפסה.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/certificate.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&family=Frank+Ruhl+Libre:wght@500;700;900&family=Suez+One&display=swap">
+<style>
+/* Layout: live certificate preview on one side, the short form on the other; stacks with the preview first on phones. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28; --blue:#2B7DE9;
+  --teal:#1E9E8A; --red:#ff5a3c; --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);min-height:100vh;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px}
+[hidden]{display:none!important}
+main{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:clamp(26px,5vw,38px);margin:0;color:var(--sun)}
+.homelink{background:var(--sun);color:#1F2A44;padding:8px 14px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:18px;align-items:start}
+@media (max-width:880px){.layout{grid-template-columns:minmax(0,1fr)}.previewCol{order:-1}}
+.form{background:var(--card);border-radius:22px;padding:clamp(16px,3vw,24px);display:flex;flex-direction:column;gap:14px;min-width:0}
+.field{display:flex;flex-direction:column;gap:6px}
+.field>label,.field>span{font-weight:600;color:var(--muted);font-size:14px}
+input[type=text],input[type=date],select,textarea{width:100%;font:600 17px var(--body);border-radius:12px;border:2px solid var(--line);background:var(--paper);color:#1F2A44;padding:9px 12px}
+textarea{resize:vertical;min-height:64px;font-weight:400;line-height:1.5}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:10px;padding:7px 11px;font:600 14px var(--body);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--sun);border-color:var(--sun);color:#1F2A44}
+.chip.icon{font-size:22px;padding:4px 10px;line-height:1.2}
+.upload{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.upload label{background:var(--blue);color:var(--paper);border-radius:10px;padding:8px 14px;font:600 14px var(--body);cursor:pointer;position:relative}
+.upload input{position:absolute;opacity:0;width:1px;height:1px}
+.upload img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--sun)}
+.small{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:10px;padding:6px 12px;font:600 13px var(--body);cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,label:focus-within{outline:3px solid var(--sun);outline-offset:2px}
+.previewCol{display:flex;flex-direction:column;gap:12px;min-width:0;position:sticky;top:12px}
+@media (max-width:880px){.previewCol{position:static}}
+canvas#cv{width:100%;height:auto;display:block;border-radius:8px;box-shadow:0 14px 40px #0009;background:#fff}
+.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.big{font-family:var(--display);font-weight:700;font-size:20px;border:0;border-radius:99px;padding:11px 26px;background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 5px 0 #a85c12}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #a85c12}
+.ghost{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:99px;padding:9px 18px;font:600 15px var(--body);cursor:pointer}
+.note{margin:0;text-align:center;color:var(--muted);font-size:13px;line-height:1.6}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--teal);color:var(--paper);padding:10px 18px;border-radius:10px;font-weight:600;z-index:9;max-width:92vw;text-align:center}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <h1>תעודת הצטיינות</h1>
+    <a class="homelink" href="index.html">🏠 דף הבית</a>
+  </div>
+
+  <div class="layout">
+    <form class="form" id="form" autocomplete="off" onsubmit="return false">
+      <div class="field"><label for="name">שם הילד או הילדה</label><input id="name" type="text" maxlength="30" placeholder="למשל: נועה כהן"></div>
+      <div class="field"><label for="reason">על מה התעודה?</label>
+        <select id="reason">
+          <option>על הצטיינות בחשבון</option>
+          <option>על הצטיינות בקריאה</option>
+          <option>על הצטיינות בלימודים</option>
+          <option>על חברות טובה</option>
+          <option>על התמדה ומאמץ</option>
+          <option>על עזרה בבית</option>
+          <option>על התנהגות למופת</option>
+          <option>על יצירתיות ודמיון</option>
+          <option>על אומץ לב</option>
+          <option>על הישג בספורט</option>
+          <option>על סיום שנת לימודים מוצלחת</option>
+          <option>על שיא חדש בפינת המשחקים</option>
+          <option value="__custom">✏️ סיבה אחרת...</option>
+        </select>
+        <input id="customReason" type="text" maxlength="50" placeholder="כתבו את הסיבה, למשל: על ניקיון החדר כל השבוע" hidden>
+      </div>
+      <div class="field"><label for="msg">משפט אישי (לא חובה)</label><textarea id="msg" maxlength="120" placeholder="למשל: על שסיימת 20 תרגילים בלי אף טעות! אנחנו גאים בך."></textarea></div>
+      <div class="field"><label for="giver">מי נותן את התעודה?</label><input id="giver" type="text" maxlength="30" placeholder="למשל: אמא ואבא, המורה דנה"></div>
+      <div class="field"><label for="date">תאריך</label><input id="date" type="date"></div>
+      <div class="field"><span>סגנון</span>
+        <div class="chips" id="styles">
+          <button class="chip" type="button" data-v="classic">🏛️ קלאסי זהב</button>
+          <button class="chip" type="button" data-v="party">🎉 שמח וצבעוני</button>
+          <button class="chip" type="button" data-v="space">🚀 חלל</button>
+          <button class="chip" type="button" data-v="soccer">⚽ כדורגל</button>
+          <button class="chip" type="button" data-v="nature">🌳 טבע</button>
+        </div>
+      </div>
+      <div class="field"><span>סמל</span>
+        <div class="chips" id="seals">
+          <button class="chip icon" type="button" data-v="🏆" aria-label="גביע">🏆</button>
+          <button class="chip icon" type="button" data-v="🥇" aria-label="מדליה">🥇</button>
+          <button class="chip icon" type="button" data-v="⭐" aria-label="כוכב">⭐</button>
+          <button class="chip icon" type="button" data-v="👑" aria-label="כתר">👑</button>
+          <button class="chip icon" type="button" data-v="🦁" aria-label="אריה">🦁</button>
+          <button class="chip icon" type="button" data-v="🌟" aria-label="כוכב נוצץ">🌟</button>
+        </div>
+      </div>
+      <div class="field"><span>תמונה (לא חובה)</span>
+        <div class="upload">
+          <label>📷 בחירת תמונה<input type="file" id="photo" accept="image/*"></label>
+          <img id="thumb" alt="התמונה שנבחרה" hidden>
+          <button class="small" type="button" id="noPhoto" hidden>הסרה</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="previewCol">
+      <canvas id="cv" width="1754" height="1240" aria-label="תצוגה מקדימה של התעודה"></canvas>
+      <div class="actions">
+        <button class="big" id="pdf" type="button">⬇ הורדה כ־PDF להדפסה</button>
+        <button class="ghost" id="png" type="button">⬇ הורדה כתמונה</button>
+        <button class="ghost" id="next" type="button">➕ תעודה לילד נוסף</button>
+      </div>
+      <p class="note">התעודה מתעדכנת בזמן שכותבים. מורידים את הקובץ, פותחים אותו ומדפיסים (מומלץ דף A4 לרוחב).<br>אפשר גם ללחוץ לחיצה ארוכה או קליק ימני על התעודה כדי לשמור אותה כתמונה.</p>
+    </div>
+  </div>
+</main>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const S={name:'',reason:'על הצטיינות בחשבון',custom:'',msg:'',giver:'',date:'',style:'classic',seal:'🏆'};
+try{Object.assign(S,JSON.parse(localStorage.getItem('cert')||'{}'))}catch(e){}
+if(!S.date){const d=new Date();S.date=d.toISOString().slice(0,10)}
+let photo=null,photoImg=null;
+
+// fill form
+$('name').value=S.name;$('msg').value=S.msg;$('giver').value=S.giver;$('date').value=S.date;$('customReason').value=S.custom;
+const opts=[...$('reason').options].map(o=>o.value);
+if(opts.includes(S.reason))$('reason').value=S.reason;else{$('reason').value='__custom';S.custom=S.custom||S.reason}
+$('customReason').hidden=$('reason').value!=='__custom';
+function syncChips(id,key){document.querySelectorAll(`#${id} .chip`).forEach(c=>c.setAttribute('aria-pressed',c.dataset.v===S[key]))}
+syncChips('styles','style');syncChips('seals','seal');
+
+function save(){try{localStorage.setItem('cert',JSON.stringify(S))}catch(e){}}
+function read(){
+  S.name=$('name').value.trim();S.msg=$('msg').value.trim();S.giver=$('giver').value.trim();S.date=$('date').value;S.custom=$('customReason').value.trim();
+  S.reason=$('reason').value;$('customReason').hidden=S.reason!=='__custom';
+  save();schedule();
+}
+['name','msg','giver','date','customReason'].forEach(id=>$(id).addEventListener('input',read));
+$('reason').addEventListener('change',()=>{read();if(S.reason==='__custom')$('customReason').focus()});
+$('styles').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;S.style=c.dataset.v;syncChips('styles','style');save();schedule()});
+$('seals').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;S.seal=c.dataset.v;syncChips('seals','seal');save();schedule()});
+$('photo').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();
+  rd.onload=()=>{const im=new Image();im.onload=()=>{photoImg=im;$('thumb').src=rd.result;$('thumb').hidden=false;$('noPhoto').hidden=false;schedule()};im.src=rd.result};rd.readAsDataURL(f)});
+$('noPhoto').onclick=()=>{photoImg=null;$('photo').value='';$('thumb').hidden=true;$('noPhoto').hidden=true;schedule()};
+$('next').onclick=()=>{$('name').value='';$('msg').value='';$('noPhoto').click();read();$('name').focus();scrollTo({top:0,behavior:'smooth'});toast('שאר הפרטים נשמרו. כתבו שם חדש ✏️')};
+
+/* ---------- drawing ---------- */
+const cv=$('cv'),x=cv.getContext('2d'),W=1754,H=1240;
+const THEMES={
+  classic:{bg:'#fffaf0',ink:'#2b2116',title:'#7a5a00',accent:'#c9a227',accent2:'#e9d48a',name:'#1F2A44',muted:'#6b5d45',titleFont:'900 132px "Frank Ruhl Libre", "Suez One", serif',nameFont:f=>`700 ${f}px "Frank Ruhl Libre", serif`,bodyFont:'500 46px "Frank Ruhl Libre", serif'},
+  party:{bg:'#FFF8EC',ink:'#1F2A44',title:'#F28C28',accent:'#2B7DE9',accent2:'#ec4899',name:'#2B7DE9',muted:'#4A5568',titleFont:'700 128px Fredoka, Rubik, sans-serif',nameFont:f=>`700 ${f}px Fredoka, Rubik, sans-serif`,bodyFont:'600 44px Rubik, sans-serif'},
+  space:{bg:'#141C30',ink:'#FFF8EC',title:'#FFC94A',accent:'#8b5cf6',accent2:'#3ec7ff',name:'#FFFFFF',muted:'#C9D2E6',titleFont:'700 128px Fredoka, Rubik, sans-serif',nameFont:f=>`700 ${f}px Fredoka, Rubik, sans-serif`,bodyFont:'600 44px Rubik, sans-serif'},
+  soccer:{bg:'#1f6b3f',ink:'#FFFFFF',title:'#FFC94A',accent:'#FFFFFF',accent2:'#FFC94A',name:'#FFFFFF',muted:'#dbeee1',titleFont:'400 124px "Suez One", Rubik, serif',nameFont:f=>`700 ${f}px Fredoka, Rubik, sans-serif`,bodyFont:'600 44px Rubik, sans-serif'},
+  nature:{bg:'#f1f8ea',ink:'#20331f',title:'#2f7d3a',accent:'#3fae5a',accent2:'#a3d977',name:'#1f4d2a',muted:'#4f6b4c',titleFont:'400 124px "Suez One", Rubik, serif',nameFont:f=>`700 ${f}px Fredoka, Rubik, sans-serif`,bodyFont:'600 44px Rubik, sans-serif'}
+};
+function rr(X,Y,w,h,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath()}
+function seeded(n){let s=n;return()=>{s=(s*9301+49297)%233280;return s/233280}}
+function wrap(text,maxW){const words=text.split(/\s+/),lines=[];let cur='';
+  for(const w of words){const t=cur?cur+' '+w:w;if(x.measureText(t).width>maxW&&cur){lines.push(cur);cur=w}else cur=t}if(cur)lines.push(cur);return lines}
+function fit(text,fontFn,start,maxW,min){let f=start;x.font=fontFn(f);while(x.measureText(text).width>maxW&&f>min){f-=4;x.font=fontFn(f)}return f}
+
+function background(T){
+  const st=S.style;
+  if(st==='space'){const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0e1430');g.addColorStop(1,'#2b2266');x.fillStyle=g;x.fillRect(0,0,W,H);
+    const r=seeded(3);for(let i=0;i<220;i++){x.globalAlpha=.3+r()*.7;x.fillStyle='#fff';x.beginPath();x.arc(r()*W,r()*H,r()*2.6+.4,0,7);x.fill()}x.globalAlpha=1;
+    // planets
+    x.fillStyle='#F28C28';x.beginPath();x.arc(220,240,78,0,7);x.fill();x.strokeStyle='#FFC94A';x.lineWidth=10;x.beginPath();x.ellipse(220,240,130,30,-.3,0,7);x.stroke();
+    x.fillStyle='#3ec7ff';x.beginPath();x.arc(W-150,170,60,0,7);x.fill();x.fillStyle='#ffffff33';x.beginPath();x.arc(W-170,150,22,0,7);x.fill();
+    x.font='100px sans-serif';x.textAlign='center';x.fillText('🚀',W-160,H-210);
+  }else if(st==='soccer'){for(let i=0;i<12;i++){x.fillStyle=i%2?'#1f6b3f':'#22764a';x.fillRect(i*W/12,0,W/12+1,H)}
+    x.strokeStyle='#ffffff55';x.lineWidth=6;x.beginPath();x.arc(W/2,H/2,250,0,7);x.stroke();x.beginPath();x.moveTo(W/2,60);x.lineTo(W/2,H-60);x.stroke();
+    x.strokeRect(60,H/2-260,220,520);x.strokeRect(W-280,H/2-260,220,520);
+    x.fillStyle='#1f6b3fdd';rr(260,170,W-520,H-340,40);x.fill();
+    x.font='100px sans-serif';x.textAlign='center';x.fillText('⚽',170,180);x.fillText('⚽',W-170,H-110);
+  }else{x.fillStyle=T.bg;x.fillRect(0,0,W,H)}
+  if(st==='party'){const r=seeded(11),cols=['#F28C28','#2B7DE9','#FFC94A','#1E9E8A','#ec4899','#8b5cf6'];
+    for(let i=0;i<140;i++){const px=r()*W,py=r()*H;if(px>220&&px<W-220&&py>200&&py<H-200)continue;x.save();x.translate(px,py);x.rotate(r()*6);x.fillStyle=cols[i%6];x.fillRect(-12,-5,24,10);x.restore()}
+    // bunting
+    for(let i=0;i<16;i++){const bx=110+i*((W-220)/15);x.fillStyle=cols[i%6];x.beginPath();x.moveTo(bx-38,70);x.lineTo(bx+38,70);x.lineTo(bx,140);x.closePath();x.fill()}
+    x.strokeStyle='#1F2A44';x.lineWidth=4;x.beginPath();x.moveTo(60,70);x.lineTo(W-60,70);x.stroke();
+  }
+  if(st==='nature'){x.font='120px sans-serif';x.textAlign='center';
+    [['🌿',120,150],['🌸',W-130,140],['🌳',140,H-130],['🦋',W-140,H-150],['🍃',W/2-560,H-90],['🌼',W/2+560,H-90]].forEach(([e,px,py])=>x.fillText(e,px,py+40))}
+}
+function frame(T){
+  const st=S.style;
+  if(st==='classic'){
+    x.strokeStyle=T.accent;x.lineWidth=18;x.strokeRect(50,50,W-100,H-100);
+    x.lineWidth=4;x.strokeRect(86,86,W-172,H-172);
+    x.strokeStyle=T.accent2;x.lineWidth=2;x.strokeRect(100,100,W-200,H-200);
+    // corner ornaments
+    [[86,86,1,1],[W-86,86,-1,1],[86,H-86,1,-1],[W-86,H-86,-1,-1]].forEach(([cx,cy,sx,sy])=>{
+      x.fillStyle=T.accent;x.beginPath();x.arc(cx,cy,22,0,7);x.fill();
+      x.strokeStyle=T.accent;x.lineWidth=5;x.beginPath();x.moveTo(cx+sx*40,cy);x.quadraticCurveTo(cx+sx*90,cy+sy*10,cx+sx*120,cy+sy*50);x.stroke();
+      x.beginPath();x.moveTo(cx,cy+sy*40);x.quadraticCurveTo(cx+sx*10,cy+sy*90,cx+sx*50,cy+sy*120);x.stroke()});
+  }else if(st==='party'){const cols=['#F28C28','#2B7DE9','#FFC94A','#1E9E8A','#ec4899'];cols.forEach((c,i)=>{x.strokeStyle=c;x.lineWidth=10;rr(30+i*10,30+i*10,W-60-i*20,H-60-i*20,40);x.stroke()})}
+  else if(st==='space'){x.strokeStyle=T.accent2;x.lineWidth=6;rr(50,50,W-100,H-100,30);x.stroke();x.setLineDash([4,18]);x.strokeStyle='#FFC94A';x.lineWidth=6;rr(72,72,W-144,H-144,24);x.stroke();x.setLineDash([])}
+  else if(st==='soccer'){x.strokeStyle='#FFFFFF';x.lineWidth=12;rr(40,40,W-80,H-80,30);x.stroke()}
+  else if(st==='nature'){x.strokeStyle=T.accent;x.lineWidth=14;rr(46,46,W-92,H-92,60);x.stroke();x.strokeStyle=T.accent2;x.lineWidth=4;rr(72,72,W-144,H-144,48);x.stroke()}
+}
+function sealAt(T,cx,cy){
+  // ribbons
+  x.fillStyle=S.style==='classic'?'#a8323e':T.accent;
+  [[-1],[1]].forEach(([s])=>{x.beginPath();x.moveTo(cx+s*30,cy+40);x.lineTo(cx+s*90,cy+190);x.lineTo(cx+s*55,cy+170);x.lineTo(cx+s*35,cy+205);x.lineTo(cx-s*5,cy+60);x.closePath();x.fill()});
+  // rosette
+  const R=105,teeth=28;x.fillStyle=S.style==='classic'?'#c9a227':T.title;x.beginPath();
+  for(let i=0;i<=teeth*2;i++){const a=i/(teeth*2)*Math.PI*2,r=i%2?R:R-12;x.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r)}x.fill();
+  x.fillStyle=S.style==='classic'?'#e9d48a':'#FFF8EC';x.beginPath();x.arc(cx,cy,R-26,0,7);x.fill();
+  x.font='92px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(S.seal,cx,cy+6);x.textBaseline='alphabetic';
+}
+function draw(){
+  const T=THEMES[S.style]||THEMES.classic;
+  x.setTransform(1,0,0,1,0,0);x.direction='rtl';x.textBaseline='alphabetic';
+  background(T);frame(T);
+  const cx=W/2;
+  // title
+  x.textAlign='center';x.fillStyle=T.title;x.font=T.titleFont;
+  if(S.style==='classic'){x.save();x.shadowColor='#c9a22755';x.shadowBlur=0;x.shadowOffsetY=4;x.fillText('תעודת הצטיינות',cx,300);x.restore()}else x.fillText('תעודת הצטיינות',cx,300);
+  // divider
+  x.strokeStyle=T.accent;x.lineWidth=4;x.beginPath();x.moveTo(cx-300,350);x.lineTo(cx-40,350);x.moveTo(cx+40,350);x.lineTo(cx+300,350);x.stroke();
+  x.fillStyle=T.accent;x.beginPath();x.moveTo(cx,330);x.lineTo(cx+18,350);x.lineTo(cx,370);x.lineTo(cx-18,350);x.closePath();x.fill();
+  // awarded to
+  x.fillStyle=T.muted;x.font=T.bodyFont;x.fillText('התעודה מוענקת ל',cx,450);
+  // photo
+  let nameY=600;
+  if(photoImg){const R=110,py=575,px=S.style==='soccer'?W-420:W-330;
+    x.save();x.beginPath();x.arc(px,py,R,0,7);x.clip();const s=Math.max(2*R/photoImg.width,2*R/photoImg.height);
+    x.drawImage(photoImg,px-photoImg.width*s/2,py-photoImg.height*s/2,photoImg.width*s,photoImg.height*s);x.restore();
+    x.strokeStyle=T.accent;x.lineWidth=10;x.beginPath();x.arc(px,py,R+4,0,7);x.stroke()}
+  // name
+  const name=S.name||'השם יופיע כאן';
+  const maxNameW=photoImg?W-900:W-500;
+  const f=fit(name,T.nameFont,160,maxNameW,70);
+  x.fillStyle=S.name?T.name:T.muted+'88';x.font=T.nameFont(f);x.fillText(name,cx,nameY);
+  x.strokeStyle=T.accent2;x.lineWidth=3;x.beginPath();x.moveTo(cx-420,nameY+40);x.lineTo(cx+420,nameY+40);x.stroke();
+  // reason
+  const reason=S.reason==='__custom'?(S.custom||'על...'):S.reason;
+  x.fillStyle=T.ink;const rf=fit(reason,s=>T.bodyFont.replace(/\d+px/,s+'px'),60,W-560,36);x.font=T.bodyFont.replace(/\d+px/,rf+'px');x.fillText(reason,cx,730);
+  // personal message
+  if(S.msg){x.fillStyle=T.muted;x.font=T.bodyFont.replace(/\d+px/,'38px');const lines=wrap(S.msg,W-700).slice(0,2);lines.forEach((l,i)=>x.fillText(l,cx,810+i*54))}
+  // bottom: date (right) · seal (center) · giver (left)
+  const by=1040;
+  x.font=T.bodyFont.replace(/\d+px/,'38px');x.fillStyle=T.ink;
+  const d=S.date?new Date(S.date+'T12:00:00'):new Date();
+  const ds=isNaN(d)?'':d.toLocaleDateString('he-IL',{day:'numeric',month:'long',year:'numeric'});
+  const rightX=W-430,leftX=430;
+  x.fillText(ds,rightX,by);x.fillText(S.giver||'',leftX,by);
+  x.strokeStyle=T.muted;x.lineWidth=3;x.beginPath();x.moveTo(rightX-200,by+22);x.lineTo(rightX+200,by+22);x.moveTo(leftX-200,by+22);x.lineTo(leftX+200,by+22);x.stroke();
+  x.fillStyle=T.muted;x.font=T.bodyFont.replace(/\d+px/,'28px');x.fillText('תאריך',rightX,by+64);x.fillText('בברכה',leftX,by+64);
+  sealAt(T,cx,by-40);
+}
+let raf=0;function schedule(){cancelAnimationFrame(raf);raf=requestAnimationFrame(draw)}
+draw();
+if(document.fonts){Promise.all(['900 40px "Frank Ruhl Libre"','400 40px "Suez One"','700 40px Fredoka','600 40px Rubik'].map(f=>document.fonts.load(f).catch(()=>{}))).then(draw)}
+
+/* ---------- downloads ---------- */
+function plainDownload(name,blob){if(window.claude)return false;try{const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);return true}catch(e){return false}}
+let dl=null;
+async function getDl(){if(dl)return dl;try{if(window.claude&&window.claude.use)dl=await window.claude.use('downloads')}catch(e){dl=null}return dl}
+function toast(t){const el=$('toast');el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2800)}
+const fname=ext=>`תעודת הצטיינות - ${(S.name||'תעודה').replace(/[\\/:*?"<>|]/g,'')}.${ext}`;
+async function saveFile(ext,data){
+  const d=await getDl();
+  if(!d){if(plainDownload(fname(ext),data)){toast('התעודה ירדה ✓');return}toast('ההורדה לא זמינה כאן. לחצו לחיצה ארוכה או קליק ימני על התעודה כדי לשמור אותה כתמונה.');return}
+  try{await d.save({filename:fname(ext),data});toast('התעודה נשמרה ✓')}
+  catch(e){if(e&&e.code==='declined')return;if(e&&e.code==='rate_limited'){toast('רגע, חלון השמירה כבר פתוח');return}
+    toast('לא הצלחנו לשמור. לחצו לחיצה ארוכה או קליק ימני על התעודה כדי לשמור אותה כתמונה.')}
+}
+function needName(){if(!S.name){toast('כתבו קודם את שם הילד או הילדה ✏️');$('name').focus();return true}return false}
+$('png').onclick=()=>{if(needName())return;draw();cv.toBlob(b=>b&&saveFile('png',b),'image/png')};
+$('pdf').onclick=()=>{if(needName())return;draw();
+  if(!window.jspdf){cv.toBlob(b=>b&&saveFile('png',b),'image/png');return}
+  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4',orientation:'landscape'});
+  doc.addImage(cv.toDataURL('image/jpeg',.93),'JPEG',0,0,297,210);saveFile('pdf',doc.output('blob'))};
+})();
+</script>
+</body>
+</html>

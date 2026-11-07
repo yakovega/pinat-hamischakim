@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>טיימר שיעורי בית – פינת המשחקים</title>
+<meta name="description" content="בוחרים כמה זמן ללמוד וכמה זמן הפסקה. עיגול גדול סופר אחורה, ובהפסקות יש רעיונות מה לעשות. כל סבב שמסיימים שווה כוכב.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/timer.html">
+<meta property="og:title" content="טיימר שיעורי בית – פינת המשחקים">
+<meta property="og:description" content="בוחרים כמה זמן ללמוד וכמה זמן הפסקה. עיגול גדול סופר אחורה, ובהפסקות יש רעיונות מה לעשות. כל סבב שמסיימים שווה כוכב.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/timer.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: one centered column; setup card first, then the big countdown ring with the round stars under it. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28; --blue:#3ec7ff;
+  --teal:#1E9E8A; --red:#ff5a3c; --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);min-height:100vh;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px}
+[hidden]{display:none!important}
+main{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:clamp(24px,5vw,36px);margin:0;color:var(--sun)}
+.homelink{background:var(--sun);color:#1F2A44;padding:8px 14px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px}
+.card{background:var(--card);border-radius:22px;padding:clamp(16px,4vw,26px);display:flex;flex-direction:column;gap:16px}
+.card h2{font-family:var(--display);font-size:22px;margin:0}
+.group{display:flex;flex-direction:column;gap:8px}
+.group>label,.group>span{font-weight:600;color:var(--muted);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:12px;padding:9px 14px;font:600 16px var(--body);cursor:pointer;font-variant-numeric:tabular-nums}
+.chip[aria-pressed="true"]{background:var(--sun);border-color:var(--sun);color:#1F2A44}
+input[type=text]{width:100%;font:600 18px var(--body);border-radius:12px;border:2px solid var(--line);background:var(--paper);color:#1F2A44;padding:10px 12px}
+.big{font-family:var(--display);font-weight:700;font-size:24px;border:0;border-radius:99px;padding:12px 40px;background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 5px 0 #a85c12;align-self:center}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #a85c12}
+.ghost{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:99px;padding:10px 18px;font:600 15px var(--body);cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.today{display:flex;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:15px;font-weight:600}
+.today b{color:var(--sun);font-family:var(--display);font-size:22px}
+/* run */
+.run{align-items:center;text-align:center}
+.mode{font-family:var(--display);font-weight:700;font-size:clamp(22px,5vw,30px)}
+.mode.work{color:var(--orange)}.mode.break{color:var(--blue)}
+.task{color:var(--muted);font-size:16px;min-height:22px}
+.ringWrap{position:relative;width:min(78vw,340px,calc(100vh - 340px));aspect-ratio:1;max-width:100%}
+.ringWrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ringWrap circle{fill:none;stroke-width:16;stroke-linecap:round}
+.ringBg{stroke:#26314F}
+.ringFg{transition:stroke-dashoffset .5s linear,stroke .3s}
+.time{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.time b{font-family:var(--display);font-weight:700;font-size:clamp(48px,14vw,84px);line-height:1;font-variant-numeric:tabular-nums;direction:ltr}
+.time span{color:var(--muted);font-size:14px;font-weight:600}
+.stars{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;font-size:30px;line-height:1}
+.stars .off{filter:grayscale(1);opacity:.3}
+.stars .now{animation:pulse 1.2s ease-in-out infinite alternate}
+@keyframes pulse{to{transform:scale(1.2)}}
+.idea{background:#26314F;border-radius:14px;padding:12px 16px;font-size:17px;line-height:1.5;max-width:420px}
+.idea b{display:block;color:var(--blue);font-size:14px;margin-bottom:2px}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.done{align-items:center;text-align:center}
+.done .t{font-family:var(--display);font-weight:700;font-size:clamp(30px,7vw,46px);color:var(--sun);line-height:1.1}
+.done p{margin:0;font-size:17px;line-height:1.5}
+.note{color:var(--muted);font-size:13px;text-align:center;margin:0;line-height:1.6}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:6;width:100%;height:100%}
+@media (prefers-reduced-motion:reduce){.stars .now{animation:none}.ringFg{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <h1>טיימר שיעורי בית</h1>
+    <a class="homelink" href="index.html">🏠 דף הבית</a>
+  </div>
+
+  <section class="card" id="setup">
+    <h2>מתכננים את הזמן ⏰</h2>
+    <div class="group"><label for="task">מה אני עושה עכשיו? (לא חובה)</label><input id="task" type="text" maxlength="40" placeholder="למשל: שיעורי בית בחשבון"></div>
+    <div class="group"><span>זמן עבודה בכל סבב</span>
+      <div class="chips" data-name="work"><button class="chip" type="button" data-v="10">10 דק׳</button><button class="chip" type="button" data-v="15">15 דק׳</button><button class="chip" type="button" data-v="20">20 דק׳</button><button class="chip" type="button" data-v="25">25 דק׳</button></div>
+    </div>
+    <div class="group"><span>זמן הפסקה</span>
+      <div class="chips" data-name="rest"><button class="chip" type="button" data-v="3">3 דק׳</button><button class="chip" type="button" data-v="5">5 דק׳</button><button class="chip" type="button" data-v="10">10 דק׳</button></div>
+    </div>
+    <div class="group"><span>כמה סבבים?</span>
+      <div class="chips" data-name="rounds"><button class="chip" type="button" data-v="1">1</button><button class="chip" type="button" data-v="2">2</button><button class="chip" type="button" data-v="3">3</button><button class="chip" type="button" data-v="4">4</button></div>
+    </div>
+    <p class="note" id="plan"></p>
+    <button class="big" id="start" type="button">▶ מתחילים!</button>
+    <div class="today">⭐ כוכבים היום: <b id="todayStars">0</b></div>
+  </section>
+
+  <section class="card run" id="run" hidden>
+    <div class="mode work" id="mode">📚 זמן עבודה</div>
+    <div class="task" id="taskShow"></div>
+    <div class="ringWrap">
+      <svg viewBox="0 0 200 200" aria-hidden="true"><circle class="ringBg" cx="100" cy="100" r="88"/><circle class="ringFg" id="ring" cx="100" cy="100" r="88"/></svg>
+      <div class="time"><b id="time">20:00</b><span id="roundTxt"></span></div>
+    </div>
+    <div class="stars" id="stars" aria-label="סבבים"></div>
+    <div class="idea" id="idea" hidden></div>
+    <div class="row">
+      <button class="big" id="pause" type="button">⏸ הפסקה</button>
+    </div>
+    <div class="row">
+      <button class="ghost" id="skip" type="button">⏭ לדלג לשלב הבא</button>
+      <button class="ghost" id="stop" type="button">⏹ לסיים</button>
+    </div>
+    <p class="note">הטיימר ימשיך לספור גם אם עוברים ללשונית אחרת, ויצלצל בסוף כל שלב.</p>
+  </section>
+
+  <section class="card done" id="done" hidden>
+    <div class="t">סיימת! כל הכבוד! 🏆</div>
+    <div class="stars" id="doneStars" style="font-size:40px"></div>
+    <p id="doneP"></p>
+    <div class="row"><button class="big" id="again" type="button">עוד סבב</button><button class="ghost" id="settings" type="button">לשנות זמנים</button></div>
+  </section>
+</main>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cfg={work:'20',rest:'5',rounds:'2',task:''};
+try{Object.assign(cfg,JSON.parse(localStorage.getItem('timer-cfg')||'{}'))}catch(e){}
+$('task').value=cfg.task||'';
+const IDEAS=['🙆 מתיחות: ידיים למעלה, לגעת באצבעות הרגליים','💧 לשתות כוס מים','🤸 10 קפיצות במקום','👀 להסתכל רחוק מהחלון כדי לנוח לעיניים','🍎 לאכול משהו קטן ובריא','🎵 לשמוע שיר אחד שאוהבים','🌬️ 5 נשימות עמוקות ואיטיות','🚶 להסתובב קצת בבית','🐶 ללטף את החיה (אם יש)','✏️ לצייר משהו קטן'];
+const save=()=>{try{localStorage.setItem('timer-cfg',JSON.stringify(cfg))}catch(e){}};
+const todayKey='timer-stars-'+new Date().toISOString().slice(0,10);
+const getToday=()=>{try{return +localStorage.getItem(todayKey)||0}catch(e){return 0}};
+function addToday(){try{localStorage.setItem(todayKey,getToday()+1)}catch(e){};$('todayStars').textContent=getToday()}
+$('todayStars').textContent=getToday();
+
+document.querySelectorAll('.chips').forEach(g=>{const name=g.dataset.name;
+  const sync=()=>{g.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',cfg[name]===c.dataset.v));plan()};
+  g.addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;cfg[name]=c.dataset.v;save();sync()});sync()});
+$('task').addEventListener('input',()=>{cfg.task=$('task').value.trim();save()});
+function plan(){const w=+cfg.work,r=+cfg.rest,n=+cfg.rounds,total=w*n+r*(n-1);
+  $('plan').textContent=n===1?`סבב אחד של ${w} דקות.`:`${n} סבבים של ${w} דקות, עם ${r} דקות הפסקה ביניהם. סך הכול ${total} דקות.`}
+
+/* ---------- timer (based on the clock, so it stays right in the background) ---------- */
+const show=id=>['setup','run','done'].forEach(s=>$(s).hidden=s!==id);
+const CIRC=2*Math.PI*88;$('ring').style.strokeDasharray=CIRC;
+let phase='work',round=1,endAt=0,remaining=0,dur=0,paused=false,tick=null,wake=null,completed=0;
+function start(){
+  cfg.task=$('task').value.trim();save();audio();
+  round=1;completed=0;show('run');$('taskShow').textContent=cfg.task?'✏️ '+cfg.task:'';
+  begin('work');requestWake();
+}
+function begin(p){
+  phase=p;dur=(p==='work'?+cfg.work:+cfg.rest)*60*1000;remaining=dur;endAt=Date.now()+dur;paused=false;
+  const m=$('mode');m.className='mode '+(p==='work'?'work':'break');m.textContent=p==='work'?'📚 זמן עבודה':'☕ הפסקה!';
+  $('ring').style.stroke=p==='work'?'#F28C28':'#3ec7ff';
+  const idea=$('idea');if(p==='break'){idea.hidden=false;idea.innerHTML='<b>רעיון להפסקה:</b>'+IDEAS[Math.floor(Math.random()*IDEAS.length)]}else idea.hidden=true;
+  $('pause').textContent='⏸ הפסקה';
+  clearInterval(tick);tick=setInterval(update,250);update();drawStars();
+}
+function fmt(ms){const s=Math.max(0,Math.ceil(ms/1000)),m=Math.floor(s/60),ss=s%60;return`${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`}
+function update(){
+  if(!paused)remaining=endAt-Date.now();
+  const t=fmt(remaining);$('time').textContent=t;
+  $('ring').style.strokeDashoffset=CIRC*(1-Math.max(0,remaining)/dur);
+  $('roundTxt').textContent=`סבב ${round} מתוך ${cfg.rounds}`+(paused?' · בהפסקה':'');
+  document.title=`${t} ${phase==='work'?'📚':'☕'} טיימר שיעורי בית`;
+  if(!paused&&remaining<=0)phaseDone();
+}
+function phaseDone(skipped){
+  clearInterval(tick);
+  if(phase==='work'){
+    if(!skipped){completed++;addToday()}chime(true); // a skipped round earns no star
+    if(round>=+cfg.rounds){finish();return}
+    begin('break');
+  }else{chime(false);round++;begin('work')}
+}
+function drawStars(){const n=+cfg.rounds;$('stars').innerHTML='';
+  for(let i=1;i<=n;i++){const s=document.createElement('span');s.textContent='⭐';
+    if(i>completed)s.className=(i===round&&phase==='work')?'off now':'off';$('stars').appendChild(s)}}
+function finish(){
+  releaseWake();
+  if(!completed){show('setup');$('todayStars').textContent=getToday();document.title='טיימר שיעורי בית';return}document.title='טיימר שיעורי בית';
+  $('doneStars').textContent='⭐'.repeat(completed);
+  const mins=completed*+cfg.work;
+  $('doneP').textContent=`עבדת ${mins} דקות${cfg.task?' על '+cfg.task:''} וצברת ${completed} ${completed===1?'כוכב':'כוכבים'}. היום יש לך כבר ${getToday()} ⭐`;
+  show('done');confetti();fanfare();$('again').focus({preventScroll:true});
+}
+$('start').onclick=start;$('again').onclick=start;
+$('settings').onclick=()=>{show('setup');$('todayStars').textContent=getToday()};
+$('pause').onclick=()=>{
+  if(!paused){paused=true;remaining=endAt-Date.now();$('pause').textContent='▶ להמשיך'}
+  else{paused=false;endAt=Date.now()+remaining;$('pause').textContent='⏸ הפסקה'}
+  update()};
+$('skip').onclick=()=>{remaining=0;endAt=Date.now();paused=false;phaseDone(true)};
+$('stop').onclick=()=>{clearInterval(tick);releaseWake();document.title='טיימר שיעורי בית';
+  if(completed>0)finish();else{show('setup');$('todayStars').textContent=getToday()}};
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!$('run').hidden){update();if(!wake)requestWake()}});
+
+/* ---------- keep the screen on while the timer runs (if the browser allows) ---------- */
+async function requestWake(){try{if('wakeLock' in navigator){wake=await navigator.wakeLock.request('screen');wake.addEventListener('release',()=>{wake=null})}}catch(e){wake=null}}
+function releaseWake(){try{wake&&wake.release()}catch(e){}wake=null}
+
+/* ---------- sound & confetti ---------- */
+let ac=null;
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume()}catch(e){ac=null}return ac}
+function tone(f,t,d,type='triangle',v=.14){const a=ac;if(!a)return;const o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+t;
+  o.type=type;o.frequency.value=f;gn.gain.setValueAtTime(.0001,s);gn.gain.exponentialRampToValueAtTime(v,s+.01);gn.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(gn).connect(a.destination);o.start(s);o.stop(s+d+.05)}
+function chime(work){if(work){[784,988,1175,1568].forEach((f,i)=>tone(f,i*.18,.6))}else{[659,523,659,784].forEach((f,i)=>tone(f,i*.2,.45,'sine'))}}
+function fanfare(){[523,659,784,1046,784,1046].forEach((f,k)=>tone(f,k*.14,.4))}
+const cc=$('confetti'),cx=cc.getContext('2d'),COLS=['#F28C28','#2B7DE9','#FFC94A','#1E9E8A','#ff5a3c','#3ec7ff'];
+function confetti(){if(still)return;cc.width=innerWidth;cc.height=innerHeight;
+  const ps=Array.from({length:200},()=>({x:innerWidth/2,y:innerHeight/3,vx:(Math.random()-.5)*16,vy:-Math.random()*14-4,r:Math.random()*6+4,c:COLS[Math.floor(Math.random()*6)],a:Math.random()*6,va:(Math.random()-.5)*.3}));
+  let f=0;(function t(){cx.clearRect(0,0,cc.width,cc.height);ps.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillStyle=p.c;cx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);cx.restore()});
+    if(++f<160)requestAnimationFrame(t);else cx.clearRect(0,0,cc.width,cc.height)})()}
+})();
+</script>
+</body>
+</html>

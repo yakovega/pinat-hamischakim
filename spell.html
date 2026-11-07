@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>אלוף האיות – פינת המשחקים</title>
+<meta name="description" content="מופיעה תמונה, ומסדרים את האותיות המעורבבות למילה הנכונה. ארבע רמות, רמזים וציון בסוף.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/spell.html">
+<meta property="og:title" content="אלוף האיות – פינת המשחקים">
+<meta property="og:description" content="מופיעה תמונה, ומסדרים את האותיות המעורבבות למילה הנכונה. ארבע רמות, רמזים וציון בסוף.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/spell.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: one centered card; big picture on top, answer slots under it (right to left), scrambled letter tiles below, then hint/skip. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28; --blue:#2B7DE9;
+  --teal:#1E9E8A; --red:#ff5a3c; --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);min-height:100vh;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px}
+[hidden]{display:none!important}
+main{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:clamp(26px,5vw,38px);margin:0;color:var(--sun)}
+.homelink{background:var(--sun);color:#1F2A44;padding:8px 14px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px}
+.card{background:var(--card);border-radius:22px;padding:clamp(16px,4vw,28px);display:flex;flex-direction:column;gap:16px}
+.card h2{font-family:var(--display);font-size:24px;margin:0}
+.group{display:flex;flex-direction:column;gap:8px}
+.group>span{font-weight:600;color:var(--muted);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:12px;padding:10px 14px;font:600 16px var(--body);cursor:pointer;text-align:right}
+.chip[aria-pressed="true"]{background:var(--sun);border-color:var(--sun);color:#1F2A44}
+.chip small{display:block;font-weight:400;font-size:12px;opacity:.85}
+.big{font-family:var(--display);font-weight:700;font-size:22px;border:0;border-radius:99px;padding:12px 34px;background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 5px 0 #a85c12;align-self:center}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #a85c12}
+.ghost{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:99px;padding:9px 16px;font:600 15px var(--body);cursor:pointer}
+.ghost:disabled{opacity:.4;cursor:default}
+button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.best{color:var(--muted);font-size:14px;text-align:center;margin:0}
+/* play */
+.status{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.status b{color:var(--paper);font-family:var(--display);font-size:20px}
+.progress{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--teal);transition:width .3s}
+.pic{font-size:clamp(84px,22vw,140px);line-height:1.1;text-align:center;filter:drop-shadow(0 8px 14px #0007)}
+.pic.pop{animation:pop .4s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.5);opacity:0}}
+.slots,.tiles{display:flex;justify-content:center;gap:clamp(5px,1.5vw,10px);flex-wrap:wrap;direction:rtl}
+.slot,.tile{width:clamp(46px,12vw,64px);height:clamp(54px,14vw,74px);border-radius:14px;font:700 clamp(28px,7vw,40px) var(--body);display:grid;place-items:center;user-select:none;-webkit-user-select:none}
+.slot{border:3px dashed var(--line);background:#26314F;color:var(--paper);cursor:pointer;padding:0}
+.slot.filled{border-style:solid;border-color:var(--sun);background:var(--paper);color:#1F2A44}
+.slot.hint{border-color:var(--teal);background:#dff5ea;color:#1F2A44;cursor:default}
+.slot.bad{border-color:var(--red);background:#ffe3dc}
+.slot.ok{border-color:var(--teal);background:#c9f0dc;animation:jump .5s ease-out}
+.slot.next{border-color:var(--sun)}
+@keyframes jump{40%{transform:translateY(-12px)}}
+.tile{border:0;background:var(--sun);color:#1F2A44;box-shadow:0 5px 0 #b8871d;cursor:pointer;transition:transform .1s,opacity .15s}
+.tile:active{transform:translateY(3px);box-shadow:0 2px 0 #b8871d}
+.tile.used{opacity:0;pointer-events:none}
+.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.fb{min-height:46px;text-align:center;font-family:var(--display);font-weight:700;font-size:clamp(24px,5vw,32px)}
+.fb .good{color:var(--sun)} .fb .bad{color:var(--red);font-size:20px;font-family:var(--body)}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+/* end */
+.result{text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center}
+.result .t{font-family:var(--display);font-weight:700;font-size:clamp(30px,7vw,46px);color:var(--sun);line-height:1.1}
+.result .stars{font-size:40px;letter-spacing:6px}
+.result p{margin:0;font-size:17px}
+.words{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.words span{background:#26314F;border-radius:12px;padding:6px 12px;font-size:18px;font-weight:600}
+.words .x{box-shadow:inset 0 0 0 2px var(--red)}
+.words .h{box-shadow:inset 0 0 0 2px var(--orange)}
+.words .v{box-shadow:inset 0 0 0 2px var(--teal)}
+.legend{color:var(--muted);font-size:13px;text-align:center;margin:0}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:6;width:100%;height:100%}
+@media (prefers-reduced-motion:reduce){.pic.pop,.slot.ok,.shake{animation:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <h1>אלוף האיות</h1>
+    <a class="homelink" href="index.html">🏠 דף הבית</a>
+  </div>
+
+  <section class="card" id="setup">
+    <h2>מסדרים אותיות למילה</h2>
+    <p style="margin:0;color:var(--muted);line-height:1.6">מופיעה תמונה, ומתחתיה האותיות של המילה בערבוביה. לוחצים על האותיות לפי הסדר (מימין לשמאל) עד שנוצרת המילה הנכונה!</p>
+    <div class="group"><span>רמה</span>
+      <div class="chips" data-name="level">
+        <button class="chip" type="button" data-v="1">🐣 קל<small>מילים של 2–3 אותיות</small></button>
+        <button class="chip" type="button" data-v="2">🐥 בינוני<small>מילים של 4 אותיות</small></button>
+        <button class="chip" type="button" data-v="3">🦅 קשה<small>מילים ארוכות</small></button>
+        <button class="chip" type="button" data-v="4">🏆 אלופים<small>מילים ארוכות ואותיות מבלבלות</small></button>
+      </div>
+    </div>
+    <div class="group"><span>כמה מילים?</span>
+      <div class="chips" data-name="count">
+        <button class="chip" type="button" data-v="5">5</button>
+        <button class="chip" type="button" data-v="10">10</button>
+        <button class="chip" type="button" data-v="15">15</button>
+      </div>
+    </div>
+    <button class="big" id="start" type="button">מתחילים!</button>
+    <p class="best" id="best"></p>
+  </section>
+
+  <section class="card" id="play" hidden>
+    <div class="status"><span id="qn"></span><span>⭐ <b id="pts">0</b></span></div>
+    <div class="progress"><i id="prog"></i></div>
+    <div class="pic" id="pic" aria-live="polite"></div>
+    <div class="slots" id="slots" aria-label="המילה שלך"></div>
+    <div class="fb" id="fb" aria-live="assertive"></div>
+    <div class="tiles" id="tiles" aria-label="אותיות"></div>
+    <div class="row">
+      <button class="ghost" id="hint" type="button">💡 רמז</button>
+      <button class="ghost" id="clear" type="button">↺ לנקות</button>
+      <button class="ghost" id="skip" type="button">⏭ לדלג</button>
+    </div>
+  </section>
+
+  <section class="card" id="end" hidden>
+    <div class="result">
+      <div class="t" id="endT"></div>
+      <div class="stars" id="endS"></div>
+      <p id="endP"></p>
+    </div>
+    <div class="words" id="words"></div>
+    <p class="legend">ירוק = לבד · כתום = עם רמז · אדום = דילגת</p>
+    <div class="row">
+      <button class="big" id="again" type="button">עוד סיבוב!</button>
+      <button class="ghost" id="settings" type="button">לשנות רמה</button>
+    </div>
+  </section>
+</main>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const WORDS=[
+  ['דג','🐟'],['עץ','🌳'],['יד','✋'],['אף','👃'],['ים','🌊'],['לב','❤️'],['אש','🔥'],['שן','🦷'],['נר','🕯️'],
+  ['פיל','🐘'],['סוס','🐴'],['ירח','🌙'],['בית','🏠'],['שמש','☀️'],['עין','👁️'],['פרה','🐮'],['דוב','🐻'],['גשם','🌧️'],['תות','🍓'],['ספר','📘'],['חלב','🥛'],['גזר','🥕'],['עכבר','🐭'],
+  ['כלב','🐶'],['חתול','🐱'],['תפוח','🍎'],['בננה','🍌'],['כדור','⚽'],['פרפר','🦋'],['אריה','🦁'],['שעון','⏰'],['עוגה','🎂'],['מטוס','✈️'],['רכבת','🚂'],['כובע','🧢'],['נמלה','🐜'],['ארנב','🐰'],['כוכב','⭐'],['מחשב','💻'],['מסוק','🚁'],['תינוק','👶'],
+  ['ציפור','🐦'],['ענבים','🍇'],['צפרדע','🐸'],['מכונית','🚗'],['אוטובוס','🚌'],['גלידה','🍦'],['מטריה','☂️'],['פינגווין','🐧'],['תרנגול','🐓'],['אבטיח','🍉'],['תמנון','🐙'],['דינוזאור','🦖'],['אופניים','🚲'],['פטריה','🍄'],['שוקולד','🍫'],['מספריים','✂️'],['טלפון','📱'],['עוגיה','🍪'],['עגבניה','🍅'],['מתנה','🎁']
+];
+const ALEF='אבגדהוזחטיכלמנסעפצקרשת';
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+const cfg={level:'1',count:'10'};
+try{Object.assign(cfg,JSON.parse(localStorage.getItem('spell-cfg')||'{}'))}catch(e){}
+document.querySelectorAll('.chips').forEach(g=>{const name=g.dataset.name;
+  const sync=()=>{g.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',cfg[name]===c.dataset.v));showBest()};
+  g.addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;cfg[name]=c.dataset.v;try{localStorage.setItem('spell-cfg',JSON.stringify(cfg))}catch(e){};sync()});sync()});
+const bestKey=()=>`spell-best-${cfg.level}-${cfg.count}`;
+function getBest(){try{return +localStorage.getItem(bestKey())||0}catch(e){return 0}}
+function showBest(){const b=getBest();$('best').textContent=b?`השיא שלך ברמה הזאת: ${b} נקודות`:''}
+const show=id=>['setup','play','end'].forEach(s=>$(s).hidden=s!==id);
+
+function pool(lv){const len=w=>[...w].length;
+  if(lv===1)return WORDS.filter(([w])=>len(w)<=3);if(lv===2)return WORDS.filter(([w])=>len(w)===4);return WORDS.filter(([w])=>len(w)>=5)}
+
+/* ---------- game ---------- */
+let list=[],qi=0,points=0,word='',letters=[],slots=[],tiles=[],hints=0,results=[],locked=false;
+function start(){
+  const p=shuffle(pool(+cfg.level).slice());list=[];while(list.length<+cfg.count)list.push(...shuffle(p.slice()));list=list.slice(0,+cfg.count);
+  qi=0;points=0;results=[];show('play');next();
+}
+function next(){
+  locked=false;hints=0;const[w,e]=list[qi];word=w;letters=[...w];
+  $('qn').textContent=`מילה ${qi+1} מתוך ${list.length}`;$('pts').textContent=points;$('prog').style.width=(qi/list.length*100)+'%';
+  const pic=$('pic');pic.textContent=e;pic.classList.remove('pop');void pic.offsetWidth;pic.classList.add('pop');
+  $('fb').innerHTML='';
+  // tiles: the word's letters (+ decoys at the top level), never already in the right order
+  let tl=letters.slice();
+  if(cfg.level==='4'){for(let k=0;k<2;k++){let d;do{d=ALEF[Math.floor(Math.random()*ALEF.length)]}while(tl.includes(d));tl.push(d)}}
+  let order;do{order=shuffle(tl.map((ch,i)=>({ch,i})))}while(order.length>1&&order.slice(0,letters.length).map(o=>o.ch).join('')===word);
+  tiles=order.map(o=>({ch:o.ch,used:false}));
+  slots=letters.map(()=>({tile:-1,hint:false}));
+  render();
+}
+function render(){
+  const S=$('slots');S.innerHTML='';
+  const firstEmpty=slots.findIndex(s=>s.tile<0);
+  slots.forEach((s,i)=>{const b=document.createElement('button');b.type='button';
+    b.className='slot'+(s.tile>=0?' filled':'')+(s.hint?' hint':'')+(i===firstEmpty&&!locked?' next':'');
+    b.textContent=s.tile>=0?tiles[s.tile].ch:'';b.setAttribute('aria-label',s.tile>=0?'אות '+tiles[s.tile].ch:'משבצת ריקה');
+    b.onclick=()=>removeAt(i);S.appendChild(b)});
+  const T=$('tiles');T.innerHTML='';
+  tiles.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.className='tile'+(t.used?' used':'');b.textContent=t.ch;b.setAttribute('aria-label','אות '+t.ch);
+    b.onclick=()=>place(i);T.appendChild(b)});
+  $('hint').disabled=locked||slots.every(s=>s.tile>=0&&s.hint);
+}
+function place(ti){
+  if(locked||tiles[ti].used)return;
+  const si=slots.findIndex(s=>s.tile<0);if(si<0)return;
+  slots[si].tile=ti;tiles[ti].used=true;click();render();
+  if(slots.every(s=>s.tile>=0))check();
+}
+function removeAt(si){if(locked||slots[si].tile<0||slots[si].hint)return;tiles[slots[si].tile].used=false;slots[si].tile=-1;$('fb').innerHTML='';render()}
+function check(){
+  const guess=slots.map(s=>tiles[s.tile].ch).join('');
+  if(guess===word){
+    locked=true;const gain=Math.max(2,10-hints*3);points+=gain;results.push({w:word,h:hints>0,skip:false});
+    render();[...$('slots').children].forEach((b,i)=>{b.classList.add('ok');b.style.animationDelay=(i*.06)+'s'});
+    const praise=['כל הכבוד!','מעולה!','אלוף האיות!','מושלם!','יפה מאוד!','בדיוק!'];
+    $('fb').innerHTML=`<span class="good">${praise[Math.floor(Math.random()*praise.length)]} 🎉 +${gain}</span>`;$('pts').textContent=points;
+    yay();setTimeout(advance,1300);
+  }else{
+    // mark wrong letters red, keep right ones
+    [...$('slots').children].forEach((b,i)=>{if(tiles[slots[i].tile].ch!==letters[i])b.classList.add('bad')});
+    const S=$('slots');S.classList.remove('shake');void S.offsetWidth;S.classList.add('shake');
+    $('fb').innerHTML='<span class="bad">כמעט! לחצו על האותיות האדומות כדי להחזיר אותן ונסו שוב</span>';oops();
+  }
+}
+function advance(){qi++;if(qi>=list.length)finish();else next()}
+$('hint').onclick=()=>{
+  if(locked)return;
+  // first slot that is empty or wrong gets the right letter
+  const i=slots.findIndex((s,k)=>s.tile<0||tiles[s.tile].ch!==letters[k]);if(i<0)return;
+  if(slots[i].tile>=0){tiles[slots[i].tile].used=false;slots[i].tile=-1}
+  let ti=tiles.findIndex(t=>!t.used&&t.ch===letters[i]);
+  if(ti<0){const j=slots.findIndex((s,k)=>k!==i&&s.tile>=0&&!s.hint&&tiles[s.tile].ch===letters[i]);if(j>=0){ti=slots[j].tile;slots[j].tile=-1}}
+  if(ti<0)return;
+  slots[i].tile=ti;slots[i].hint=true;tiles[ti].used=true;hints++;$('fb').innerHTML='';render();
+  if(slots.every(s=>s.tile>=0))check();
+};
+$('clear').onclick=()=>{if(locked)return;slots.forEach(s=>{if(s.tile>=0&&!s.hint){tiles[s.tile].used=false;s.tile=-1}});$('fb').innerHTML='';render()};
+$('skip').onclick=()=>{if(locked)return;locked=true;results.push({w:word,h:false,skip:true});
+  slots.forEach((s,i)=>{if(s.tile>=0)tiles[s.tile].used=false;s.tile=-1});
+  $('slots').innerHTML='';letters.forEach(ch=>{const d=document.createElement('div');d.className='slot hint';d.textContent=ch;$('slots').appendChild(d)});
+  $('fb').innerHTML=`<span class="bad">המילה היא: <b>${word}</b></span>`;$('hint').disabled=true;setTimeout(advance,1700)};
+
+function finish(){
+  $('prog').style.width='100%';
+  const max=list.length*10,pct=points/max,st=pct>=.9?3:pct>=.65?2:pct>=.35?1:0;
+  $('endT').textContent=pct>=.9?'אלוף האיות! 🏆':pct>=.65?'כל הכבוד! 🎉':'יפה מאוד! 💪';
+  $('endS').textContent='★'.repeat(st)+'☆'.repeat(3-st);
+  const self=results.filter(r=>!r.skip&&!r.h).length;
+  const prev=getBest(),rec=points>prev;if(rec)try{localStorage.setItem(bestKey(),points)}catch(e){}
+  $('endP').textContent=`${points} נקודות מתוך ${max}. איותם ${self} מילים לבד.`+(rec&&prev?' שיא חדש! 🏆':'');
+  $('words').innerHTML='';results.forEach(r=>{const s=document.createElement('span');s.className=r.skip?'x':r.h?'h':'v';s.textContent=r.w;$('words').appendChild(s)});
+  show('end');$('again').focus({preventScroll:true});showBest();
+  if(pct>=.65){confetti();[523,659,784,1046].forEach((f,k)=>tone(f,k*.12,.35))}
+}
+$('start').onclick=start;$('again').onclick=start;$('settings').onclick=()=>{show('setup');showBest()};
+// typing on a keyboard also works: press the letter's key (Hebrew layout)
+addEventListener('keydown',e=>{if($('play').hidden||locked)return;
+  if(e.key==='Backspace'){e.preventDefault();const filled=slots.map((s,i)=>i).filter(i=>slots[i].tile>=0&&!slots[i].hint);if(filled.length)removeAt(filled[filled.length-1]);return}
+  const map={'ך':'ך','ם':'ם','ן':'ן','ף':'ף','ץ':'ץ'};const k=e.key;
+  const ti=tiles.findIndex(t=>!t.used&&t.ch===k);if(ti>=0){e.preventDefault();place(ti)}});
+
+/* ---------- sound & confetti ---------- */
+let ac=null;
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}return ac}
+function tone(f,t,d,type='triangle',v=.1){const a=audio();if(!a)return;const o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+t;
+  o.type=type;o.frequency.value=f;gn.gain.setValueAtTime(.0001,s);gn.gain.exponentialRampToValueAtTime(v,s+.01);gn.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(gn).connect(a.destination);o.start(s);o.stop(s+d+.05)}
+const click=()=>tone(600,0,.05,'sine',.06);
+const yay=()=>{tone(660,0,.12);tone(880,.09,.12);tone(1100,.18,.2)};
+const oops=()=>tone(200,0,.25,'sawtooth',.06);
+const cc=$('confetti'),cx=cc.getContext('2d'),COLS=['#F28C28','#2B7DE9','#FFC94A','#1E9E8A','#ff5a3c','#3ec7ff'];
+function confetti(){if(still)return;cc.width=innerWidth;cc.height=innerHeight;
+  const ps=Array.from({length:170},()=>({x:innerWidth/2,y:innerHeight/3,vx:(Math.random()-.5)*16,vy:-Math.random()*14-4,r:Math.random()*6+4,c:COLS[Math.floor(Math.random()*6)],a:Math.random()*6,va:(Math.random()-.5)*.3}));
+  let f=0;(function t(){cx.clearRect(0,0,cc.width,cc.height);ps.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillStyle=p.c;cx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);cx.restore()});
+    if(++f<140)requestAnimationFrame(t);else cx.clearRect(0,0,cc.width,cc.height)})()}
+})();
+</script>
+</body>
+</html>

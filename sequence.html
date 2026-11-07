@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>השלם את הסדרה – פינת המשחקים</title>
+<meta name="description" content="מגלים את החוק ומשלימים מה חסר: סדרות של מספרים, צורות וצבעים. 5 רמות, מ־+1 ועד סדרות של אלופים, ואחרי כל תשובה יש הסבר.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/sequence.html">
+<meta property="og:title" content="השלם את הסדרה – פינת המשחקים">
+<meta property="og:description" content="מגלים את החוק ומשלימים מה חסר: סדרות של מספרים, צורות וצבעים. 5 רמות, מ־+1 ועד סדרות של אלופים, ואחרי כל תשובה יש הסבר.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/sequence.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: one centered card; the sequence runs as a row of tiles (right to left, with arrows), answers in a 2×2 grid under it. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28; --blue:#2B7DE9;
+  --teal:#1E9E8A; --red:#ff5a3c; --purple:#8b5cf6; --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);min-height:100vh;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px}
+[hidden]{display:none!important}
+main{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:clamp(26px,5vw,38px);margin:0;color:var(--sun)}
+.homelink{background:var(--sun);color:#1F2A44;padding:8px 14px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px}
+.card{background:var(--card);border-radius:22px;padding:clamp(16px,4vw,28px);display:flex;flex-direction:column;gap:16px}
+.card h2{font-family:var(--display);font-size:22px;margin:0}
+.group{display:flex;flex-direction:column;gap:8px}
+.group>span{font-weight:600;color:var(--muted);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:12px;padding:9px 13px;font:600 15px var(--body);cursor:pointer;text-align:right}
+.chip[aria-pressed="true"]{background:var(--sun);border-color:var(--sun);color:#1F2A44}
+.chip small{display:block;font-weight:400;font-size:12px;opacity:.85}
+.big{font-family:var(--display);font-weight:700;font-size:22px;border:0;border-radius:99px;padding:12px 34px;background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 5px 0 #a85c12;align-self:center}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #a85c12}
+.ghost{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:99px;padding:9px 16px;font:600 15px var(--body);cursor:pointer}
+.ghost:disabled{opacity:.4;cursor:default}
+button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.best{color:var(--muted);font-size:14px;text-align:center;margin:0}
+.status{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.status b{color:var(--paper);font-family:var(--display);font-size:20px}
+.progress{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--teal);transition:width .3s}
+.ask{text-align:center;color:var(--muted);font-weight:600;margin:0}
+.seq{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;direction:rtl;min-height:90px}
+.seq.pop .tile{animation:pop .35s cubic-bezier(.2,1.6,.4,1) backwards}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
+.tile{min-width:clamp(52px,12vw,72px);height:clamp(58px,13vw,78px);padding:0 10px;border-radius:16px;background:var(--paper);color:#1F2A44;display:grid;place-items:center;
+  font-family:var(--display);font-weight:700;font-size:clamp(24px,6vw,36px);font-variant-numeric:tabular-nums;box-shadow:0 5px 0 #d8ccb4;direction:ltr}
+.tile.sh{font-size:clamp(28px,7vw,42px)}
+.tile.q{background:transparent;border:3px dashed var(--sun);color:var(--sun);box-shadow:none}
+.tile.q.filled{background:#c9f0dc;border:3px solid var(--teal);color:#1F2A44}
+.tile.q.filled.badq{background:#ffe3dc;border-color:var(--red)}
+.arrow{color:var(--muted);font-size:18px}
+.diffs{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;direction:rtl;min-height:26px}
+.diffs span{background:#26314F;border-radius:99px;padding:2px 10px;font:700 15px var(--display);color:var(--sun);direction:ltr}
+.answers{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media (max-width:520px){.answers{grid-template-columns:1fr 1fr}}
+.ans{border:3px solid var(--line);background:#26314F;color:var(--paper);border-radius:18px;min-height:76px;cursor:pointer;font-family:var(--display);font-weight:700;font-size:clamp(26px,6vw,36px);font-variant-numeric:tabular-nums;direction:ltr;position:relative}
+.ans:hover{border-color:var(--sun)}
+.ans.right{border-color:var(--teal);background:#1d4a44}
+.ans.wrong{border-color:var(--red);background:#4a2420;animation:shake .35s}
+.ans:disabled{cursor:default}
+.ans kbd{position:absolute;top:5px;left:8px;font:600 12px var(--body);color:var(--muted)}
+@media (hover:none){.ans kbd{display:none}}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.fb{min-height:54px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}
+.fb .good{font-family:var(--display);font-weight:700;font-size:28px;color:var(--sun)}
+.fb .bad{font-weight:700;font-size:18px;color:var(--red)}
+.fb .why{color:var(--muted);font-size:16px;line-height:1.5}
+.fb .why b{color:var(--paper)}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.result{text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center}
+.result .t{font-family:var(--display);font-weight:700;font-size:clamp(30px,7vw,46px);color:var(--sun);line-height:1.1}
+.result .stars{font-size:40px;letter-spacing:6px}
+.result p{margin:0;font-size:17px}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:6;width:100%;height:100%}
+@media (prefers-reduced-motion:reduce){.seq.pop .tile,.ans.wrong{animation:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <h1>השלם את הסדרה</h1>
+    <a class="homelink" href="index.html">🏠 דף הבית</a>
+  </div>
+
+  <section class="card" id="setup">
+    <h2>מה חסר בסדרה? 🤔</h2>
+    <p style="margin:0;color:var(--muted);line-height:1.6">בכל סדרה יש חוק. מגלים את החוק ובוחרים מה מתאים במקום של סימן השאלה. הסדרה נקראת מימין לשמאל, לפי החצים.</p>
+    <div class="group"><span>מה בסדרות?</span>
+      <div class="chips" data-name="kind">
+        <button class="chip" type="button" data-v="mix">🎲 גם וגם</button>
+        <button class="chip" type="button" data-v="num">🔢 מספרים</button>
+        <button class="chip" type="button" data-v="shape">🔷 צורות וצבעים</button>
+      </div>
+    </div>
+    <div class="group"><span>רמה</span>
+      <div class="chips" data-name="level">
+        <button class="chip" type="button" data-v="veryeasy">🐣 ממש קל<small>+1, +2</small></button>
+        <button class="chip" type="button" data-v="easy">🐥 קל<small>+5, +10, ספירה לאחור</small></button>
+        <button class="chip" type="button" data-v="mid">🐇 בינוני<small>קפיצות גדולות, חסר באמצע</small></button>
+        <button class="chip" type="button" data-v="hard">🦊 קשה<small>כפל, קפיצות שגדלות</small></button>
+        <button class="chip" type="button" data-v="champ">🏆 אלופים<small>סדרות מיוחדות</small></button>
+      </div>
+    </div>
+    <div class="group"><span>כמה סדרות?</span>
+      <div class="chips" data-name="count">
+        <button class="chip" type="button" data-v="5">5</button>
+        <button class="chip" type="button" data-v="10">10</button>
+        <button class="chip" type="button" data-v="15">15</button>
+      </div>
+    </div>
+    <button class="big" id="start" type="button">מתחילים!</button>
+    <p class="best" id="best"></p>
+  </section>
+
+  <section class="card" id="play" hidden>
+    <div class="status"><span id="qn"></span><span>⭐ <b id="pts">0</b></span></div>
+    <div class="progress"><i id="prog"></i></div>
+    <p class="ask">מה חסר במקום של <b style="color:var(--sun)">?</b></p>
+    <div class="seq" id="seq" aria-live="polite"></div>
+    <div class="diffs" id="diffs"></div>
+    <div class="answers" id="answers"></div>
+    <div class="fb" id="fb" aria-live="assertive"></div>
+    <div class="row">
+      <button class="ghost" id="hint" type="button">💡 רמז</button>
+      <button class="ghost" id="next" type="button" hidden>הבא ←</button>
+    </div>
+  </section>
+
+  <section class="card" id="end" hidden>
+    <div class="result"><div class="t" id="endT"></div><div class="stars" id="endS"></div><p id="endP"></p></div>
+    <div class="row"><button class="big" id="again" type="button">עוד סיבוב!</button><button class="ghost" id="settings" type="button">לשנות</button></div>
+  </section>
+</main>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const SYMS=['🔴','🔵','🟡','🟢','🟣','🟠','⭐','❤️','🔺','🟦','🌙','🍎','🐶','🐱','⚽','🌸'];
+
+/* ---------- number rules ---------- */
+function addSeq(dMin,dMax,allowDown){
+  let d=R(dMin,dMax);if(allowDown&&Math.random()<.35)d=-d;
+  const len=6,s=d>0?R(0,Math.max(5,d*3)):R(-d*(len-1),-d*(len-1)+20);
+  return{items:[...Array(len)].map((_,i)=>s+i*d),why:d>0?`כל פעם <b>מוסיפים ${d}</b>`:`כל פעם <b>מורידים ${-d}</b>`,diffs:true};
+}
+function countBy(n){const s=n*R(0,4);return{items:[...Array(6)].map((_,i)=>s+i*n),why:`סופרים בקפיצות של <b>${n}</b>`,diffs:true}}
+function mulSeq(m){const s=R(1,m===2?5:3),len=m===2?6:5;return{items:[...Array(len)].map((_,i)=>s*m**i),why:`כל פעם <b>כופלים ב־${m}</b>`,diffs:false,ratio:m}}
+function growSeq(){const s=R(1,10),step=R(1,2),items=[s];for(let i=1;i<6;i++)items.push(items[i-1]+i*step);
+  return{items,why:step===1?'כל פעם <b>מוסיפים אחד יותר</b>: +1, +2, +3, +4…':'כל פעם <b>מוסיפים 2 יותר</b>: +2, +4, +6, +8…',diffs:true}}
+function altSeq(big){const a=R(big?4:2,big?9:5),b=R(1,a-1),s=R(b+1,10),items=[s];for(let i=1;i<7;i++)items.push(items[i-1]+(i%2?a:-b));
+  return{items,why:`בהתחלפות: <b>+${a}</b> ואז <b>−${b}</b>`,diffs:true}}
+function sqSeq(){const s=R(1,3);return{items:[...Array(6)].map((_,i)=>(s+i)**2),why:'כל מספר הוא <b>מספר כפול עצמו</b>: '+[0,1,2].map(i=>`${s+i}×${s+i}`).join(', ')+'…',diffs:true}}
+function fibSeq(){let a=R(1,3),b=a+R(0,2);const items=[a,b];for(let i=2;i<7;i++)items.push(items[i-1]+items[i-2]);return{items,why:'כל מספר הוא <b>החיבור של שני המספרים שלפניו</b>',diffs:false}}
+
+/* ---------- shape patterns ---------- */
+function shapeSeq(units){
+  const unit=pick(units),n=new Set(unit.split('')).size,syms=shuffle(SYMS.slice()).slice(0,n),map={};[...new Set(unit.split(''))].forEach((ch,i)=>map[ch]=syms[i]);
+  const len=Math.max(7,unit.length*2+2),items=[...Array(len)].map((_,i)=>map[unit[i%unit.length]]);
+  const name=unit.split('').map(c=>map[c]).join(' ');
+  return{items,why:`החלק <b>${name}</b> חוזר שוב ושוב`,shape:true,pool:syms,unitLen:unit.length};
+}
+
+/* ---------- levels ---------- */
+const LEVELS={
+  veryeasy:{num:()=>addSeq(1,2,false),shape:()=>shapeSeq(['AB','AAB']),middle:0},
+  easy:{num:()=>pick([()=>addSeq(2,2,false),()=>countBy(5),()=>countBy(10),()=>addSeq(1,2,true)])(),shape:()=>shapeSeq(['ABB','ABC','AB']),middle:0},
+  mid:{num:()=>addSeq(3,9,true),shape:()=>shapeSeq(['AABB','ABC','ABCD','ABB']),middle:.5},
+  hard:{num:()=>pick([()=>mulSeq(2),growSeq,()=>altSeq(false),()=>addSeq(11,25,true)])(),shape:()=>shapeSeq(['ABCD','AABC','ABBC','AABBC']),middle:.6},
+  champ:{num:()=>pick([()=>mulSeq(3),()=>mulSeq(2),sqSeq,fibSeq,growSeq,()=>altSeq(true)])(),shape:()=>shapeSeq(['AABBC','ABCDE','ABACD','AABCC']),middle:.7}
+};
+function makeQ(lv,kind){
+  const L=LEVELS[lv],k=kind==='mix'?(Math.random()<.6?'num':'shape'):kind,q=k==='num'?L.num():L.shape();
+  const n=q.items.length;let miss=n-1;if(Math.random()<L.middle)miss=R(2,n-2);
+  q.miss=miss;q.answer=q.items[miss];
+  if(q.shape){q.options=shuffle(q.pool.concat(shuffle(SYMS.filter(s=>!q.pool.includes(s))).slice(0,Math.max(0,4-q.pool.length))).slice(0,4));if(!q.options.includes(q.answer))q.options[0]=q.answer;q.options=shuffle(q.options)}
+  else{const a=q.answer,d=Math.abs((q.items[1]??a)-(q.items[0]??a))||1;const cand=new Set([a]);
+    [a+1,a-1,a+d,a-d,a+2,a+10,a-10,a*2].forEach(x=>{if(cand.size<4&&x>=0&&x!==a)cand.add(x)});let k2=3;while(cand.size<4)cand.add(a+k2++);
+    q.options=shuffle([...cand])}
+  return q;
+}
+
+/* ---------- setup ---------- */
+const cfg={kind:'mix',level:'veryeasy',count:'10'};
+try{Object.assign(cfg,JSON.parse(localStorage.getItem('seq-cfg')||'{}'))}catch(e){}
+document.querySelectorAll('.chips').forEach(g=>{const n=g.dataset.name;const sync=()=>{g.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',cfg[n]===c.dataset.v));showBest()};
+  g.addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;cfg[n]=c.dataset.v;try{localStorage.setItem('seq-cfg',JSON.stringify(cfg))}catch(e){};sync()});sync()});
+const bestKey=()=>`seq-best-${cfg.kind}-${cfg.level}-${cfg.count}`;
+function getBest(){try{return +localStorage.getItem(bestKey())||0}catch(e){return 0}}
+function showBest(){const b=getBest();$('best').textContent=b?`השיא שלך כאן: ${b} נקודות`:''}
+const show=id=>['setup','play','end'].forEach(s=>$(s).hidden=s!==id);
+
+/* ---------- game ---------- */
+let qi=0,points=0,right=0,cur=null,locked=false,hinted=false;
+function start(){qi=0;points=0;right=0;show('play');next()}
+function next(){
+  locked=false;hinted=false;cur=makeQ(cfg.level,cfg.kind);
+  $('qn').textContent=`סדרה ${qi+1} מתוך ${cfg.count}`;$('pts').textContent=points;$('prog').style.width=(qi/+cfg.count*100)+'%';
+  renderSeq(null);$('diffs').innerHTML='';$('fb').innerHTML='';$('next').hidden=true;$('hint').disabled=false;
+  const A=$('answers');A.innerHTML='';cur.options.forEach((o,i)=>{const b=document.createElement('button');b.type='button';b.className='ans';b.textContent=o;b.insertAdjacentHTML('beforeend',`<kbd>${i+1}</kbd>`);b.dataset.v=o;b.onclick=()=>choose(o,b);A.appendChild(b)});
+}
+function renderSeq(filled,bad){
+  const S=$('seq');S.innerHTML='';S.classList.remove('pop');void S.offsetWidth;if(filled===null)S.classList.add('pop');
+  cur.items.forEach((v,i)=>{
+    if(i>0){const a=document.createElement('span');a.className='arrow';a.textContent='←';S.appendChild(a)}
+    const t=document.createElement('div');t.className='tile'+(cur.shape?' sh':'');t.style.animationDelay=(i*.05)+'s';
+    if(i===cur.miss){t.classList.add('q');if(filled!==null){t.classList.add('filled');if(bad)t.classList.add('badq');t.textContent=filled}else t.textContent='?'}else t.textContent=v;
+    S.appendChild(t)});
+}
+function choose(o,b){
+  if(locked)return;locked=true;const ok=String(o)===String(cur.answer);
+  document.querySelectorAll('.ans').forEach(x=>{x.disabled=true;if(x.dataset.v===String(cur.answer))x.classList.add('right')});
+  if(!ok)b.classList.add('wrong');
+  renderSeq(cur.answer,false);showDiffs();$('hint').disabled=true;
+  const why=`<span class="why">${cur.why}</span>`;
+  if(ok){right++;const gain=hinted?5:10;points+=gain;$('pts').textContent=points;
+    $('fb').innerHTML=`<span class="good">${pick(['כל הכבוד! 🎉','גילית את החוק! 🧠','מעולה! ⭐','בדיוק! 🎯'])} +${gain}</span>${why}`;yay();setTimeout(advance,2200)}
+  else{$('fb').innerHTML=`<span class="bad">כמעט! התשובה היא ${cur.answer}</span>${why}`;oops();$('next').hidden=false;$('next').focus({preventScroll:true})}
+}
+function showDiffs(){
+  if(cur.shape||!cur.diffs){if(cur.ratio){$('diffs').innerHTML=cur.items.slice(1).map(()=>`<span>×${cur.ratio}</span>`).join('')}return}
+  const d=[];for(let i=1;i<cur.items.length;i++){const x=cur.items[i]-cur.items[i-1];d.push(x>=0?'+'+x:'−'+(-x))}
+  $('diffs').innerHTML=d.map(x=>`<span>${x}</span>`).join('');
+}
+$('hint').onclick=()=>{if(locked||hinted)return;hinted=true;$('hint').disabled=true;
+  if(cur.shape){$('diffs').innerHTML=`<span style="direction:rtl">חפשו חלק של ${cur.unitLen} שחוזר על עצמו 👀</span>`;return}
+  // show the jumps between the numbers we can see (not the one around the ?)
+  const d=[];for(let i=1;i<cur.items.length;i++){if(i===cur.miss||i-1===cur.miss){d.push('?');continue}const x=cur.items[i]-cur.items[i-1];d.push(cur.ratio?'×'+cur.ratio:(x>=0?'+'+x:'−'+(-x)))}
+  $('diffs').innerHTML=d.map(x=>`<span>${x}</span>`).join('')+(cur.diffs||cur.ratio?'':`<span style="direction:rtl">רמז: הסתכלו על שני המספרים שלפני</span>`)};
+function advance(){if(qi>=+cfg.count)return;qi++;if(qi>=+cfg.count)finish();else next()}
+$('next').onclick=advance;
+function finish(){
+  $('prog').style.width='100%';const n=+cfg.count,pct=points/(n*10),st=pct>=.9?3:pct>=.65?2:pct>=.35?1:0;
+  $('endT').textContent=pct>=.9?'גאון הסדרות! 🧠🏆':pct>=.65?'כל הכבוד! 🎉':'יפה מאוד! 💪';$('endS').textContent='★'.repeat(st)+'☆'.repeat(3-st);
+  const prev=getBest(),rec=points>prev;if(rec)try{localStorage.setItem(bestKey(),points)}catch(e){}
+  $('endP').textContent=`פתרת ${right} מתוך ${n} סדרות, ${points} נקודות.`+(rec&&prev?' שיא חדש! 🏆':'')+(pct>=.9&&cfg.level!=='champ'?' אולי לנסות רמה קשה יותר?':'');
+  show('end');$('again').focus({preventScroll:true});showBest();if(pct>=.65){confetti();[523,659,784,1046].forEach((f,k)=>tone(f,k*.12,.35))}
+}
+$('start').onclick=start;$('again').onclick=start;$('settings').onclick=()=>{show('setup');showBest()};
+addEventListener('keydown',e=>{if($('play').hidden)return;const n=parseInt(e.key,10);if(n>=1&&n<=4&&!locked){const b=$('answers').children[n-1];b&&b.click()}
+  if(e.key==='Enter'&&locked&&!$('next').hidden){e.preventDefault();advance()}});
+
+/* ---------- sound & confetti ---------- */
+let ac=null;
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}return ac}
+function tone(f,t,d,type='triangle',v=.08){const a=audio();if(!a)return;const o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+t;
+  o.type=type;o.frequency.value=f;gn.gain.setValueAtTime(.0001,s);gn.gain.exponentialRampToValueAtTime(v,s+.01);gn.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(gn).connect(a.destination);o.start(s);o.stop(s+d+.05)}
+const yay=()=>{tone(660,0,.1);tone(990,.08,.16)},oops=()=>tone(220,0,.22,'sawtooth',.05);
+const cc=$('confetti'),cx=cc.getContext('2d'),COLS=['#F28C28','#2B7DE9','#FFC94A','#1E9E8A','#ff5a3c','#3ec7ff'];
+function confetti(){if(still)return;cc.width=innerWidth;cc.height=innerHeight;
+  const ps=Array.from({length:170},()=>({x:innerWidth/2,y:innerHeight/3,vx:(Math.random()-.5)*16,vy:-Math.random()*14-4,r:Math.random()*6+4,c:COLS[Math.floor(Math.random()*6)],a:Math.random()*6,va:(Math.random()-.5)*.3}));
+  let f=0;(function t(){cx.clearRect(0,0,cc.width,cc.height);ps.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillStyle=p.c;cx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);cx.restore()});
+    if(++f<140)requestAnimationFrame(t);else cx.clearRect(0,0,cc.width,cc.height)})()}
+})();
+</script>
+</body>
+</html>

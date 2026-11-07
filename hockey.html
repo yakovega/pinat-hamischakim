@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>הוקי אוויר – פינת המשחקים</title>
+<meta name="description" content="כל שחקן גורר את המחבט שלו בחצי שלו של המסך ומנסה להכניס גול. הכי כיף על טאבלט או טלפון שמונח על השולחן.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/hockey.html">
+<meta property="og:title" content="הוקי אוויר – פינת המשחקים">
+<meta property="og:description" content="כל שחקן גורר את המחבט שלו בחצי שלו של המסך ומנסה להכניס גול. הכי כיף על טאבלט או טלפון שמונח על השולחן.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/hockey.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: slim bar on top (title, score, home), the ice table fills the rest of the screen and turns sideways on wide screens. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28;
+  --red:#ff5a3c; --blue:#3ec7ff; --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);display:flex;flex-direction:column;gap:8px;overflow:hidden;
+  padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));padding-block:10px}
+[hidden]{display:none!important}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+h1{font-family:var(--display);font-size:clamp(20px,4vw,30px);margin:0;color:var(--sun);white-space:nowrap}
+.homelink{background:var(--sun);color:#1F2A44;padding:7px 12px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;white-space:nowrap}
+.score{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:clamp(22px,5vw,32px);font-variant-numeric:tabular-nums;direction:ltr}
+.score.flip{flex-direction:row-reverse}
+.score .r{color:var(--red)} .score .b{color:var(--blue)} .score small{font-size:14px;color:var(--muted);font-family:var(--body);font-weight:600}
+.stage{position:relative;flex:1;min-height:0;touch-action:none;user-select:none;-webkit-user-select:none}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.overlay{position:absolute;inset:0;display:grid;place-items:center;padding:12px;background:#0b1020aa}
+.card{background:var(--paper);color:#1F2A44;border-radius:22px;padding:clamp(16px,4vw,26px);display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;width:min(100%,460px);max-height:100%;overflow:auto}
+.card h2{font-family:var(--display);font-size:clamp(28px,6vw,40px);margin:0;color:var(--orange)}
+.card p{margin:0;line-height:1.5}
+.how{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;text-align:right;font-size:14px;align-items:center}
+.how b{white-space:nowrap}
+kbd{background:#efe6d4;border-radius:6px;padding:1px 6px;font:600 13px var(--body);border:1px solid #d8ccb4}
+.seg{display:flex;gap:4px;background:#e9e1d1;padding:4px;border-radius:12px;flex-wrap:wrap;justify-content:center}
+.seg button{border:0;background:transparent;border-radius:9px;padding:8px 12px;font:600 15px var(--body);cursor:pointer;color:#1F2A44}
+.seg button[aria-pressed="true"]{background:#1F2A44;color:var(--paper)}
+.big{font-family:var(--display);font-weight:700;font-size:24px;border:0;border-radius:99px;padding:12px 40px;background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 5px 0 #a85c12}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #a85c12}
+.ghost{border:2px solid #d8ccb4;background:transparent;color:#1F2A44;border-radius:99px;padding:8px 18px;font:600 15px var(--body);cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.label{font-size:13px;font-weight:600;color:#6b7280}
+.pause{position:absolute;top:8px;left:8px;border:0;border-radius:10px;background:#1F2A44cc;color:var(--paper);font:600 14px var(--body);padding:8px 12px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>הוקי אוויר</h1>
+  <div class="score" aria-live="polite"><span class="r" id="s0">0</span><small>:</small><span class="b" id="s1">0</span></div>
+  <a class="homelink" href="index.html">🏠 דף הבית</a>
+</div>
+
+<div class="stage" id="stage">
+  <canvas id="cv" aria-label="שולחן הוקי אוויר"></canvas>
+  <button class="pause" id="pauseBtn" type="button" hidden>⏸ הפסקה</button>
+  <div class="overlay" id="startOv">
+    <div class="card">
+      <h2 id="cardT">הוקי אוויר</h2>
+      <p id="cardP">מזיזים את המחבט ומנסים להכניס את הדיסקית לשער של היריב. ראשון ל־7 גולים מנצח!</p>
+      <div class="how">
+        <b>📱 בטלפון</b><span>כל שחקן גורר עם האצבע בחצי שלו של המסך</span>
+        <b>💻 במחשב</b><span>אדום: החיצים <kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> או העכבר<br>כחול: <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> (גם במקלדת בעברית: ׳ ש ד ג)</span>
+        <b>🤖 נגד מחשב</b><span>הכחול הוא המחשב, ואתם משחקים באדום</span>
+      </div>
+      <span class="label">נגד מי משחקים?</span>
+      <div class="seg" id="modes" role="group" aria-label="מצב משחק">
+        <button type="button" data-m="2p" aria-pressed="true">👫 שני שחקנים</button>
+        <button type="button" data-m="easy" aria-pressed="false">🤖 מחשב קל</button>
+        <button type="button" data-m="hard" aria-pressed="false">🤖 מחשב קשה</button>
+      </div>
+      <button class="big" id="go" type="button">מתחילים!</button>
+      <button class="ghost" id="resume" type="button" hidden>להמשיך את המשחק</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const stage=$('stage'),cv=$('cv'),g=cv.getContext('2d');
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+// logical table: width TW (x), length TL (y). Red (player 0) defends y=TL, Blue (player 1) defends y=0.
+const TW=500,TL=880,GOAL=170,MR=38,PR=24,WIN=7,WALL=14;
+let mode='2p',running=false,paused=false,score=[0,0],flash=0,flashText='',flashCol='',serveWait=0;
+try{mode=localStorage.getItem('hockey-mode')||mode}catch(e){}
+const M=[{x:TW/2,y:TL-110,vx:0,vy:0,tx:TW/2,ty:TL-110,ptr:null,col:'#ff5a3c'},{x:TW/2,y:110,vx:0,vy:0,tx:TW/2,ty:110,ptr:null,col:'#3ec7ff'}];
+const P={x:TW/2,y:TL/2,vx:0,vy:0};
+const trail=[];
+
+/* ---------- view (portrait = table upright, landscape = table sideways) ---------- */
+let V={s:1,ox:0,oy:0,land:false,dpr:1};
+function resize(){
+  const w=stage.clientWidth,h=stage.clientHeight,d=Math.min(2,devicePixelRatio||1);
+  cv.width=w*d;cv.height=h*d;V.dpr=d;V.land=w>h;document.querySelector('.score').classList.toggle('flip',V.land);
+  const L=TL+2*WALL,Wd=TW+2*WALL;
+  V.s=V.land?Math.min(w/L,h/Wd):Math.min(w/Wd,h/L);
+  V.ox=V.land?(w-TL*V.s)/2:(w-TW*V.s)/2;V.oy=V.land?(h-TW*V.s)/2:(h-TL*V.s)/2;
+}
+new ResizeObserver(resize).observe(stage);resize();
+// landscape: logical y runs left→right (red on the right), logical x runs top→bottom
+function toLogical(cx,cy){const r=cv.getBoundingClientRect(),sx=cx-r.left,sy=cy-r.top;
+  return V.land?{x:(sy-V.oy)/V.s,y:(sx-V.ox)/V.s}:{x:(sx-V.ox)/V.s,y:(sy-V.oy)/V.s}}
+function applyView(){const d=V.dpr,s=V.s;
+  if(V.land)g.setTransform(0,s*d,s*d,0,V.ox*d,V.oy*d);else g.setTransform(s*d,0,0,s*d,V.ox*d,V.oy*d)}
+
+/* ---------- input ---------- */
+const keys={};
+// use the physical key (e.code) so W/A/S/D work even when the keyboard is set to Hebrew
+const GAMEKEYS=['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','KeyA','KeyD','KeyW','KeyS'];
+addEventListener('keydown',e=>{keys[e.code]=true;if(running&&GAMEKEYS.includes(e.code))e.preventDefault();
+  if(e.code==='Escape'||e.code==='Space'){if(running){e.preventDefault();pause()}}});
+addEventListener('keyup',e=>{keys[e.code]=false});
+addEventListener('blur',()=>{for(const k in keys)keys[k]=false;if(running)pause()});
+const isAI=i=>i===1&&mode!=='2p';
+stage.addEventListener('pointerdown',e=>{
+  if(!running||e.target!==cv)return;
+  const p=toLogical(e.clientX,e.clientY),i=p.y>TL/2?0:1;
+  const who=isAI(i)?0:i; // vs computer: the whole screen steers red
+  if(M[who].ptr!==null)return;
+  M[who].ptr=e.pointerId;cv.setPointerCapture(e.pointerId);setTarget(who,p);
+});
+stage.addEventListener('pointermove',e=>{for(let i=0;i<2;i++)if(M[i].ptr===e.pointerId)setTarget(i,toLogical(e.clientX,e.clientY))});
+function release(e){for(const m of M)if(m.ptr===e.pointerId)m.ptr=null}
+stage.addEventListener('pointerup',release);stage.addEventListener('pointercancel',release);
+// desktop mouse hover steers red when nothing is pressed
+stage.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'&&running&&M[0].ptr===null&&!mouseOff){const p=toLogical(e.clientX,e.clientY);if(p.y>TL/2-60)setTarget(0,p)}});
+let mouseOff=false;stage.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse')mouseOff=true});stage.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse')mouseOff=false});
+function setTarget(i,p){M[i].tx=p.x;M[i].ty=p.y;M[i].kbd=false}
+
+/* ---------- physics ---------- */
+function clampMallet(m,i){
+  m.x=Math.max(MR,Math.min(TW-MR,m.x));
+  if(i===0)m.y=Math.max(TL/2+MR,Math.min(TL-MR,m.y));else m.y=Math.max(MR,Math.min(TL/2-MR,m.y));
+}
+function keyMove(i){
+  const k=i===0?['ArrowLeft','ArrowRight','ArrowUp','ArrowDown']:['KeyA','KeyD','KeyW','KeyS'];
+  let dx=(keys[k[1]]?1:0)-(keys[k[0]]?1:0),dy=(keys[k[3]]?1:0)-(keys[k[2]]?1:0);
+  if(V.land){const t=dx;dx=dy;dy=t} // keys follow what you see on screen
+  if(dx||dy){const m=M[i],sp=11;m.tx=m.x+dx*sp;m.ty=m.y+dy*sp;m.kbd=true}
+}
+function ai(){
+  const m=M[1],hard=mode==='hard',react=hard?1:.55;
+  let tx=TW/2,ty=hard?90:120;
+  if(P.y<TL/2+40&&(P.vy<2||P.y<TL*.3)){ // puck coming or in our half: go hit it from behind
+    tx=P.x+(P.x-TW/2)*-.15;ty=Math.max(MR,P.y-PR-MR*.6);
+    if(P.y<m.y){tx=P.x+(P.x<TW/2?MR*1.6:-MR*1.6);ty=P.y-MR*2} // puck got behind: get around it
+  }else{tx=TW/2+(P.x-TW/2)*.45;ty=hard?80:110}
+  m.tx=m.tx+(tx-m.tx)*react;m.ty=m.ty+(ty-m.ty)*react;
+}
+function stepMallet(m,i){
+  const max=isAI(i)?(mode==='hard'?13:8):26;
+  let dx=m.tx-m.x,dy=m.ty-m.y;const d=Math.hypot(dx,dy);
+  if(d>max){dx*=max/d;dy*=max/d}
+  const ox=m.x,oy=m.y;m.x+=dx;m.y+=dy;clampMallet(m,i);m.vx=m.x-ox;m.vy=m.y-oy;
+}
+function collide(m){
+  const dx=P.x-m.x,dy=P.y-m.y,d=Math.hypot(dx,dy),min=MR+PR;
+  if(d>=min||d===0)return;
+  const nx=dx/d,ny=dy/d;
+  P.x=m.x+nx*min;P.y=m.y+ny*min;
+  const rvx=P.vx-m.vx,rvy=P.vy-m.vy,rel=rvx*nx+rvy*ny;
+  if(rel<0){P.vx-=1.9*rel*nx;P.vy-=1.9*rel*ny}
+  P.vx+=m.vx*.35;P.vy+=m.vy*.35;
+  hitSound(Math.hypot(P.vx,P.vy));
+}
+function physics(){
+  const sub=3;
+  for(let s=0;s<sub;s++){
+    P.x+=P.vx/sub;P.y+=P.vy/sub;
+    M.forEach(collide);
+    // side walls
+    if(P.x<PR){P.x=PR;P.vx=Math.abs(P.vx)*.9;wallSound()}
+    if(P.x>TW-PR){P.x=TW-PR;P.vx=-Math.abs(P.vx)*.9;wallSound()}
+    const inGoal=P.x>TW/2-GOAL/2+PR*.4&&P.x<TW/2+GOAL/2-PR*.4;
+    if(!inGoal){
+      if(P.y<PR){P.y=PR;P.vy=Math.abs(P.vy)*.9;wallSound()}
+      if(P.y>TL-PR){P.y=TL-PR;P.vy=-Math.abs(P.vy)*.9;wallSound()}
+    }else{
+      if(P.y<-PR){goal(0);return}
+      if(P.y>TL+PR){goal(1);return}
+    }
+  }
+  P.vx*=.995;P.vy*=.995;
+  const sp=Math.hypot(P.vx,P.vy),MAX=30;if(sp>MAX){P.vx*=MAX/sp;P.vy*=MAX/sp}
+  // nudge a puck that is stuck dead on the center line
+  if(sp<.15&&Math.abs(P.y-TL/2)<PR){P.vy+=(Math.random()<.5?-1:1)*.6}
+  trail.push({x:P.x,y:P.y});if(trail.length>10)trail.shift();
+}
+function goal(i){
+  score[i]++;updateScore();trail.length=0;
+  flash=70;flashText='גול!';flashCol=i===0?'#ff5a3c':'#3ec7ff';goalSound();
+  if(score[i]>=WIN){running=false;$('pauseBtn').hidden=true;
+    setTimeout(()=>{const who=mode==='2p'?(i===0?'האדום':'הכחול'):(i===0?'אתה':'המחשב');
+      $('cardT').textContent=mode!=='2p'&&i===0?'ניצחת! 🎉':mode!=='2p'?'המחשב ניצח':`${who} ניצח! 🎉`;
+      $('cardP').textContent=`התוצאה: אדום ${score[0]} – כחול ${score[1]}`;
+      $('go').textContent='משחק חדש';$('resume').hidden=true;$('startOv').hidden=false;$('go').focus({preventScroll:true});fanfare()},900);}
+  // the player who was scored on serves
+  P.x=TW/2;P.y=i===0?TL/2-120:TL/2+120;P.vx=P.vy=0;serveWait=50;
+}
+function updateScore(){$('s0').textContent=score[0];$('s1').textContent=score[1]}
+
+/* ---------- drawing ---------- */
+function draw(){
+  g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height);
+  applyView();
+  // rim
+  g.fillStyle='#2B7DE9';rr(-WALL,-WALL,TW+2*WALL,TL+2*WALL,34);g.fill();
+  // ice
+  g.fillStyle='#eaf6ff';rr(0,0,TW,TL,22);g.fill();
+  // air holes
+  g.fillStyle='#c9def0';for(let y=30;y<TL;y+=40)for(let x=25+(y/40%2)*20;x<TW;x+=40){g.beginPath();g.arc(x,y,2,0,7);g.fill()}
+  // lines
+  g.lineWidth=5;g.strokeStyle='#ff5a3c88';g.beginPath();g.moveTo(0,TL/2);g.lineTo(TW,TL/2);g.stroke();
+  g.strokeStyle='#2B7DE988';g.beginPath();g.arc(TW/2,TL/2,70,0,7);g.stroke();
+  g.strokeStyle='#ff5a3c66';g.beginPath();g.arc(TW/2,TL,GOAL/2+30,Math.PI,0);g.stroke();
+  g.strokeStyle='#3ec7ff88';g.beginPath();g.arc(TW/2,0,GOAL/2+30,0,Math.PI);g.stroke();
+  // goals
+  g.fillStyle='#141C30';g.fillRect(TW/2-GOAL/2,-WALL-2,GOAL,WALL+6);g.fillRect(TW/2-GOAL/2,TL-4,GOAL,WALL+6);
+  // puck trail
+  if(!still)trail.forEach((t,k)=>{g.globalAlpha=k/trail.length*.25;g.fillStyle='#1F2A44';g.beginPath();g.arc(t.x,t.y,PR*(.5+k/trail.length*.5),0,7);g.fill()});
+  g.globalAlpha=1;
+  // puck
+  shadow(P.x,P.y,PR);g.fillStyle='#1F2A44';g.beginPath();g.arc(P.x,P.y,PR,0,7);g.fill();
+  g.strokeStyle='#FFC94A';g.lineWidth=4;g.beginPath();g.arc(P.x,P.y,PR*.6,0,7);g.stroke();
+  // mallets
+  M.forEach(m=>{shadow(m.x,m.y,MR);g.fillStyle=m.col;g.beginPath();g.arc(m.x,m.y,MR,0,7);g.fill();
+    g.fillStyle='#ffffff55';g.beginPath();g.arc(m.x,m.y,MR*.72,0,7);g.fill();
+    g.fillStyle=m.col;g.beginPath();g.arc(m.x,m.y,MR*.45,0,7);g.fill();
+    g.fillStyle='#ffffff88';g.beginPath();g.arc(m.x-MR*.15,m.y-MR*.15,MR*.15,0,7);g.fill()});
+  // screen-space text
+  g.setTransform(V.dpr,0,0,V.dpr,0,0);
+  if(flash>0){const w=stage.clientWidth,h=stage.clientHeight;g.globalAlpha=Math.min(1,flash/20);
+    g.font=`700 ${Math.min(w,h)*.18}px Fredoka, Rubik, sans-serif`;g.textAlign='center';g.textBaseline='middle';
+    g.lineWidth=8;g.strokeStyle='#141C30';g.strokeText(flashText,w/2,h/2);g.fillStyle=flashCol;g.fillText(flashText,w/2,h/2);g.globalAlpha=1;flash--}
+}
+function rr(x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+function shadow(x,y,r){g.fillStyle='#0000001f';g.beginPath();g.arc(x+4,y+6,r,0,7);g.fill()}
+
+/* ---------- loop ---------- */
+let acc=0,last=0;
+function loop(t){
+  const dt=Math.min(100,t-(last||t));last=t;acc+=dt;
+  while(acc>=16.67){acc-=16.67;
+    if(running&&!paused){
+      keyMove(0);if(!isAI(1))keyMove(1);else ai();
+      M.forEach(stepMallet);
+      if(serveWait>0)serveWait--;else physics();
+    }
+  }
+  draw();requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* ---------- menu ---------- */
+function syncModes(){document.querySelectorAll('#modes button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===mode))}
+$('modes').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;mode=b.dataset.m;try{localStorage.setItem('hockey-mode',mode)}catch(e){};syncModes()});
+syncModes();
+function reset(){
+  score=[0,0];updateScore();
+  M[0].x=M[0].tx=TW/2;M[0].y=M[0].ty=TL-110;M[1].x=M[1].tx=TW/2;M[1].y=M[1].ty=110;
+  P.x=TW/2;P.y=TL/2+(Math.random()<.5?-120:120);P.vx=P.vy=0;serveWait=40;trail.length=0;
+}
+$('go').onclick=()=>{reset();running=true;paused=false;$('startOv').hidden=true;$('pauseBtn').hidden=false;audio()};
+function pause(){if(!running)return;paused=true;$('cardT').textContent='הפסקה';$('cardP').textContent='המשחק עצר. אפשר להמשיך או להתחיל משחק חדש.';
+  $('go').textContent='משחק חדש';$('resume').hidden=false;$('startOv').hidden=false;$('pauseBtn').hidden=true;$('resume').focus({preventScroll:true})}
+$('pauseBtn').onclick=pause;
+$('resume').onclick=()=>{paused=false;$('startOv').hidden=true;$('pauseBtn').hidden=false;M.forEach(m=>{m.ptr=null;m.tx=m.x;m.ty=m.y})};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pause()});
+
+/* ---------- sound ---------- */
+let ac=null,lastHit=0;
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}return ac}
+function tone(f,t,d,type='triangle',v=.12){const a=ac;if(!a)return;const o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+t;
+  o.type=type;o.frequency.value=f;gn.gain.setValueAtTime(.0001,s);gn.gain.exponentialRampToValueAtTime(v,s+.005);gn.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(gn).connect(a.destination);o.start(s);o.stop(s+d+.05)}
+function hitSound(sp){const n=performance.now();if(n-lastHit<60)return;lastHit=n;tone(300+Math.min(sp,30)*12,0,.06,'square',.06)}
+function wallSound(){const n=performance.now();if(n-lastHit<50)return;lastHit=n;tone(200,0,.05,'triangle',.05)}
+function goalSound(){[392,523,659].forEach((f,k)=>tone(f,k*.09,.25))}
+function fanfare(){[523,659,784,1046].forEach((f,k)=>tone(f,k*.12,.35))}
+})();
+</script>
+</body>
+</html>

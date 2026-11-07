@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>פינת המשחקים – משחקים לילדים בעברית</title>
+<meta name="description" content="פינת המשחקים: 30 משחקים וכלים לילדים בעברית שעובדים בדפדפן בלי התקנה. כדורגל, שחמט, טאנקים, מלחמת שלג, משחקי חשבון ואנגלית, איות, זיכרון ועוד. יוצר: איתן וגה.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/">
+<meta property="og:title" content="פינת המשחקים – משחקים לילדים בעברית">
+<meta property="og:description" content="פינת המשחקים: 30 משחקים וכלים לילדים בעברית שעובדים בדפדפן בלי התקנה. כדורגל, שחמט, טאנקים, מלחמת שלג, משחקי חשבון ואנגלית, איות, זיכרון ועוד. יוצר: איתן וגה.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+</head>
+<body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600&display=swap">
+<style>
+/* Layout: a toy-box landing — big title, two large door-cards side by side that stack on phones. Single bright look on a deep navy ground. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --ink:#1F2A44; --paper:#FFF8EC;
+  --sun:#FFC94A; --orange:#F28C28; --pitch:#1f6b3f; --red:#ff5a3c; --cyan:#3ec7ff; --muted:#C9D2E6;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+}
+html,body{min-height:100%}
+body{background:var(--ground);color:var(--paper);font-family:var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:32px;box-sizing:border-box}
+main{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+header{display:flex;flex-direction:column;gap:6px;text-align:center}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(36px,7vw,64px);margin:0;color:var(--sun);text-wrap:balance}
+header p{margin:0;color:var(--muted);font-size:17px}
+header p.by{font-size:16px;color:var(--paper)}
+header p.by b{color:var(--sun);font-family:var(--display);font-size:20px;font-weight:700}
+.doors{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:20px}
+.door{display:flex;flex-direction:column;border-radius:22px;overflow:hidden;text-decoration:none;color:var(--ink);
+  background:var(--paper);box-shadow:0 10px 30px #0006;transition:transform .15s}
+.door:hover{transform:translateY(-4px) rotate(-.4deg)}
+.door:focus-visible{outline:4px solid var(--sun);outline-offset:4px}
+.art{height:180px;position:relative;display:grid;place-items:center}
+.math .art{background:var(--orange)}
+.ball .art{background:repeating-linear-gradient(90deg,#1f6b3f 0 40px,#22764a 40px 80px)}
+.chips{display:flex;gap:10px}
+.chip{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:34px}
+.body{padding:20px 22px 22px;display:flex;flex-direction:column;gap:8px;direction:rtl}
+.body h2{font-family:var(--display);font-size:30px;margin:0}
+.body p{margin:0;font-size:16px;line-height:1.5;color:#4A5568}
+.go{align-self:flex-start;margin-top:8px;background:var(--ink);color:var(--paper);font-weight:600;padding:10px 20px;border-radius:99px;font-size:16px}
+.tag{font-size:13px;font-weight:600;color:var(--ink);background:var(--sun);padding:3px 10px;border-radius:99px;align-self:flex-start}
+canvas{display:block}
+.wheel .art{background:#2B7DE9}
+.spinner{width:140px;height:140px;border-radius:50%;border:6px solid #FFF8EC;
+  background:conic-gradient(#F28C28 0 60deg,#FFC94A 0 120deg,#1E9E8A 0 180deg,#ff5a3c 0 240deg,#8b5cf6 0 300deg,#3ec7ff 0 360deg);
+  animation:turn 6s linear infinite}
+@keyframes turn{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spinner{animation:none}}
+@media (min-width:900px){.doors{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.drill .art{background:#1E9E8A}
+.about .art{background:#ec4899}
+.c4 .art{background:#1F2A44}
+.hockey .art{background:#2B7DE9}
+.memory .art{background:#F28C28}
+.simon .art{background:#1F2A44}
+.guess .art{background:#8b5cf6}
+.cert .art{background:#c9a227}
+.race .art{background:#3e9b4f}
+.balls .art{background:#141C30}
+.spell .art{background:#1E9E8A}
+.pong .art{background:#0e1430}
+.bub .art{background:linear-gradient(#1d2a52,#101a33)}
+.ck .art{background:#5b3a24}
+.timer .art{background:#F28C28}
+.snow .art{background:linear-gradient(#eef6ff,#cfe2f5)}
+.tanks .art{background:#efe3c4}
+.flappy .art{background:linear-gradient(#7fd0ff,#d7f1ff)}
+.dots .art{background:#FFF8EC}
+.eng .art{background:#2B7DE9}
+.seqd .art{background:#8b5cf6}
+.brk .art{background:linear-gradient(#1d2a52,#0e1430)}
+.chars .art{background:#ec4899}
+.mad .art{background:#F28C28}
+.mlmini{background:#FFF8EC;color:#1F2A44;border-radius:14px;padding:14px 16px;width:230px;font-size:17px;line-height:1.8;transform:rotate(-2deg);box-shadow:0 6px 0 #a85c12;direction:rtl}
+.mlmini mark{background:#FFC94A;border-radius:6px;padding:0 5px;font-weight:800}
+.cbmini{display:flex;gap:8px;font-size:52px}
+.cbmini span{background:#FFF8EC;border-radius:18px;width:78px;height:92px;display:grid;place-items:center;box-shadow:0 5px 0 #a3306a}
+.cbmini span:nth-child(2){transform:translateY(-8px)}
+.bkmini{width:200px;height:140px;position:relative;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:20px;gap:5px;align-content:start;padding-top:8px}
+.bkmini i{border-radius:5px;box-shadow:inset 0 4px 0 #ffffff40}
+.bkmini b{position:absolute;bottom:6px;left:30%;width:40%;height:12px;border-radius:6px;background:linear-gradient(#FFC94A,#F28C28)}
+.bkmini s{position:absolute;bottom:40px;left:58%;width:14px;height:14px;border-radius:50%;background:#FFF8EC}
+.sqmini{display:flex;gap:8px;direction:rtl}
+.sqmini i{width:44px;height:52px;border-radius:12px;background:#FFF8EC;color:#1F2A44;font:700 28px var(--display);font-style:normal;display:grid;place-items:center;box-shadow:0 4px 0 #5b36b8}
+.sqmini i.q{background:transparent;border:3px dashed #FFC94A;color:#FFC94A;box-shadow:none}
+.enmini{display:flex;align-items:center;gap:14px;direction:ltr}
+.enmini .em{font-size:60px}
+.enmini .w{background:#FFF8EC;color:#1F2A44;font-family:var(--display);font-weight:700;font-size:34px;padding:8px 18px;border-radius:14px;box-shadow:0 5px 0 #1d5fb8}
+.runner .art{background:linear-gradient(#7fd0ff 0 70%,#6cc070 70% 76%,#d9b77a 76%)}
+.rnmini{width:220px;height:130px;position:relative}
+.rnmini b{position:absolute;left:14%;bottom:24px;font-size:46px;transform:scaleX(-1)}
+.rnmini .cr{position:absolute;left:62%;bottom:28px;width:34px;height:34px;background:#c98a3c;border:3px solid #8a5a22;border-radius:4px}
+.rnmini span{position:absolute;left:46%;top:18px;font-size:20px;letter-spacing:2px}
+.dmini{width:130px;height:130px}
+.flmini{width:200px;height:150px;position:relative}
+.flmini i{position:absolute;left:62%;width:40px;background:linear-gradient(90deg,#2e9e57,#5fd38a 35%,#1f7a42);border:3px solid #17623a}
+.flmini .pt{top:-6px;height:52px;border-radius:0 0 6px 6px}.flmini .pb{bottom:-6px;height:44px;border-radius:6px 6px 0 0}
+.flmini b{position:absolute;left:22%;top:42%;font-size:40px;transform:scaleX(-1) rotate(-12deg)}
+.tkmini{width:220px;height:130px;position:relative;border:6px solid #4a3a2a;border-radius:8px}
+.tkmini i{position:absolute;background:#4a3a2a;border-radius:3px}
+.tkmini .w1{left:35%;top:0;width:6px;height:55%}.tkmini .w2{left:55%;bottom:0;width:6px;height:50%}
+.tkmini b{position:absolute;width:34px;height:24px;border-radius:6px;box-shadow:0 -5px 0 -1px #2a2f3d,0 5px 0 -1px #2a2f3d}
+.tkmini b::after{content:"";position:absolute;top:9px;width:20px;height:6px;border-radius:3px}
+.tkmini .tb{left:10%;top:20%;background:#3ec7ff}.tkmini .tb::after{left:24px;background:#1a6f95}
+.tkmini .tr{right:10%;bottom:20%;background:#ff5a3c}.tkmini .tr::after{right:24px;background:#a3311d}
+.tkmini s{position:absolute;width:9px;height:9px;border-radius:50%;background:#3ec7ff;left:30%;top:28%;box-shadow:0 0 0 2px #1F2A44}
+.snmini{display:flex;align-items:center;gap:10px;font-size:40px;direction:ltr}
+.snmini i{width:26px;height:52px;border-radius:12px;background:#fff;box-shadow:0 0 0 3px #b9cfe4}
+.snmini b{font-size:26px;color:#3ec7ff}
+.tmini{width:130px;height:130px;border-radius:50%;background:#1F2A44;box-shadow:inset 0 0 0 10px #FFC94A,0 6px 0 #a85c12;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.tmini b{font-family:var(--display);font-size:32px;color:#FFF8EC;direction:ltr}
+.tmini span{font-size:16px}
+.ckmini{display:grid;grid-template-columns:repeat(4,40px);border-radius:6px;overflow:hidden;direction:ltr;box-shadow:0 6px 0 #3b2516}
+.ckmini i{width:40px;height:40px;background:#ecd6ad;display:grid;place-items:center}
+.ckmini i.d{background:#8a5a3b}
+.ckmini b{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:14px}
+.ckmini b.r{background:#ff5a3c;box-shadow:inset 0 -4px 0 #8e2a17}.ckmini b.b{background:#3ec7ff;box-shadow:inset 0 -4px 0 #135f80}
+.bmini{display:flex;flex-wrap:wrap;width:150px;gap:2px;direction:ltr}
+.bmini i{width:34px;height:34px;border-radius:50%;box-shadow:inset -5px -6px 0 #0003,inset 5px 5px 0 #ffffff44}
+.court{width:220px;height:120px;border:3px solid #33416A;border-radius:12px;position:relative;
+  background:linear-gradient(90deg,#3ec7ff14 50%,#ff5a3c14 50%)}
+.court::after{content:"";position:absolute;left:50%;top:8px;bottom:8px;border-left:3px dashed #ffffff30}
+.court i{position:absolute}
+.court .pd{width:9px;height:42px;border-radius:5px;top:30%}
+.court .pd.l{left:12px;background:#3ec7ff}.court .pd.r{right:12px;background:#ff5a3c;top:44%}
+.court .bl{width:14px;height:14px;border-radius:50%;background:#FFF8EC;top:52%;left:30%;box-shadow:-10px 0 0 -2px #FFC94A66,-20px 0 0 -4px #FFC94A33;animation:pongb 2.4s ease-in-out infinite alternate}
+@keyframes pongb{to{left:68%;top:28%}}
+@media (prefers-reduced-motion:reduce){.court .bl{animation:none}}
+.smile{display:flex;flex-direction:column;align-items:center;gap:8px}
+.smile .em{font-size:58px;line-height:1}
+.smile .lt{display:flex;gap:6px;direction:rtl}
+.smile .lt i{width:38px;height:44px;border-radius:9px;background:#FFC94A;color:#1F2A44;font:700 26px var(--body);font-style:normal;display:grid;place-items:center;box-shadow:0 4px 0 #b8871d}
+.split{display:flex;gap:8px;direction:ltr}
+.sc{width:84px;height:140px;border-radius:12px;position:relative;overflow:hidden;border:3px solid}
+.sc.b{background:#14324a;border-color:#3ec7ff}.sc.r{background:#4a1d1a;border-color:#ff5a3c}
+.sc .bar{position:absolute;height:10px;width:55%;background:#ff4a6e;border-radius:4px;top:38px}
+.sc.b .bar{left:0}.sc.r .bar{right:0}
+.sc .ball{position:absolute;width:20px;height:20px;border-radius:50%;bottom:22px;left:50%;transform:translateX(-50%)}
+.sc.b .ball{background:radial-gradient(circle at 35% 35%,#fff,#3ec7ff 40%,#1a6f95)}.sc.r .ball{background:radial-gradient(circle at 35% 35%,#fff,#ff5a3c 40%,#a3311d)}
+.road{width:100%;height:90px;background:#4a4f5c;position:relative;border-block:8px dashed #e53935;
+  background-image:repeating-linear-gradient(90deg,#ffffffaa 0 22px,transparent 22px 48px);background-size:100% 4px;background-repeat:repeat-x;background-position:0 50%}
+.road .car{position:absolute;width:56px;height:28px;border-radius:8px;box-shadow:inset -14px 0 0 -6px #ffffffcc,0 3px 0 #0005}
+.road .car.r{background:#ff5a3c;top:10px;left:58%;animation:drive 2.4s linear infinite}
+.road .car.b{background:#3ec7ff;bottom:10px;left:30%;animation:drive 2.4s linear infinite .6s}
+@keyframes drive{0%{transform:translateX(-120px)}100%{transform:translateX(160px)}}
+@media (prefers-reduced-motion:reduce){.road .car{animation:none}}
+.cmini{width:200px;height:130px;background:#fffaf0;border:6px double #c9a227;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;box-shadow:0 6px 0 #8a6d10;transform:rotate(-3deg)}
+.cmini b{font-family:'Frank Ruhl Libre',Georgia,serif;font-size:20px;color:#7a5a00}
+.cmini span{font-size:34px}
+.gmini{display:flex;flex-direction:column;align-items:center;gap:8px}
+.gmini .q{width:84px;height:84px;border-radius:20px;background:#FFF8EC;color:#8b5cf6;font-family:var(--display);font-weight:700;font-size:60px;display:grid;place-items:center;box-shadow:0 6px 0 #5b36b8}
+.gmini .hint{background:#1F2A44;color:#3ec7ff;font-weight:800;font-size:15px;padding:4px 12px;border-radius:99px}
+.smini{width:130px;height:130px;border-radius:50%;background:#0b1020;padding:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px;position:relative}
+.smini i{opacity:.6}
+.smini i:nth-child(1){background:#1fbf6b;border-radius:100% 6px 6px 6px}.smini i:nth-child(2){background:#ff4a3d;border-radius:6px 100% 6px 6px}
+.smini i:nth-child(3){background:#ffcc33;border-radius:6px 6px 6px 100%}.smini i:nth-child(4){background:#2b8cff;border-radius:6px 6px 100% 6px}
+.smini i.on{opacity:1;box-shadow:0 0 20px #ff4a3d;animation:blink 1.4s ease-in-out infinite}
+@keyframes blink{50%{opacity:.6;box-shadow:none}}
+@media (prefers-reduced-motion:reduce){.smini i.on{animation:none}}
+.mcards{display:flex;gap:10px}
+.mcards i{width:52px;height:70px;border-radius:10px;background:#FFF8EC;display:grid;place-items:center;font-style:normal;font-size:30px;box-shadow:0 4px 0 #a85c12}
+.mcards i.bk{background:#2B7DE9;box-shadow:inset 0 0 0 3px #ffffff33,0 4px 0 #1d5fb8}
+.mcards i:nth-child(2){transform:rotate(-6deg)}.mcards i:nth-child(3){transform:rotate(5deg)}
+.rink{width:220px;height:120px;background:#eaf6ff;border-radius:16px;position:relative;box-shadow:inset 0 0 0 4px #1d5fb8;
+  background-image:linear-gradient(90deg,transparent calc(50% - 2px),#ff5a3c88 calc(50% - 2px),#ff5a3c88 calc(50% + 2px),transparent calc(50% + 2px))}
+.rink i{position:absolute;border-radius:50%;top:50%;transform:translate(-50%,-50%)}
+.rink .m{width:40px;height:40px;box-shadow:inset 0 0 0 8px #ffffff55}
+.rink .m.r{background:#ff5a3c;left:78%}.rink .m.b{background:#3ec7ff;left:18%;top:36%}
+.rink .pk{width:24px;height:24px;background:#1F2A44;left:60%;top:62%;box-shadow:inset 0 0 0 4px #1F2A44,inset 0 0 0 7px #FFC94A}
+.stars .art{background:radial-gradient(ellipse at 50% 120%,#26205a,#0e1430 70%)}
+.st{position:absolute;color:#FFC94A;text-shadow:0 0 14px #ffd54a;line-height:1;animation:tw 1.6s ease-in-out infinite alternate}
+.s1{font-size:70px;left:22%;top:30%}.s2{font-size:44px;left:62%;top:18%;animation-delay:.5s}.s3{font-size:56px;left:55%;top:58%;color:#fff6c7;animation-delay:1s}
+@keyframes tw{to{transform:scale(.75);opacity:.6}}
+@media (prefers-reduced-motion:reduce){.st{animation:none}}
+.c4mini{display:grid;grid-template-columns:repeat(4,30px);gap:6px;background:#2B7DE9;padding:10px;border-radius:12px;box-shadow:0 6px 0 #1d5fb8}
+.c4mini i{width:30px;height:30px;border-radius:50%;background:#141C30}
+.c4mini i.r{background:#ff5a3c}.c4mini i.y{background:#FFC94A}
+.badge{background:#FFF8EC;color:#1F2A44;font-family:var(--display);font-weight:700;font-size:34px;padding:16px 26px;border-radius:18px;transform:rotate(-4deg);box-shadow:0 6px 0 #a3306a}
+.eq{font-family:var(--display);font-weight:700;font-size:56px;color:#FFF8EC;direction:ltr;text-shadow:0 4px 0 #13695c}
+.chess .art{background:repeating-conic-gradient(#9a6640 0 25%,#ecd6ad 0 50%) 0 0/60px 60px}
+.king{font-size:96px;line-height:1;color:#141218;text-shadow:0 4px 10px #0007}
+.king.w{color:#FFF8EC;margin-inline-start:-10px}
+@media (prefers-reduced-motion:reduce){.door{transition:none}.door:hover{transform:none}}
+</style>
+
+<main dir="rtl">
+  <header>
+    <h1>פינת המשחקים</h1>
+    <p class="by">יוצר: <b>איתן וגה</b></p>
+    <p>בחרו משחק ולחצו כדי להתחיל</p>
+  </header>
+  <div class="doors">
+    <a class="door math" href="math.html">
+      <div class="art" aria-hidden="true">
+        <div class="chips">
+          <span class="chip" style="background:#1F2A44;color:#FFF8EC">+</span>
+          <span class="chip" style="background:#FFC94A;color:#1F2A44">−</span>
+          <span class="chip" style="background:#2B7DE9;color:#FFF8EC">×</span>
+          <span class="chip" style="background:#1E9E8A;color:#FFF8EC">÷</span>
+        </div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · לילדים</span>
+        <h2>מסע החשבון הגדול</h2>
+        <p>6 שאלות מילוליות בחיבור, חיסור, כפל, חילוק וכסף. לוחצים על התשובה ומגלים אם צדקתם.</p>
+        <span class="go">לשאלות ←</span>
+      </div>
+    </a>
+    <a class="door ball" href="kaduraish.html">
+      <div class="art" aria-hidden="true">
+        <canvas id="mini" width="300" height="140"></canvas>
+      </div>
+      <div class="body">
+        <span class="tag">2 שחקנים · אותו מסך</span>
+        <h2>כדוראיש</h2>
+        <p>כדורגל אחד על אחד. שחקן 1 רץ עם Enter, שחקן 2 עם Shift, ומקשים 1 ו־2 מפעילים מהירות. ראשון ל־5 מנצח.</p>
+        <span class="go">למגרש ←</span>
+      </div>
+    </a>
+    <a class="door wheel" href="wheel.html">
+      <div class="art" aria-hidden="true">
+        <div class="spinner"></div>
+      </div>
+      <div class="body">
+        <span class="tag">כמה שרוצים</span>
+        <h2>גלגל המזל</h2>
+        <p>כותבים שמות, לוחצים סובב, והגלגל בוחר מי יוצא. אפשר גם להוציא מהגלגל את מי שכבר יצא.</p>
+        <span class="go">לגלגל ←</span>
+      </div>
+    </a>
+    <a class="door chess" href="chess.html">
+      <div class="art" aria-hidden="true">
+        <span class="king">♚</span><span class="king w">♔</span>
+      </div>
+      <div class="body">
+        <span class="tag">2 שחקנים · תלת־ממד</span>
+        <h2>שחמט תלת־ממדי</h2>
+        <p>גוררים כדי להסתכל מכל הכיוונים. הלוח מסתובב לבד לצד של מי שתורו, ומדליק את המשבצות שאליהן מותר ללכת.</p>
+        <span class="go">ללוח ←</span>
+      </div>
+    </a>
+    <a class="door drill" href="drill.html">
+      <div class="art" aria-hidden="true">
+        <span class="eq">7 × 8 = ?</span>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · 4 רמות</span>
+        <h2>אלוף התרגילים</h2>
+        <p>כל פעם תרגיל חדש ואקראי. בוחרים רמה, סוגי תרגילים ושעון, ובסוף מקבלים ציון.</p>
+        <span class="go">לתרגילים ←</span>
+      </div>
+    </a>
+    <a class="door about" href="about.html">
+      <div class="art" aria-hidden="true">
+        <span class="badge">👋 נעים מאוד!</span>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · דף להדפסה</span>
+        <h2>הכירו אותי</h2>
+        <p>עונים על כמה שאלות קטנות: איך קוראים לך, איפה נולדת, מה אוהבים. בסוף יוצא דף מעוצב שאפשר להוריד ולהדפיס.</p>
+        <span class="go">להתחיל ←</span>
+      </div>
+    </a>
+    <a class="door c4" href="connect4.html">
+      <div class="art" aria-hidden="true">
+        <div class="c4mini"><i class="y"></i><i></i><i></i><i></i><i class="r"></i><i class="y"></i><i></i><i></i><i class="r"></i><i class="r"></i><i class="y"></i><i></i><i class="y"></i><i class="r"></i><i class="r"></i><i class="y"></i></div>
+      </div>
+      <div class="body">
+        <span class="tag">2 שחקנים או נגד המחשב</span>
+        <h2>ארבע בשורה</h2>
+        <p>מפילים אסימונים לעמודות, ומי שמסדר ראשון ארבעה ברצף מנצח. אפשר לשחק נגד מחשב קל או חכם.</p>
+        <span class="go">לשחק ←</span>
+      </div>
+    </a>
+    <a class="door stars" href="stars.html">
+      <div class="art" aria-hidden="true">
+        <span class="st s1">★</span><span class="st s2">★</span><span class="st s3">★</span>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · 30 שניות</span>
+        <h2>תפוס את הכוכב</h2>
+        <p>כוכבים קופצים בשמיים ונעלמים מהר. לוחצים עליהם, נזהרים מפצצות, ומנסים להיכנס לטבלת השיאים.</p>
+        <span class="go">לתפוס ←</span>
+      </div>
+    </a>
+    <a class="door hockey" href="hockey.html">
+      <div class="art" aria-hidden="true">
+        <div class="rink"><i class="m r"></i><i class="pk"></i><i class="m b"></i></div>
+      </div>
+      <div class="body">
+        <span class="tag">2 שחקנים או נגד המחשב</span>
+        <h2>הוקי אוויר</h2>
+        <p>כל שחקן גורר את המחבט שלו בחצי שלו של המסך ומנסה להכניס גול. הכי כיף על טאבלט או טלפון שמונח על השולחן.</p>
+        <span class="go">למגרש ←</span>
+      </div>
+    </a>
+    <a class="door memory" href="memory.html">
+      <div class="art" aria-hidden="true">
+        <div class="mcards"><i>🐶</i><i class="bk"></i><i class="bk"></i><i>🐶</i></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד או שניים</span>
+        <h2>משחק זיכרון</h2>
+        <p>הופכים קלפים ומחפשים זוגות: חיות, פירות, מילה ותמונה, תרגיל ותשובה או לוח הכפל.</p>
+        <span class="go">להפוך קלפים ←</span>
+      </div>
+    </a>
+    <a class="door simon" href="simon.html">
+      <div class="art" aria-hidden="true">
+        <div class="smini"><i></i><i class="on"></i><i></i><i></i></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · זיכרון</span>
+        <h2>סימון אומר</h2>
+        <p>צבעים נדלקים לפי הסדר, וצריך ללחוץ עליהם באותו סדר. בכל שלב מתווסף עוד צבע. כמה תצליחו לזכור?</p>
+        <span class="go">לשחק ←</span>
+      </div>
+    </a>
+    <a class="door guess" href="guess.html">
+      <div class="art" aria-hidden="true">
+        <div class="gmini"><span class="q">?</span><span class="hint">⬆️ גבוה יותר!</span></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד או שניים · חשיבה</span>
+        <h2>נחש את המספר</h2>
+        <p>המחשב חושב על מספר, ואתם מנחשים לפי "גבוה יותר" ו"נמוך יותר". יש גם מצב חם וקר, מצב הפוך שבו המחשב מנחש, ומצב לשני שחקנים.</p>
+        <span class="go">לנחש ←</span>
+      </div>
+    </a>
+    <a class="door cert" href="certificate.html">
+      <div class="art" aria-hidden="true">
+        <div class="cmini"><b>תעודת הצטיינות</b><span>🏆</span></div>
+      </div>
+      <div class="body">
+        <span class="tag">כלי להורים ולמורים · להדפסה</span>
+        <h2>תעודת הצטיינות</h2>
+        <p>כותבים שם וסיבה, בוחרים סגנון (קלאסי, שמח, חלל, כדורגל או טבע), ומורידים תעודה מעוצבת להדפסה.</p>
+        <span class="go">להכין תעודה ←</span>
+      </div>
+    </a>
+    <a class="door race" href="race.html">
+      <div class="art" aria-hidden="true">
+        <div class="road"><i class="car r"></i><i class="car b"></i></div>
+      </div>
+      <div class="body">
+        <span class="tag">2 שחקנים או נגד המחשב</span>
+        <h2>מרוץ מכוניות</h2>
+        <p>שתי מכוניות על מסלול מפותל, עם רמזור התחלה והקפות. מי שמסיים ראשון מנצח, ועל הדשא נוסעים לאט!</p>
+        <span class="go">לנסוע ←</span>
+      </div>
+    </a>
+    <a class="door balls" href="balls.html">
+      <div class="art" aria-hidden="true">
+        <div class="split"><div class="sc b"><i class="bar"></i><i class="ball"></i></div><div class="sc r"><i class="bar"></i><i class="ball"></i></div></div>
+      </div>
+      <div class="body">
+        <span class="tag">2 שחקנים · מסך מפוצל</span>
+        <h2>מרוץ הכדורים</h2>
+        <p>לכל שחקן מסך וכדור משלו: הכחול עם WASD והאדום עם החיצים. עוברים מכשולים, אוספים כוכבי טורבו, ומי שמגיע ראשון לסיום מנצח.</p>
+        <span class="go">לגלגל ←</span>
+      </div>
+    </a>
+    <a class="door spell" href="spell.html">
+      <div class="art" aria-hidden="true">
+        <div class="smile"><span class="em">🐶</span><span class="lt"><i>כ</i><i>ל</i><i>ב</i></span></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · קריאה וכתיבה</span>
+        <h2>אלוף האיות</h2>
+        <p>מופיעה תמונה, ומסדרים את האותיות המעורבבות למילה הנכונה. ארבע רמות, רמזים וציון בסוף.</p>
+        <span class="go">לאיית ←</span>
+      </div>
+    </a>
+    <a class="door pong" href="pong.html">
+      <div class="art" aria-hidden="true">
+        <div class="court"><i class="pd l"></i><i class="bl"></i><i class="pd r"></i></div>
+      </div>
+      <div class="body">
+        <span class="tag">2 שחקנים או נגד המחשב</span>
+        <h2>פונג</h2>
+        <p>הקלאסיקה! מחזירים את הכדור עם המחבט, והוא נהיה מהיר יותר בכל פגיעה. הכחול עם W ו־S, האדום עם החיצים.</p>
+        <span class="go">לשחק ←</span>
+      </div>
+    </a>
+    <a class="door bub" href="bubbles.html">
+      <div class="art" aria-hidden="true">
+        <div class="bmini"><i style="background:#ff4a5c"></i><i style="background:#3e8bff"></i><i style="background:#ff4a5c"></i><i style="background:#2ecc71"></i><i style="background:#FFC94A;margin-inline-start:14px"></i><i style="background:#3e8bff"></i><i style="background:#2ecc71"></i><i style="background:#ff4a5c"></i></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · שלבים</span>
+        <h2>בועות מתפוצצות</h2>
+        <p>יורים בועות, ושלוש בועות באותו צבע מתפוצצות. אפשר לפגוע בקירות, ויש פצצות, קשתות וכוכבים. אל תתנו לבועות להגיע למטה!</p>
+        <span class="go">לפוצץ ←</span>
+      </div>
+    </a>
+    <a class="door ck" href="checkers.html">
+      <div class="art" aria-hidden="true">
+        <div class="ckmini"><i></i><i class="d"><b class="b"></b></i><i></i><i class="d"></i><i class="d"></i><i></i><i class="d"><b class="r"></b></i><i></i><i></i><i class="d"><b class="r k">👑</b></i><i></i><i class="d"></i></div>
+      </div>
+      <div class="body">
+        <span class="tag">2 שחקנים או נגד המחשב</span>
+        <h2>דמקה</h2>
+        <p>זזים באלכסון ואוכלים בקפיצה, גם כמה ברצף. מי שמגיע לצד השני הופך למלך 👑. יש חוקים פשוטים ומלאים.</p>
+        <span class="go">לשחק ←</span>
+      </div>
+    </a>
+    <a class="door timer" href="timer.html">
+      <div class="art" aria-hidden="true">
+        <div class="tmini"><b>20:00</b><span>⭐⭐☆</span></div>
+      </div>
+      <div class="body">
+        <span class="tag">כלי ללמידה · בבית</span>
+        <h2>טיימר שיעורי בית</h2>
+        <p>בוחרים כמה זמן ללמוד וכמה זמן הפסקה. עיגול גדול סופר אחורה, ובהפסקות יש רעיונות מה לעשות. כל סבב שמסיימים שווה כוכב.</p>
+        <span class="go">להתחיל ללמוד ←</span>
+      </div>
+    </a>
+    <a class="door snow" href="snow.html">
+      <div class="art" aria-hidden="true">
+        <div class="snmini"><span>🧑‍🦱</span><i></i><b>❄</b><i></i><span>🧑</span></div>
+      </div>
+      <div class="body">
+        <span class="tag">2 שחקנים או נגד המחשב</span>
+        <h2>מלחמת שלג</h2>
+        <p>כל שחקן בצד שלו: זורקים כדורי שלג, מתחבאים מאחורי מבצרי השלג ואוספים כוכבים ושוקו חם. מי שנגמרים לו הלבבות מפסיד!</p>
+        <span class="go">לזרוק ←</span>
+      </div>
+    </a>
+    <a class="door tanks" href="tanks.html">
+      <div class="art" aria-hidden="true">
+        <div class="tkmini"><i class="w1"></i><i class="w2"></i><b class="tb"></b><b class="tr"></b><s></s></div>
+      </div>
+      <div class="body">
+        <span class="tag">2 שחקנים או נגד המחשב</span>
+        <h2>טאנקים</h2>
+        <p>שני טאנקים במבוך שמשתנה בכל סיבוב. הכדורים קופצים מהקירות, אז אפשר לירות מסביב לפינה. 5 רמות מחשב, עד אלופים!</p>
+        <span class="go">לקרב ←</span>
+      </div>
+    </a>
+    <a class="door flappy" href="flappy.html">
+      <div class="art" aria-hidden="true">
+        <div class="flmini"><i class="pt"></i><i class="pb"></i><b>🐤</b></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · 5 רמות</span>
+        <h2>ציפור מעופפת</h2>
+        <p>לוחצים כדי שהציפור תעוף, ועוברים בין הצינורות בלי לגעת בהם. קל להבין, קשה להפסיק! מדליות ושיא אישי.</p>
+        <span class="go">לעוף ←</span>
+      </div>
+    </a>
+    <a class="door dots" href="dots.html">
+      <div class="art" aria-hidden="true">
+        <svg class="dmini" viewBox="0 0 120 120"><rect x="14" y="14" width="44" height="44" rx="6" fill="#3ec7ff55"/><g stroke-width="6" stroke-linecap="round"><line x1="10" y1="10" x2="62" y2="10" stroke="#2b9fd6"/><line x1="10" y1="10" x2="10" y2="62" stroke="#e8492c"/><line x1="62" y1="10" x2="62" y2="62" stroke="#2b9fd6"/><line x1="10" y1="62" x2="62" y2="62" stroke="#2b9fd6"/><line x1="62" y1="62" x2="110" y2="62" stroke="#e8492c"/><line x1="110" y1="62" x2="110" y2="110" stroke="#e8492c"/></g><g fill="#1F2A44"><circle cx="10" cy="10" r="6"/><circle cx="62" cy="10" r="6"/><circle cx="110" cy="10" r="6"/><circle cx="10" cy="62" r="6"/><circle cx="62" cy="62" r="6"/><circle cx="110" cy="62" r="6"/><circle cx="10" cy="110" r="6"/><circle cx="62" cy="110" r="6"/><circle cx="110" cy="110" r="6"/></g></svg>
+      </div>
+      <div class="body">
+        <span class="tag">2 שחקנים או נגד המחשב · חשיבה</span>
+        <h2>נקודות וקווים</h2>
+        <p>מציירים קווים בין נקודות, ומי שסוגר ריבוע מקבל אותו ועוד תור. ארבעה גדלים של לוח ו־5 רמות מחשב.</p>
+        <span class="go">לצייר ←</span>
+      </div>
+    </a>
+    <a class="door runner" href="runner.html">
+      <div class="art" aria-hidden="true">
+        <div class="rnmini"><b>🏃</b><i class="cr"></i><span>🪙🪙🪙</span></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · 5 רמות</span>
+        <h2>הרץ האמיץ</h2>
+        <p>רצים בלי הפסקה, קופצים מעל קקטוסים וארגזים, מתכופפים מתחת לציפורים ואוספים מטבעות. כמה רחוק תגיעו?</p>
+        <span class="go">לרוץ ←</span>
+      </div>
+    </a>
+    <a class="door eng" href="english.html">
+      <div class="art" aria-hidden="true">
+        <div class="enmini"><span class="em">🐶</span><span class="w">dog</span></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · אנגלית</span>
+        <h2>אנגלית בכיף</h2>
+        <p>בערך 100 מילים באנגלית עם תמונות: חיות, אוכל, צבעים, מספרים ועוד. מתאימים תמונה למילה, עברית לאנגלית, ויש גם מצב הקשבה.</p>
+        <span class="go">Let's go ←</span>
+      </div>
+    </a>
+    <a class="door seqd" href="sequence.html">
+      <div class="art" aria-hidden="true">
+        <div class="sqmini"><i>2</i><i>4</i><i>6</i><i class="q">?</i></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · חשיבה</span>
+        <h2>השלם את הסדרה</h2>
+        <p>מגלים את החוק ומשלימים מה חסר: סדרות של מספרים, צורות וצבעים. 5 רמות, מ־+1 ועד סדרות של אלופים, ואחרי כל תשובה יש הסבר.</p>
+        <span class="go">לגלות את החוק ←</span>
+      </div>
+    </a>
+    <a class="door brk" href="breakout.html">
+      <div class="art" aria-hidden="true">
+        <div class="bkmini"><i style="background:#ff5a3c"></i><i style="background:#F28C28"></i><i style="background:#FFC94A"></i><i style="background:#2ecc71"></i><i style="background:#3ec7ff"></i><i style="background:#2B7DE9"></i><i style="background:#8b5cf6"></i><i style="background:#ec4899;visibility:hidden"></i><b></b><s></s></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · שלבים</span>
+        <h2>שובר לבנים</h2>
+        <p>מחזירים את הכדור עם המחבט ושוברים קירות של לבנים צבעוניות בצורות שונות. תופסים בונוסים כמו כדור אש ועוד כדורים!</p>
+        <span class="go">לשבור ←</span>
+      </div>
+    </a>
+    <a class="door chars" href="characters.html">
+      <div class="art" aria-hidden="true">
+        <div class="cbmini"><span>🧑‍🎤</span><span>🧙</span><span>🦸</span></div>
+      </div>
+      <div class="body">
+        <span class="tag">יצירה · להורדה</span>
+        <h2>בונה דמויות</h2>
+        <p>בונים דמות משלכם: עור, שיער, עיניים, פה, בגדים, כתר, גלימה ועוד. יש כפתור הפתעה, נותנים לדמות שם ומורידים אותה כתמונה.</p>
+        <span class="go">לבנות דמות ←</span>
+      </div>
+    </a>
+    <a class="door mad" href="madlibs.html">
+      <div class="art" aria-hidden="true">
+        <div class="mlmini">הבוקר מצאתי <mark>פינגווין</mark> שאכל <mark>פיצה</mark> ב<mark>ירח</mark>!</div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד או יותר · צחוקים</span>
+        <h2>סיפור משוגע</h2>
+        <p>עונים על כמה מילים בלי לראות את הסיפור: חיה, מאכל, צבע, מקום... ובסוף נחשף סיפור מצחיק ומשוגע עם המילים שלכם. 6 סיפורים!</p>
+        <span class="go">לכתוב סיפור ←</span>
+      </div>
+    </a>
+  </div>
+</main>
+
+<script>
+// small animated preview: two spinning players and a ball
+(function(){
+  const c=document.getElementById('mini'),x=c.getContext('2d');
+  const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let t=0;
+  function pl(px,py,a,col){
+    x.fillStyle=col;x.beginPath();x.arc(px,py,16,0,7);x.fill();
+    x.strokeStyle='#eef6ef';x.lineWidth=3;x.stroke();
+    x.fillStyle='#eef6ef';x.beginPath();
+    x.moveTo(px+Math.cos(a)*28,py+Math.sin(a)*28);
+    x.lineTo(px+Math.cos(a+.4)*18,py+Math.sin(a+.4)*18);
+    x.lineTo(px+Math.cos(a-.4)*18,py+Math.sin(a-.4)*18);x.fill();
+  }
+  function f(){
+    x.clearRect(0,0,300,140);
+    x.strokeStyle='#eef6efaa';x.lineWidth=2;
+    x.beginPath();x.moveTo(150,10);x.lineTo(150,130);x.stroke();
+    x.beginPath();x.arc(150,70,26,0,7);x.stroke();
+    pl(80,70,t*.06,'#ff5a3c');pl(220,70,Math.PI-t*.06,'#3ec7ff');
+    const bx=150+Math.sin(t*.03)*30;
+    x.fillStyle='#fff';x.beginPath();x.arc(bx,70,9,0,7);x.fill();
+    x.fillStyle='#111';x.beginPath();x.arc(bx,70,3.5,0,7);x.fill();
+    t++; if(!still)requestAnimationFrame(f);
+  }
+  f();
+})();
+</script>
+
+</body>
+</html>

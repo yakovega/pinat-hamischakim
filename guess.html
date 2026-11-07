@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>נחש את המספר – פינת המשחקים</title>
+<meta name="description" content="המחשב חושב על מספר, ואתם מנחשים לפי &quot;גבוה יותר&quot; ו&quot;נמוך יותר&quot;. יש גם מצב חם וקר, מצב הפוך שבו המחשב מנחש, ומצב לשני שחקנים.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/guess.html">
+<meta property="og:title" content="נחש את המספר – פינת המשחקים">
+<meta property="og:description" content="המחשב חושב על מספר, ואתם מנחשים לפי &quot;גבוה יותר&quot; ו&quot;נמוך יותר&quot;. יש גם מצב חם וקר, מצב הפוך שבו המחשב מנחש, ומצב לשני שחקנים.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/guess.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: one centered card that swaps between setup, play and result; the shrinking number line sits under the big feedback. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28; --blue:#2B7DE9;
+  --teal:#1E9E8A; --red:#ff5a3c; --cyan:#3ec7ff; --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);min-height:100vh;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px}
+[hidden]{display:none!important}
+main{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:clamp(26px,5vw,38px);margin:0;color:var(--sun)}
+.homelink{background:var(--sun);color:#1F2A44;padding:8px 14px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px}
+.card{background:var(--card);border-radius:22px;padding:clamp(18px,4vw,28px);display:flex;flex-direction:column;gap:16px}
+.card h2{font-family:var(--display);font-size:24px;margin:0}
+.group{display:flex;flex-direction:column;gap:8px}
+.group>span{font-weight:600;color:var(--muted);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:12px;padding:10px 14px;font:600 16px var(--body);cursor:pointer;text-align:right}
+.chip[aria-pressed="true"]{background:var(--sun);border-color:var(--sun);color:#1F2A44}
+.chip small{display:block;font-weight:400;font-size:12px;opacity:.85}
+.big{font-family:var(--display);font-weight:700;font-size:22px;border:0;border-radius:99px;padding:12px 34px;background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 5px 0 #a85c12}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #a85c12}
+.big:disabled{opacity:.5;cursor:default}
+.ghost{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:99px;padding:9px 18px;font:600 15px var(--body);cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.center{align-self:center}
+.best{color:var(--muted);font-size:14px;text-align:center;margin:0}
+/* play */
+.status{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
+.status b{color:var(--paper);font-family:var(--display);font-size:20px}
+.who{background:var(--line);color:var(--paper);padding:4px 12px;border-radius:99px;font-size:14px}
+.feedback{text-align:center;min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.feedback .icon{font-size:52px;line-height:1}
+.feedback .text{font-family:var(--display);font-weight:700;font-size:clamp(26px,6vw,38px);line-height:1.15}
+.feedback .sub{color:var(--muted);font-size:15px}
+.feedback.pop .icon,.feedback.pop .text{animation:pop .35s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+.up{color:var(--cyan)} .down{color:var(--orange)} .win{color:var(--sun)}
+.form{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.form input{width:min(100%,200px);font:700 36px var(--display);text-align:center;border-radius:14px;border:3px solid var(--line);background:var(--paper);color:#1F2A44;padding:6px;direction:ltr}
+.form input::-webkit-outer-spin-button,.form input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.form input{-moz-appearance:textfield}
+.warn{color:var(--red);text-align:center;margin:0;font-weight:600;min-height:22px}
+/* number line */
+.line{position:relative;height:46px;direction:ltr;margin:6px 6px 22px}
+.track{position:absolute;left:0;right:0;top:16px;height:14px;border-radius:99px;background:#2a3554;overflow:hidden}
+.alive{position:absolute;top:0;bottom:0;background:linear-gradient(90deg,var(--teal),#3fd39f);border-radius:99px;transition:left .45s cubic-bezier(.3,1.2,.5,1),right .45s cubic-bezier(.3,1.2,.5,1)}
+.mark{position:absolute;top:8px;width:4px;height:30px;border-radius:2px;transform:translateX(-50%);background:var(--paper)}
+.mark.hot{background:var(--red)}.mark.warm{background:var(--orange)}.mark.cool{background:var(--cyan)}.mark.cold{background:#8aa4ff}
+.lab{position:absolute;top:40px;transform:translateX(-50%);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.range{position:absolute;top:-6px;transform:translateX(-50%);font:700 13px var(--body);color:#3fd39f;white-space:nowrap;transition:left .45s}
+.history{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;direction:ltr}
+.history span{background:var(--line);border-radius:99px;padding:4px 10px;font-weight:700;font-variant-numeric:tabular-nums}
+.history .u{color:var(--cyan)}.history .d{color:var(--orange)}.history .w{background:var(--sun);color:#1F2A44}
+/* reverse mode */
+.robot{text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center}
+.robot .face{font-size:56px;line-height:1}
+.robot .guess{font-family:var(--display);font-weight:700;font-size:clamp(56px,14vw,88px);color:var(--sun);line-height:1;font-variant-numeric:tabular-nums}
+.answers{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.answers button{border:0;border-radius:14px;padding:14px 18px;font:700 18px var(--body);cursor:pointer;min-width:120px}
+.a-up{background:var(--cyan);color:#0b2233}.a-down{background:var(--orange);color:#2a1600}.a-ok{background:var(--sun);color:#1F2A44}
+/* result */
+.result{text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center}
+.result .t{font-family:var(--display);font-weight:700;font-size:clamp(30px,7vw,46px);color:var(--sun);line-height:1.1}
+.result .stars{font-size:40px;letter-spacing:6px}
+.result p{margin:0;font-size:17px;line-height:1.5}
+.tip{background:#26314F;border-radius:14px;padding:12px 14px;color:var(--muted);font-size:14px;line-height:1.6;text-align:right}
+.tip b{color:var(--paper)}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:6;width:100%;height:100%}
+@media (prefers-reduced-motion:reduce){.feedback.pop .icon,.feedback.pop .text{animation:none}.alive,.range{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <h1>נחש את המספר</h1>
+    <a class="homelink" href="index.html">🏠 דף הבית</a>
+  </div>
+
+  <!-- setup -->
+  <section class="card" id="setup">
+    <h2>בוחרים איך לשחק</h2>
+    <div class="group"><span>מצב משחק</span>
+      <div class="chips" data-name="mode">
+        <button class="chip" type="button" data-v="classic">🔢 רגיל<small>המחשב חושב, אתם מנחשים</small></button>
+        <button class="chip" type="button" data-v="hot">🔥 חם וקר<small>רק אומרים אם אתם קרובים</small></button>
+        <button class="chip" type="button" data-v="reverse">🤖 הפוך<small>אתם חושבים, המחשב מנחש</small></button>
+        <button class="chip" type="button" data-v="duel">👫 שני שחקנים<small>כל אחד כותב מספר סודי</small></button>
+      </div>
+    </div>
+    <div class="group"><span>טווח המספרים</span>
+      <div class="chips" data-name="max">
+        <button class="chip" type="button" data-v="10">1 עד 10<small>לקטנים</small></button>
+        <button class="chip" type="button" data-v="100">1 עד 100<small>רגיל</small></button>
+        <button class="chip" type="button" data-v="1000">1 עד 1000<small>לאלופים</small></button>
+      </div>
+    </div>
+    <button class="big center" id="start" type="button">מתחילים!</button>
+    <p class="best" id="best"></p>
+  </section>
+
+  <!-- secret entry (duel) -->
+  <section class="card" id="secret" hidden>
+    <div class="status"><span class="who" id="secretWho"></span></div>
+    <div class="feedback"><div class="icon">🤫</div><div class="text" id="secretT"></div><div class="sub" id="secretS"></div></div>
+    <form class="form" id="secretForm" autocomplete="off">
+      <input id="secretIn" type="password" inputmode="numeric" aria-label="המספר הסודי" placeholder="?">
+      <button class="big" type="submit">שמור בסוד</button>
+    </form>
+    <p class="warn" id="secretWarn"></p>
+  </section>
+
+  <!-- play (classic / hot / duel guessing) -->
+  <section class="card" id="play" hidden>
+    <div class="status"><span class="who" id="playWho"></span><span>ניחושים: <b id="count">0</b></span></div>
+    <div class="feedback" id="fb"></div>
+    <div class="line" id="line">
+      <div class="track"><div class="alive" id="alive"></div></div>
+      <div class="range" id="range"></div>
+      <span class="lab" style="left:0">1</span><span class="lab" id="maxLab" style="left:100%"></span>
+    </div>
+    <form class="form" id="form" autocomplete="off">
+      <input id="in" type="text" inputmode="numeric" aria-label="הניחוש שלך" placeholder="?">
+      <button class="big" type="submit" id="go">נחש!</button>
+    </form>
+    <p class="warn" id="warn"></p>
+    <div class="history" id="hist"></div>
+    <div class="row"><button class="ghost" id="giveup" type="button">🏳️ לגלות את המספר</button></div>
+  </section>
+
+  <!-- reverse -->
+  <section class="card" id="rev" hidden>
+    <div class="status"><span class="who">🤖 המחשב מנחש</span><span>ניחושים: <b id="rcount">0</b></span></div>
+    <div id="revIntro" class="feedback"><div class="icon">🧠</div><div class="text" id="revIntroT"></div><div class="sub">אל תגידו לי! רק תזכרו אותו בראש (או תכתבו על דף).</div></div>
+    <div class="row" id="revReadyRow"><button class="big" id="revReady" type="button">חשבתי על מספר!</button></div>
+    <div id="revPlay" hidden style="display:flex;flex-direction:column;gap:14px">
+      <div class="robot"><div class="face" id="rface">🤔</div><span style="color:var(--muted);font-weight:600">המספר שלך הוא...</span><div class="guess" id="rguess"></div></div>
+      <div class="answers">
+        <button class="a-up" type="button" data-a="up">⬆️ גבוה יותר</button>
+        <button class="a-ok" type="button" data-a="ok">🎯 בול!</button>
+        <button class="a-down" type="button" data-a="down">⬇️ נמוך יותר</button>
+      </div>
+      <div class="line" id="rline">
+        <div class="track"><div class="alive" id="ralive"></div></div>
+        <div class="range" id="rrange"></div>
+        <span class="lab" style="left:0">1</span><span class="lab" id="rmaxLab" style="left:100%"></span>
+      </div>
+      <p class="warn" id="rwarn"></p>
+    </div>
+  </section>
+
+  <!-- result -->
+  <section class="card" id="end" hidden>
+    <div class="result">
+      <div class="t" id="endT"></div>
+      <div class="stars" id="endS"></div>
+      <p id="endP"></p>
+    </div>
+    <div class="tip" id="tip"></div>
+    <div class="row">
+      <button class="big" id="again" type="button">עוד פעם!</button>
+      <button class="ghost" id="settings" type="button">לשנות מצב</button>
+    </div>
+  </section>
+</main>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cfg={mode:'classic',max:'100'};
+try{Object.assign(cfg,JSON.parse(localStorage.getItem('guess-cfg')||'{}'))}catch(e){}
+const MAXN=()=>+cfg.max, OPT=()=>Math.ceil(Math.log2(MAXN()+1)); // guesses needed with the "middle" trick
+const screens=['setup','secret','play','rev','end'];
+const show=id=>screens.forEach(s=>$(s).hidden=s!==id);
+
+document.querySelectorAll('.chips').forEach(g=>{
+  const name=g.dataset.name;
+  const sync=()=>{g.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',cfg[name]===c.dataset.v));showBest()};
+  g.addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;cfg[name]=c.dataset.v;try{localStorage.setItem('guess-cfg',JSON.stringify(cfg))}catch(e){};sync()});
+  sync();
+});
+const bestKey=()=>`guess-best-${cfg.mode}-${cfg.max}`;
+function getBest(){try{return +localStorage.getItem(bestKey())||0}catch(e){return 0}}
+function showBest(){const b=getBest();$('best').textContent=(cfg.mode==='classic'||cfg.mode==='hot')&&b?`השיא שלך: ${b} ניחושים`:''}
+
+/* ---------- number line ---------- */
+const pct=v=>((v-1)/(MAXN()-1||1))*100;
+function drawLine(prefix,lo,hi,marks){
+  const p=prefix||'';
+  $(p+'maxLab').textContent=MAXN();
+  const a=$(p+'alive');a.style.left=pct(lo)+'%';a.style.right=(100-pct(hi))+'%';
+  const r=$(p+'range');r.style.left=((pct(lo)+pct(hi))/2)+'%';r.textContent=lo===hi?String(lo):`${lo}–${hi}`;
+  const line=$(p+'line');line.querySelectorAll('.mark').forEach(m=>m.remove());
+  (marks||[]).forEach(m=>{const d=document.createElement('div');d.className='mark '+(m.cls||'');d.style.left=pct(m.v)+'%';line.appendChild(d)});
+}
+
+/* ---------- guessing (classic / hot / duel) ---------- */
+let secret=0,lo=1,hi=100,guesses=[],round=0,duel=[];
+function heat(g){const d=Math.abs(g-secret)/MAXN();
+  if(d<=.02)return['🔥','רותח!','hot'];if(d<=.06)return['♨️','חם מאוד!','hot'];if(d<=.12)return['🌤️','חם','warm'];if(d<=.25)return['🌥️','פושר','cool'];return['🥶','קר!','cold']}
+function setFb(icon,text,cls,sub){const f=$('fb');f.classList.remove('pop');void f.offsetWidth;f.classList.add('pop');
+  f.innerHTML=`<div class="icon">${icon}</div><div class="text ${cls||''}"></div><div class="sub"></div>`;f.querySelector('.text').textContent=text;f.querySelector('.sub').textContent=sub||''}
+function startGuessing(sec,whoText){
+  secret=sec;lo=1;hi=MAXN();guesses=[];
+  $('count').textContent=0;$('hist').innerHTML='';$('warn').textContent='';$('in').value='';
+  $('playWho').textContent=whoText;
+  $('line').hidden=false;
+  setFb('🤔',`חשבתי על מספר בין 1 ל־${MAXN()}`,'',cfg.mode==='hot'?'אני רק אגיד לכם אם אתם קרובים (חם) או רחוקים (קר)':'נסו לנחש! אני אגיד אם הוא גבוה יותר או נמוך יותר');
+  drawLine('',lo,hi,[]);
+  if(cfg.mode==='hot'){$('alive').style.left='0';$('alive').style.right='0';$('range').textContent=''}
+  show('play');focusIn();
+}
+function focusIn(){if(matchMedia('(hover:hover) and (pointer:fine)').matches)$('in').focus({preventScroll:true})}
+$('form').addEventListener('submit',e=>{
+  e.preventDefault();const raw=$('in').value.trim(),g=Number(raw);
+  if(!raw||!Number.isInteger(g)){$('warn').textContent='כתבו מספר שלם';return}
+  if(g<1||g>MAXN()){$('warn').textContent=`המספר צריך להיות בין 1 ל־${MAXN()}`;return}
+  if(guesses.some(x=>x.v===g)){$('warn').textContent=`כבר ניחשתם ${g}!`;return}
+  $('warn').textContent='';$('in').value='';
+  const item={v:g};guesses.push(item);$('count').textContent=guesses.length;
+  if(g===secret){item.cls='w';addHist(item);setFb('🎉','בול!','win',`המספר היה ${secret}`);beep(true);setTimeout(()=>roundDone(),900);return}
+  if(cfg.mode==='hot'){
+    const[ic,tx,cls]=heat(g);item.cls=cls;
+    const prev=guesses.length>1?Math.abs(guesses[guesses.length-2].v-secret):null,now=Math.abs(g-secret);
+    const trend=prev===null?'':now<prev?'מתחמם... 📈':now>prev?'מתקרר... 📉':'אותו מרחק';
+    setFb(ic,tx,cls==='hot'?'down':cls==='warm'?'down':'up',trend);drawLine('',1,MAXN(),guesses.map(x=>({v:x.v,cls:x.cls})));
+    $('alive').style.left='0';$('alive').style.right='0';$('range').textContent='';
+  }else{
+    if(g<secret){item.cls='u';lo=Math.max(lo,g+1);setFb('⬆️','גבוה יותר!','up',`המספר גדול מ־${g}`)}
+    else{item.cls='d';hi=Math.min(hi,g-1);setFb('⬇️','נמוך יותר!','down',`המספר קטן מ־${g}`)}
+    drawLine('',lo,hi,guesses.map(x=>({v:x.v})));
+  }
+  addHist(item);beep(false);focusIn();
+});
+function addHist(item){const s=document.createElement('span');s.className=item.cls==='u'||item.cls==='d'||item.cls==='w'?item.cls:'';
+  s.textContent=item.v+(item.cls==='u'?' ⬆':item.cls==='d'?' ⬇':item.cls==='w'?' 🎯':'');
+  if(cfg.mode==='hot'&&item.cls!=='w')s.textContent=item.v+' '+heat(item.v)[0];
+  $('hist').appendChild(s)}
+$('giveup').onclick=()=>{guesses.giveup=true;setFb('🏳️',`המספר היה ${secret}`,'win','לא נורא, בפעם הבאה!');setTimeout(roundDone,1200)};
+$('in').addEventListener('input',()=>{$('in').value=$('in').value.replace(/[^0-9]/g,'').slice(0,4)});
+
+function roundDone(){
+  const n=guesses.length,gave=!!guesses.giveup;
+  if(cfg.mode==='duel'){
+    duel.push(gave?null:n);
+    if(round===0){round=1;askSecret();return}
+    // both rounds done
+    const [a,b]=duel; // a = guesses of player 2 (round 1), b = guesses of player 1 (round 2)
+    let t;
+    if(a===null&&b===null)t='תיקו! 🤝';else if(b===null||(a!==null&&a<b))t='שחקן 2 ניצח! 🎉';else if(a===null||b<a)t='שחקן 1 ניצח! 🎉';else t='תיקו! 🤝';
+    showEnd(t,'',`שחקן 1 מצא ב־${b===null?'—':b} ניחושים · שחקן 2 מצא ב־${a===null?'—':a} ניחושים`,tipText());
+    if(!t.startsWith('תיקו'))party();
+    return;
+  }
+  if(gave){showEnd('לא נורא! 💪','',`המספר היה ${secret}. אחרי ${n} ניחושים.`,tipText());return}
+  const opt=OPT(),st=n<=opt?3:n<=opt+2?2:1;
+  const prev=getBest(),rec=!prev||n<prev;if(rec)try{localStorage.setItem(bestKey(),n)}catch(e){}
+  showEnd(n===1?'וואו, בניחוש הראשון! 🤯':'מצאת! 🎉','★'.repeat(st)+'☆'.repeat(3-st),
+    `מצאת את ${secret} ב־${n} ניחושים.`+(rec&&prev?' שיא חדש! 🏆':''),tipText(n));
+  party();
+}
+function tipText(n){
+  const opt=OPT();
+  if(cfg.mode==='hot')return `💡 <b>טיפ:</b> במצב חם וקר כדאי לנחש מספר אחד בצד אחד ואחר כך בצד השני, ולבדוק לאיזה כיוון "מתחמם".`;
+  return `💡 <b>הטריק של האלופים:</b> תמיד לנחש באמצע של מה שנשאר (הפס הירוק). ככה כל תשובה מעיפה חצי מהמספרים, ותמיד אפשר למצוא מספר בין 1 ל־${MAXN()} ב־${opt} ניחושים לכל היותר.`+(n&&n<=opt?' ואתם עשיתם בדיוק את זה! 🧠':'');
+}
+function showEnd(t,stars,p,tip){$('endT').textContent=t;$('endS').textContent=stars;$('endP').textContent=p;$('tip').innerHTML=tip;$('tip').hidden=!tip;show('end');$('again').focus({preventScroll:true});showBest()}
+
+/* ---------- duel ---------- */
+function askSecret(){
+  const setter=round===0?1:2,guesser=round===0?2:1;
+  $('secretWho').textContent=`🔒 תור שחקן ${setter}`;
+  $('secretT').textContent=`שחקן ${setter}, כתבו מספר סודי`;
+  $('secretS').textContent=`בין 1 ל־${MAXN()}. שחקן ${guesser}, אל תסתכלו! 🙈`;
+  $('secretIn').value='';$('secretWarn').textContent='';show('secret');$('secretIn').focus({preventScroll:true});
+}
+$('secretIn').addEventListener('input',()=>{$('secretIn').value=$('secretIn').value.replace(/[^0-9]/g,'').slice(0,4)});
+$('secretForm').addEventListener('submit',e=>{e.preventDefault();const v=Number($('secretIn').value);
+  if(!Number.isInteger(v)||v<1||v>MAXN()){$('secretWarn').textContent=`צריך מספר בין 1 ל־${MAXN()}`;return}
+  const guesser=round===0?2:1;startGuessing(v,`🔍 שחקן ${guesser} מנחש`);
+  setFb('🔍',`שחקן ${guesser}, תורך לנחש!`,'',`המספר הסודי בין 1 ל־${MAXN()}`)});
+
+/* ---------- reverse: the computer guesses ---------- */
+let rlo=1,rhi=100,rg=0,rn=0,rhist=[];
+function startReverse(){
+  rlo=1;rhi=MAXN();rn=0;rhist=[];$('rcount').textContent=0;$('rwarn').textContent='';
+  $('revIntroT').textContent=`חשבו על מספר בין 1 ל־${MAXN()}`;
+  $('revIntro').hidden=false;$('revReadyRow').hidden=false;$('revPlay').hidden=true;show('rev');$('revReady').focus({preventScroll:true});
+}
+$('revReady').onclick=()=>{$('revIntro').hidden=true;$('revReadyRow').hidden=true;$('revPlay').hidden=false;nextR()};
+function nextR(){
+  rg=Math.floor((rlo+rhi)/2);rn++;rhist.push(rg);$('rcount').textContent=rn;
+  const el=$('rguess');el.textContent=rg;el.animate([{transform:'scale(.6)',opacity:0},{transform:'none',opacity:1}],{duration:still?1:300,easing:'cubic-bezier(.2,1.6,.4,1)'});
+  $('rface').textContent=['🤔','🧐','🤖','😏'][rn%4];
+  drawLine('r',rlo,rhi,rhist.map(v=>({v})));beep(false);
+}
+document.querySelector('.answers').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;
+  if(a==='ok'){$('rface').textContent='😎';beep(true);
+    setTimeout(()=>{showEnd(`מצאתי! המספר שלך הוא ${rg} 😎`,'',`מצאתי ב־${rn} ניחושים.`,
+      `💡 <b>איך עשיתי את זה?</b> כל פעם ניחשתי בדיוק באמצע של מה שנשאר. ככה כל תשובה שלכם העיפה חצי מהמספרים. בין 1 ל־${MAXN()} אני תמיד מוצא תוך ${OPT()} ניחושים לכל היותר. נסו את הטריק הזה במצב הרגיל!`);party()},700);return}
+  if(a==='up')rlo=rg+1;else rhi=rg-1;
+  if(rlo>rhi){$('rwarn').textContent='🤨 רגע... משהו לא מסתדר. אולי התבלבלתם באחת התשובות? בואו נתחיל מחדש.';$('rface').textContent='😵';
+    setTimeout(startReverse,2600);return}
+  $('rwarn').textContent='';nextR()});
+
+/* ---------- flow ---------- */
+function begin(){
+  if(cfg.mode==='reverse'){startReverse();return}
+  if(cfg.mode==='duel'){round=0;duel=[];askSecret();return}
+  startGuessing(1+Math.floor(Math.random()*MAXN()),cfg.mode==='hot'?'🔥 חם וקר':'🔢 רגיל');
+}
+$('start').onclick=begin;$('again').onclick=begin;
+$('settings').onclick=()=>{show('setup');showBest()};
+
+/* ---------- sound & confetti ---------- */
+let ac=null;
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}return ac}
+function tone(f,t,d,type='triangle',v=.1){const a=audio();if(!a)return;const o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+t;
+  o.type=type;o.frequency.value=f;gn.gain.setValueAtTime(.0001,s);gn.gain.exponentialRampToValueAtTime(v,s+.01);gn.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(gn).connect(a.destination);o.start(s);o.stop(s+d+.05)}
+function beep(win){if(win)[523,659,784,1046].forEach((f,k)=>tone(f,k*.1,.3));else tone(440,0,.08,'sine',.07)}
+const cc=$('confetti'),cx=cc.getContext('2d'),COLS=['#F28C28','#2B7DE9','#FFC94A','#1E9E8A','#ff5a3c','#3ec7ff'];
+function party(){if(still)return;cc.width=innerWidth;cc.height=innerHeight;
+  const ps=Array.from({length:170},()=>({x:innerWidth/2,y:innerHeight/3,vx:(Math.random()-.5)*16,vy:-Math.random()*14-4,r:Math.random()*6+4,c:COLS[Math.floor(Math.random()*6)],a:Math.random()*6,va:(Math.random()-.5)*.3}));
+  let f=0;(function t(){cx.clearRect(0,0,cc.width,cc.height);ps.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillStyle=p.c;cx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);cx.restore()});
+    if(++f<140)requestAnimationFrame(t);else cx.clearRect(0,0,cc.width,cc.height)})()}
+})();
+</script>
+</body>
+</html>

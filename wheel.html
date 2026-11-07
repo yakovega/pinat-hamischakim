@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>גלגל המזל – פינת המשחקים</title>
+<meta name="description" content="כותבים שמות, לוחצים סובב, והגלגל בוחר מי יוצא. אפשר גם להוציא מהגלגל את מי שכבר יצא.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/wheel.html">
+<meta property="og:title" content="גלגל המזל – פינת המשחקים">
+<meta property="og:description" content="כותבים שמות, לוחצים סובב, והגלגל בוחר מי יוצא. אפשר גם להוציא מהגלגל את מי שכבר יצא.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/wheel.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: wheel on one side, names list on the other; stacks on phones. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --panel:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28;
+  --blue:#2B7DE9; --teal:#1E9E8A; --red:#ff5a3c; --muted:#C9D2E6;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px}
+[hidden]{display:none!important}
+main{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:clamp(28px,5vw,44px);margin:0;color:var(--sun)}
+.homelink{background:var(--sun);color:#1F2A44;padding:8px 14px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px}
+.layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:760px){.layout{grid-template-columns:minmax(0,1fr)}}
+.wheelbox{position:relative;display:flex;flex-direction:column;align-items:center;gap:16px}
+.wheelwrap{position:relative;width:min(100%,520px);aspect-ratio:1;max-width:100%}
+canvas{width:100%;height:100%;display:block}
+.pointer{position:absolute;top:50%;left:-6px;transform:translateY(-50%);width:0;height:0;
+  border-top:22px solid transparent;border-bottom:22px solid transparent;border-left:44px solid var(--sun);
+  filter:drop-shadow(0 3px 4px #0008)}
+.spin{font-family:var(--display);font-weight:700;font-size:26px;border:0;border-radius:99px;padding:14px 48px;
+  background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 6px 0 #a85c12;transition:transform .1s}
+.spin:active{transform:translateY(4px);box-shadow:0 2px 0 #a85c12}
+.spin:disabled{opacity:.6;cursor:default}
+button:focus-visible,textarea:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.panel{background:var(--panel);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel h2{font-family:var(--display);font-size:22px;margin:0}
+.panel p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+textarea{width:100%;min-height:220px;resize:vertical;background:var(--paper);color:#1F2A44;border:0;border-radius:12px;padding:12px;font:16px/1.6 var(--body)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.small{border:0;border-radius:8px;padding:8px 14px;font:600 14px var(--body);cursor:pointer;background:#33416A;color:var(--paper)}
+.small:hover{background:#3f4f80}
+label{display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--orange)}
+.count{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.history{display:flex;flex-wrap:wrap;gap:6px}
+.history span{background:#33416A;padding:3px 10px;border-radius:99px;font-size:13px}
+/* winner overlay */
+.win{position:fixed;inset:0;background:#0b1020cc;display:grid;place-items:center;z-index:5;padding:16px}
+.card{background:var(--paper);color:#1F2A44;border-radius:24px;padding:28px 32px;text-align:center;max-width:min(92vw,520px);
+  display:flex;flex-direction:column;gap:10px;align-items:center;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+.card small{font-size:16px;font-weight:600;color:#4A5568}
+.card b{font-family:var(--display);font-size:clamp(40px,9vw,72px);line-height:1.1;color:var(--orange);word-break:break-word}
+.card .row{justify-content:center;margin-top:8px}
+.card .spin{font-size:20px;padding:10px 28px}
+@keyframes pop{from{transform:scale(.5);opacity:0}to{transform:none;opacity:1}}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:6;width:100%;height:100%}
+@media (prefers-reduced-motion:reduce){.card{animation:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <h1>גלגל המזל</h1>
+    <a class="homelink" href="index.html">🏠 דף הבית</a>
+  </div>
+  <div class="layout">
+    <div class="wheelbox">
+      <div class="wheelwrap">
+        <canvas id="wheel" width="1040" height="1040" aria-label="גלגל המזל"></canvas>
+        <div class="pointer" aria-hidden="true"></div>
+      </div>
+      <button class="spin" id="spin" type="button">סובב!</button>
+    </div>
+    <div class="panel">
+      <h2>השמות בגלגל</h2>
+      <p>כתבו שם אחד בכל שורה. הגלגל מתעדכן מיד.</p>
+      <textarea id="names" aria-label="רשימת שמות"></textarea>
+      <div class="row">
+        <span class="count" id="count"></span>
+        <button class="small" id="shuffle" type="button">ערבב</button>
+        <button class="small" id="clear" type="button">נקה הכול</button>
+      </div>
+      <label><input type="checkbox" id="remove"> להוציא מהגלגל את מי שיצא</label>
+      <div id="histWrap" hidden>
+        <p style="margin-bottom:6px">יצאו עד עכשיו:</p>
+        <div class="history" id="history"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="win" id="win" hidden>
+  <div class="card" role="dialog" aria-live="assertive">
+    <small>🎉 הגלגל בחר ב...</small>
+    <b id="winner"></b>
+    <div class="row">
+      <button class="spin" id="again" type="button">סובב שוב</button>
+      <button class="small" id="close" type="button">סגור</button>
+    </div>
+  </div>
+</div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+(function(){
+const COLORS=['#F28C28','#2B7DE9','#FFC94A','#1E9E8A','#ff5a3c','#8b5cf6','#3ec7ff','#ec4899'];
+const DEFAULT='נועה\nדני\nמאיה\nיוסי\nתמר\nאורי';
+const ta=document.getElementById('names'),cv=document.getElementById('wheel'),x=cv.getContext('2d');
+const spinBtn=document.getElementById('spin'),win=document.getElementById('win'),winner=document.getElementById('winner');
+const countEl=document.getElementById('count'),rem=document.getElementById('remove');
+const hist=document.getElementById('history'),histWrap=document.getElementById('histWrap');
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let angle=0,spinning=false,lastWinner=-1;
+const history=[];
+
+function load(){try{return localStorage.getItem('wheel-names')}catch(e){return null}}
+function save(){try{localStorage.setItem('wheel-names',ta.value)}catch(e){}}
+ta.value=load()??DEFAULT;
+
+function names(){return ta.value.split('\n').map(s=>s.trim()).filter(Boolean)}
+
+function draw(){
+  const n=names(),S=cv.width,R=S/2-12,cx=S/2,cy=S/2;
+  x.clearRect(0,0,S,S);
+  // rim
+  x.fillStyle='#FFF8EC';x.beginPath();x.arc(cx,cy,R+10,0,Math.PI*2);x.fill();
+  if(!n.length){
+    x.fillStyle='#33416A';x.beginPath();x.arc(cx,cy,R,0,Math.PI*2);x.fill();
+    x.fillStyle='#FFF8EC';x.font='600 44px Rubik, Arial';x.textAlign='center';x.textBaseline='middle';
+    x.fillText('כתבו שמות ברשימה',cx,cy);countEl.textContent='0 שמות';return;
+  }
+  const seg=Math.PI*2/n.length;
+  for(let i=0;i<n.length;i++){
+    const a0=angle+i*seg;
+    let col=COLORS[i%COLORS.length];
+    if(n.length>1&&i===n.length-1&&i%COLORS.length===0)col=COLORS[3]; // avoid same color next to the first
+    x.fillStyle=col;x.beginPath();x.moveTo(cx,cy);x.arc(cx,cy,R,a0,a0+seg);x.closePath();x.fill();
+    x.strokeStyle='#FFF8EC';x.lineWidth=4;x.stroke();
+    // label
+    x.save();x.translate(cx,cy);x.rotate(a0+seg/2);
+    const fs=Math.max(22,Math.min(56,620/n.length+18));
+    x.font=`700 ${fs}px Fredoka, Rubik, Arial`;x.textAlign='right';x.textBaseline='middle';
+    const dark=['#FFC94A','#3ec7ff','#F28C28'].includes(col);
+    x.fillStyle=dark?'#1F2A44':'#FFF8EC';
+    let t=n[i];const maxW=R-110;
+    while(x.measureText(t).width>maxW&&t.length>1)t=t.slice(0,-1);
+    if(t!==n[i])t=t.slice(0,-1)+'…';
+    x.fillText(t,R-28,0);x.restore();
+  }
+  // hub
+  x.fillStyle='#1F2A44';x.beginPath();x.arc(cx,cy,64,0,Math.PI*2);x.fill();
+  x.strokeStyle='#FFC94A';x.lineWidth=8;x.stroke();
+  x.fillStyle='#FFC94A';x.font='700 40px Fredoka, Arial';x.textAlign='center';x.textBaseline='middle';x.fillText('★',cx,cy+2);
+  countEl.textContent=n.length+(n.length===1?' שם':' שמות');
+  spinBtn.disabled=spinning||n.length<2;
+}
+
+// the pointer sits on the LEFT (angle = PI)
+function indexAtPointer(){
+  const n=names().length,seg=Math.PI*2/n;
+  let a=(Math.PI-angle)%(Math.PI*2);if(a<0)a+=Math.PI*2;
+  return Math.floor(a/seg)%n;
+}
+
+function spin(){
+  const n=names();if(spinning||n.length<2)return;
+  win.hidden=true;spinning=true;spinBtn.disabled=true;
+  const start=angle,turns=5+Math.random()*3,target=start+turns*Math.PI*2+Math.random()*Math.PI*2;
+  const dur=still?600:4500+Math.random()*1000,t0=performance.now();
+  let lastTick=Math.floor(start/(Math.PI*2/n.length));
+  function frame(now){
+    const p=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-p,4);
+    angle=start+(target-start)*e;draw();
+    const tick=Math.floor(angle/(Math.PI*2/n.length));
+    if(tick!==lastTick){lastTick=tick;click()}
+    if(p<1)requestAnimationFrame(frame);else done();
+  }
+  requestAnimationFrame(frame);
+}
+
+function done(){
+  spinning=false;
+  const n=names(),i=indexAtPointer(),name=n[i];
+  lastWinner=i;winner.textContent=name;win.hidden=false;
+  history.unshift(name);if(history.length>12)history.pop();
+  hist.innerHTML='';history.forEach(h=>{const s=document.createElement('span');s.textContent=h;hist.appendChild(s)});
+  histWrap.hidden=false;
+  fanfare();confetti();
+  draw();
+  document.getElementById('again').focus({preventScroll:true});
+}
+
+function closeWin(){
+  win.hidden=true;
+  if(rem.checked&&lastWinner>=0){
+    const n=names();n.splice(lastWinner,1);ta.value=n.join('\n');save();lastWinner=-1;draw();
+  }
+}
+
+// sound (only after a click, as browsers require)
+let ac=null;
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}return ac}
+function click(){const a=audio();if(!a)return;const o=a.createOscillator(),g=a.createGain();
+  o.frequency.value=900;g.gain.setValueAtTime(.06,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.04);
+  o.connect(g).connect(a.destination);o.start();o.stop(a.currentTime+.05)}
+function fanfare(){const a=audio();if(!a)return;[523,659,784,1046].forEach((f,k)=>{
+  const o=a.createOscillator(),g=a.createGain(),t=a.currentTime+k*.12;o.type='triangle';o.frequency.value=f;
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.15,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+.35);
+  o.connect(g).connect(a.destination);o.start(t);o.stop(t+.4)})}
+
+// confetti
+const cc=document.getElementById('confetti'),cx2=cc.getContext('2d');
+function confetti(){
+  if(still)return;
+  cc.width=innerWidth;cc.height=innerHeight;
+  const parts=Array.from({length:160},()=>({x:innerWidth/2,y:innerHeight/2,vx:(Math.random()-.5)*16,vy:-Math.random()*16-4,
+    r:Math.random()*6+4,c:COLORS[Math.floor(Math.random()*COLORS.length)],a:Math.random()*6,va:(Math.random()-.5)*.3}));
+  let f=0;
+  (function tick(){
+    cx2.clearRect(0,0,cc.width,cc.height);
+    parts.forEach(p=>{p.vy+=.35;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;
+      cx2.save();cx2.translate(p.x,p.y);cx2.rotate(p.a);cx2.fillStyle=p.c;cx2.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);cx2.restore()});
+    if(++f<150)requestAnimationFrame(tick);else cx2.clearRect(0,0,cc.width,cc.height);
+  })();
+}
+
+ta.addEventListener('input',()=>{save();draw()});
+spinBtn.onclick=spin;
+document.getElementById('again').onclick=()=>{closeWin();spin()};
+document.getElementById('close').onclick=closeWin;
+win.addEventListener('click',e=>{if(e.target===win)closeWin()});
+cv.addEventListener('click',spin);
+document.getElementById('shuffle').onclick=()=>{const n=names();for(let i=n.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[n[i],n[j]]=[n[j],n[i]]}ta.value=n.join('\n');save();draw()};
+document.getElementById('clear').onclick=()=>{ta.value='';save();draw();ta.focus()};
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!win.hidden)closeWin()});
+draw();
+if(document.fonts)document.fonts.ready.then(draw);
+})();
+</script>
+</body>
+</html>

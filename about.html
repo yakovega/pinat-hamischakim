@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>הכירו אותי – פינת המשחקים</title>
+<meta name="description" content="עונים על כמה שאלות קטנות: איך קוראים לך, איפה נולדת, מה אוהבים. בסוף יוצא דף מעוצב שאפשר להוריד ולהדפיס.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/about.html">
+<meta property="og:title" content="הכירו אותי – פינת המשחקים">
+<meta property="og:description" content="עונים על כמה שאלות קטנות: איך קוראים לך, איפה נולדת, מה אוהבים. בסוף יוצא דף מעוצב שאפשר להוריד ולהדפיס.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/about.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: one question card at a time (like a quiz), then a result screen with the printable "about me" poster. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28; --blue:#2B7DE9;
+  --teal:#1E9E8A; --red:#ff5a3c; --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);min-height:100vh;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px}
+[hidden]{display:none!important}
+main{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:clamp(28px,5vw,40px);margin:0;color:var(--sun)}
+.homelink{background:var(--sun);color:#1F2A44;padding:8px 14px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px}
+.card{background:var(--card);border-radius:22px;padding:clamp(18px,4vw,30px);display:flex;flex-direction:column;gap:18px}
+.progress{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--teal);transition:width .3s}
+.step{color:var(--muted);font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+.emoji{font-size:64px;line-height:1;text-align:center}
+.question{font-family:var(--display);font-size:clamp(28px,6vw,40px);margin:0;text-align:center;text-wrap:balance}
+.help{margin:0;text-align:center;color:var(--muted)}
+input[type=text],input[type=number],textarea{width:100%;font:600 24px var(--body);border-radius:14px;border:3px solid var(--line);background:var(--paper);color:#1F2A44;padding:12px 14px}
+textarea{min-height:120px;resize:vertical;font-size:20px;line-height:1.5}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{border:3px solid transparent;border-radius:12px;padding:10px 14px;font:600 16px var(--body);cursor:pointer;color:#1F2A44}
+.chip[aria-pressed="true"]{border-color:var(--paper);box-shadow:0 0 0 3px var(--sun)}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.big{font-family:var(--display);font-weight:700;font-size:22px;border:0;border-radius:99px;padding:12px 36px;background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 5px 0 #a85c12}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #a85c12}
+.ghost{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:99px;padding:10px 22px;font:600 16px var(--body);cursor:pointer}
+.ghost:hover{background:#26314F}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible,label:focus-within{outline:3px solid var(--sun);outline-offset:3px}
+.warn{color:var(--red);text-align:center;margin:0;font-weight:600}
+.photo{display:flex;flex-direction:column;align-items:center;gap:12px}
+.photo img{width:160px;height:160px;border-radius:50%;object-fit:cover;border:5px solid var(--sun)}
+.upload{display:inline-block;background:var(--blue);color:var(--paper);border-radius:99px;padding:12px 26px;font:600 18px var(--body);cursor:pointer}
+.upload input{position:absolute;opacity:0;width:1px;height:1px}
+/* result */
+.poster{width:100%;max-width:520px;align-self:center;border-radius:12px;box-shadow:0 12px 40px #0008;background:var(--paper)}
+.themes{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.theme{width:44px;height:44px;border-radius:50%;border:3px solid var(--card);cursor:pointer}
+.theme[aria-pressed="true"]{box-shadow:0 0 0 3px var(--paper)}
+.note{margin:0;text-align:center;color:var(--muted);font-size:14px;line-height:1.6}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--teal);color:var(--paper);padding:10px 18px;border-radius:10px;font-weight:600;z-index:9}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <h1>הכירו אותי</h1>
+    <a class="homelink" href="index.html">🏠 דף הבית</a>
+  </div>
+
+  <section class="card" id="ask">
+    <div class="row" style="justify-content:space-between"><span class="step" id="step"></span><button class="ghost" id="back" type="button">→ אחורה</button></div>
+    <div class="progress"><i id="prog"></i></div>
+    <div class="emoji" id="emo" aria-hidden="true"></div>
+    <h2 class="question" id="qt"></h2>
+    <p class="help" id="help"></p>
+    <form id="form" autocomplete="off" style="display:flex;flex-direction:column;gap:16px">
+      <div id="field"></div>
+      <p class="warn" id="warn" hidden>צריך לכתוב שם כדי להמשיך</p>
+      <div class="row">
+        <button class="big" type="submit" id="next">הבא ←</button>
+        <button class="ghost" type="button" id="skip">דלג</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="card" id="done" hidden>
+    <h2 class="question">הדף שלך מוכן! 🎉</h2>
+    <img class="poster" id="poster" alt="דף הכירו אותי">
+    <div class="themes" id="themes" aria-label="צבע הדף"></div>
+    <div class="row" id="saveRow">
+      <button class="big" id="pdf" type="button">⬇ הורדה כ־PDF להדפסה</button>
+      <button class="ghost" id="png" type="button">⬇ הורדה כתמונה</button>
+    </div>
+    <p class="note" id="note">אחרי ההורדה פותחים את הקובץ ומדפיסים אותו, או שולחים אותו למי שרוצים.<br>אפשר גם ללחוץ לחיצה ארוכה על הדף (או קליק ימני במחשב) ולשמור אותו כתמונה.</p>
+    <div class="row">
+      <button class="ghost" id="edit" type="button">✏️ לשנות תשובות</button>
+      <button class="ghost" id="restart" type="button">דף חדש לילד אחר</button>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast" hidden></div>
+<canvas id="cv" width="1240" height="1754" hidden></canvas>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const COLORS=[['אדום','#ff5a3c'],['כתום','#F28C28'],['צהוב','#FFC94A'],['ירוק','#3fae5a'],['כחול','#2B7DE9'],['סגול','#8b5cf6'],['ורוד','#ec4899'],['שחור','#2a2a33'],['לבן','#f4f4f4']];
+const Q=[
+  {k:'name',e:'👋',t:'איך קוראים לך?',h:'השם יופיע בגדול בראש הדף',type:'text',req:true,max:30},
+  {k:'age',e:'🎂',t:'בן או בת כמה את/ה?',type:'number'},
+  {k:'born',e:'🏥',t:'איפה נולדת?',h:'עיר, מושב או מדינה',type:'text',max:40},
+  {k:'live',e:'🏠',t:'איפה את/ה גר/ה?',type:'text',max:40},
+  {k:'school',e:'🏫',t:'באיזה בית ספר או גן?',h:'ובאיזו כיתה',type:'text',max:40},
+  {k:'color',e:'🎨',t:'מה הצבע האהוב עליך?',type:'color'},
+  {k:'food',e:'🍕',t:'מה האוכל האהוב עליך?',type:'text',max:40},
+  {k:'animal',e:'🐶',t:'איזו חיה את/ה הכי אוהב/ת?',type:'text',max:40},
+  {k:'hobby',e:'⚽',t:'מה את/ה הכי אוהב/ת לעשות?',h:'תחביב, ספורט, משחק',type:'text',max:50},
+  {k:'dream',e:'🚀',t:'מה תרצה/י להיות כשתהיה/י גדול/ה?',type:'text',max:40},
+  {k:'special',e:'⭐',t:'משהו מיוחד עליך',h:'משהו שכיף לדעת עליך, כמה מילים',type:'long',max:160},
+  {k:'photo',e:'📷',t:'רוצה להוסיף תמונה?',h:'אפשר לדלג. התמונה נשארת רק אצלך במכשיר',type:'photo'}
+];
+const LABEL={age:'גיל',born:'נולדתי ב',live:'גר/ה ב',school:'בית ספר',color:'צבע אהוב',food:'אוכל אהוב',animal:'חיה אהובה',hobby:'אוהב/ת לעשות',dream:'כשאהיה גדול/ה',special:'משהו מיוחד עליי'};
+const ICON={age:'🎂',born:'🏥',live:'🏠',school:'🏫',color:'🎨',food:'🍕',animal:'🐶',hobby:'⚽',dream:'🚀',special:'⭐'};
+const THEMES=['#2B7DE9','#F28C28','#1E9E8A','#8b5cf6','#ec4899','#ff5a3c'];
+
+let A={},idx=0,theme=THEMES[0];
+try{const s=JSON.parse(localStorage.getItem('aboutme')||'null');if(s){A=s.A||{};theme=s.theme||theme}}catch(e){}
+function save(){try{const {photo,...rest}=A;localStorage.setItem('aboutme',JSON.stringify({A:rest,theme}))}catch(e){}}
+
+function render(){
+  const q=Q[idx];
+  $('step').textContent=`שאלה ${idx+1} מתוך ${Q.length}`;
+  $('prog').style.width=(idx/Q.length*100)+'%';
+  $('emo').textContent=q.e;$('qt').textContent=q.t;$('help').textContent=q.h||'';$('help').hidden=!q.h;
+  $('back').style.visibility=idx?'visible':'hidden';
+  $('skip').hidden=!!q.req;$('warn').hidden=true;
+  $('next').textContent=idx===Q.length-1?'לראות את הדף! 🎉':'הבא ←';
+  const f=$('field');f.innerHTML='';
+  if(q.type==='text'||q.type==='number'){
+    const i=document.createElement('input');i.type=q.type==='number'?'number':'text';i.id='in';
+    if(q.type==='number'){i.min=1;i.max=120;i.inputMode='numeric'}else i.maxLength=q.max;
+    i.value=A[q.k]||'';i.setAttribute('aria-label',q.t);f.appendChild(i);setTimeout(()=>i.focus({preventScroll:true}),30);
+  }else if(q.type==='long'){
+    const t=document.createElement('textarea');t.id='in';t.maxLength=q.max;t.value=A[q.k]||'';t.setAttribute('aria-label',q.t);f.appendChild(t);
+  }else if(q.type==='color'){
+    const w=document.createElement('div');w.className='chips';
+    COLORS.forEach(([n,c])=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=n;b.style.background=c;
+      if(n==='שחור')b.style.color='#fff';b.setAttribute('aria-pressed',A.color===n);
+      b.onclick=()=>{A.color=n;A.colorHex=c;w.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===b));other.value=''};w.appendChild(b)});
+    const other=document.createElement('input');other.type='text';other.id='in';other.placeholder='או כתבו צבע אחר';other.maxLength=20;
+    other.style.marginTop='12px';other.value=A.color&&!COLORS.some(c=>c[0]===A.color)?A.color:'';
+    other.oninput=()=>{w.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',false))};
+    f.append(w,other);
+  }else if(q.type==='photo'){
+    const w=document.createElement('div');w.className='photo';
+    const img=document.createElement('img');img.alt='התמונה שלך';img.hidden=!A.photo;if(A.photo)img.src=A.photo;
+    const lab=document.createElement('label');lab.className='upload';lab.innerHTML='📷 בחירת תמונה<input type="file" accept="image/*">';
+    lab.querySelector('input').onchange=e=>{const file=e.target.files[0];if(!file)return;
+      const rd=new FileReader();rd.onload=()=>{shrink(rd.result,500).then(d=>{A.photo=d;img.src=d;img.hidden=false})};rd.readAsDataURL(file)};
+    w.append(img,lab);f.appendChild(w);
+  }
+}
+function shrink(src,max){return new Promise(res=>{const im=new Image();im.onload=()=>{const s=Math.min(1,max/Math.max(im.width,im.height));
+  const c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.9))};
+  im.onerror=()=>res(null);im.src=src})}
+
+function collect(){
+  const q=Q[idx],i=$('in');
+  if(q.type==='color'){if(i&&i.value.trim()){A.color=i.value.trim();A.colorHex=null}}
+  else if(i)A[q.k]=i.value.trim();
+}
+$('form').addEventListener('submit',e=>{e.preventDefault();collect();
+  if(Q[idx].req&&!A[Q[idx].k]){$('warn').hidden=false;$('in').focus();return}
+  save();go(1)});
+$('skip').onclick=()=>{const q=Q[idx];if(q.type!=='photo')delete A[q.k];if(q.type==='color')delete A.colorHex;save();go(1)};
+$('back').onclick=()=>{collect();save();go(-1)};
+function go(d){idx+=d;if(idx>=Q.length){finish();return}idx=Math.max(0,idx);render()}
+
+/* ---------- poster ---------- */
+const cv=$('cv'),x=cv.getContext('2d'),W=1240,H=1754;
+function rr(X,Y,w,h,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath()}
+function wrap(text,maxW,font){x.font=font;const words=String(text).split(/\s+/),lines=[];let cur='';
+  for(const w of words){const t=cur?cur+' '+w:w;if(x.measureText(t).width>maxW&&cur){lines.push(cur);cur=w}else cur=t}
+  if(cur)lines.push(cur);return lines}
+function loadImg(src){return new Promise(r=>{if(!src)return r(null);const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src})}
+async function drawPoster(){
+  try{await Promise.all([document.fonts.load('700 120px Fredoka'),document.fonts.load('600 40px Rubik'),document.fonts.load('400 40px Rubik')])}catch(e){}
+  x.direction='rtl';x.textBaseline='alphabetic';
+  // paper + frame
+  x.fillStyle='#FFF8EC';x.fillRect(0,0,W,H);
+  x.lineWidth=18;x.strokeStyle=theme;rr(30,30,W-60,H-60,40);x.stroke();
+  // confetti dots
+  const dots=['#F28C28','#2B7DE9','#FFC94A','#1E9E8A','#ec4899'];
+  let seed=7;const r=()=>{seed=(seed*9301+49297)%233280;return seed/233280};
+  for(let i=0;i<40;i++){x.fillStyle=dots[i%5];x.globalAlpha=.35;x.beginPath();x.arc(60+r()*(W-120),H-260+r()*190,6+r()*10,0,7);x.fill()}
+  x.globalAlpha=1;
+  // header band
+  x.fillStyle=theme;rr(70,70,W-140,430,30);x.fill();
+  x.fillStyle='#ffffffcc';x.font='600 46px Rubik, Arial';x.textAlign='center';x.fillText('נעים מאוד, הכירו אותי!',W/2,160);
+  const name=A.name||'';let fs=150;x.font=`700 ${fs}px Fredoka, Rubik, Arial`;
+  while(x.measureText(name).width>W-260&&fs>60){fs-=6;x.font=`700 ${fs}px Fredoka, Rubik, Arial`}
+  x.fillStyle='#FFFFFF';x.fillText(name,W/2,310+fs*.25);
+  // avatar circle
+  const cx=W/2,cy=530,R=125;
+  x.fillStyle='#FFF8EC';x.beginPath();x.arc(cx,cy,R+14,0,7);x.fill();
+  const img=await loadImg(A.photo);
+  x.save();x.beginPath();x.arc(cx,cy,R,0,7);x.clip();
+  if(img){const s=Math.max(2*R/img.width,2*R/img.height);x.drawImage(img,cx-img.width*s/2,cy-img.height*s/2,img.width*s,img.height*s)}
+  else{x.fillStyle=A.colorHex||'#FFC94A';x.fillRect(cx-R,cy-R,2*R,2*R);
+    x.fillStyle=(A.colorHex==='#f4f4f4'||A.colorHex==='#FFC94A'||!A.colorHex)?'#1F2A44':'#FFFFFF';
+    x.font='700 150px Fredoka, Rubik, Arial';x.textAlign='center';x.fillText(name.trim().charAt(0)||'?',cx,cy+52)}
+  x.restore();x.lineWidth=10;x.strokeStyle=theme;x.beginPath();x.arc(cx,cy,R+5,0,7);x.stroke();
+  // facts grid
+  const keys=['age','born','live','school','color','food','animal','hobby','dream'].filter(k=>A[k]);
+  const colW=(W-140-30)/2,boxH=128,gx=70,top=700,gap=30;
+  keys.forEach((k,i)=>{
+    const col=i%2,row=Math.floor(i/2),bx=gx+(1-col)*(colW+gap),by=top+row*(boxH+16);
+    const lone=i===keys.length-1&&keys.length%2===1,w=lone?W-140:colW,X=lone?gx:bx;
+    x.fillStyle='#FFFFFF';rr(X,by,w,boxH,24);x.fill();x.lineWidth=4;x.strokeStyle=theme+'55';x.stroke();
+    x.textAlign='center';x.font='56px sans-serif';x.fillText(ICON[k],X+w-58,by+boxH/2+20);
+    x.textAlign='right';x.fillStyle='#6b7280';x.font='600 28px Rubik, Arial';x.fillText(LABEL[k],X+w-110,by+42);
+    let val=k==='age'?String(A.age):A[k];
+    x.fillStyle='#1F2A44';
+    if(k==='color'&&A.colorHex){x.fillStyle=A.colorHex;x.beginPath();x.arc(X+60,by+boxH/2,34,0,7);x.fill();x.strokeStyle='#1F2A4433';x.lineWidth=3;x.stroke();x.fillStyle='#1F2A44'}
+    const mw=w-130-(k==='color'?90:20);
+    let lines=wrap(val,mw,'700 42px Rubik, Arial');
+    if(lines.length===1){x.font='700 42px Rubik, Arial';x.fillText(lines[0],X+w-110,by+96)}
+    else{const all=wrap(val,mw,'700 32px Rubik, Arial');lines=all.slice(0,2);if(all.length>2)lines[1]=lines[1]+'…';
+      x.font='700 32px Rubik, Arial';lines.forEach((l,j)=>x.fillText(l,X+w-110,by+80+j*36))}
+  });
+  let y=top+Math.ceil(keys.length/2)*(boxH+16)+8;
+  if(A.special){
+    const lines=wrap(A.special,W-140-100,'600 40px Rubik, Arial').slice(0,3),h=86+lines.length*52;
+    x.fillStyle='#FFFFFF';rr(70,y,W-140,h,24);x.fill();
+    x.fillStyle=theme+'1f';rr(70,y,W-140,h,24);x.fill();
+    x.textAlign='right';x.fillStyle=theme;x.font='700 36px Rubik, Arial';x.fillText('⭐ '+LABEL.special,W-110,y+56);
+    x.fillStyle='#1F2A44';x.font='600 40px Rubik, Arial';lines.forEach((l,j)=>x.fillText(l,W-110,y+108+j*52));
+  }
+  // footer
+  x.textAlign='center';x.fillStyle='#9aa1ad';x.font='400 26px Rubik, Arial';
+  x.fillText(new Date().toLocaleDateString('he-IL',{day:'numeric',month:'long',year:'numeric'}),W/2,H-62);
+  $('poster').src=cv.toDataURL('image/png');
+}
+
+function finish(){
+  $('prog').style.width='100%';
+  $('ask').hidden=true;$('done').hidden=false;
+  const t=$('themes');t.innerHTML='';
+  THEMES.forEach(c=>{const b=document.createElement('button');b.type='button';b.className='theme';b.style.background=c;b.setAttribute('aria-label','צבע '+c);
+    b.setAttribute('aria-pressed',c===theme);b.onclick=()=>{theme=c;save();t.querySelectorAll('.theme').forEach(z=>z.setAttribute('aria-pressed',z===b));drawPoster()};t.appendChild(b)});
+  drawPoster();scrollTo({top:0,behavior:'smooth'});
+}
+$('edit').onclick=()=>{idx=0;$('done').hidden=true;$('ask').hidden=false;render()};
+$('restart').onclick=()=>{A={};idx=0;save();$('done').hidden=true;$('ask').hidden=false;render()};
+
+/* ---------- downloads ---------- */
+function plainDownload(name,blob){if(window.claude)return false;try{const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);return true}catch(e){return false}}
+let dl=null;
+async function getDl(){
+  if(dl)return dl;
+  try{if(window.claude&&window.claude.use)dl=await window.claude.use('downloads')}catch(e){dl=null}
+  return dl;
+}
+function toast(t){const el=$('toast');el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2600)}
+const fname=ext=>`הכירו אותי - ${(A.name||'הדף שלי').replace(/[\\/:*?"<>|]/g,'')}.${ext}`;
+async function saveFile(ext,data){
+  const d=await getDl();
+  if(!d){if(plainDownload(fname(ext),data)){toast('הקובץ ירד ✓');return}toast('ההורדה לא זמינה כאן. לחצו לחיצה ארוכה על הדף כדי לשמור אותו כתמונה.');return}
+  try{await d.save({filename:fname(ext),data});toast('הקובץ נשמר ✓')}
+  catch(e){if(e&&e.code==='declined')return;if(e&&e.code==='rate_limited'){toast('רגע, חלון השמירה כבר פתוח');return}
+    toast('לא הצלחנו לשמור. לחצו לחיצה ארוכה על הדף כדי לשמור אותו כתמונה.')}
+}
+$('png').onclick=()=>cv.toBlob(b=>b&&saveFile('png',b),'image/png');
+$('pdf').onclick=()=>{
+  if(!window.jspdf){cv.toBlob(b=>b&&saveFile('png',b),'image/png');return}
+  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4',orientation:'portrait'});
+  doc.addImage(cv.toDataURL('image/jpeg',.93),'JPEG',0,0,210,297);
+  saveFile('pdf',doc.output('blob'));
+};
+
+render();
+})();
+</script>
+</body>
+</html>

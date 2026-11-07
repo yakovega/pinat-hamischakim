@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>מרוץ הכדורים – פינת המשחקים</title>
+<meta name="description" content="לכל שחקן מסך וכדור משלו: הכחול עם WASD והאדום עם החיצים. עוברים מכשולים, אוספים כוכבי טורבו, ומי שמגיע ראשון לסיום מנצח.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/balls.html">
+<meta property="og:title" content="מרוץ הכדורים – פינת המשחקים">
+<meta property="og:description" content="לכל שחקן מסך וכדור משלו: הכחול עם WASD והאדום עם החיצים. עוברים מכשולים, אוספים כוכבי טורבו, ומי שמגיע ראשון לסיום מנצח.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/balls.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: slim bar on top, the stage below split into two side-by-side player screens (blue/WASD on the left, red/arrows on the right) drawn on one canvas. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28;
+  --red:#ff5a3c; --blue:#3ec7ff; --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);display:flex;flex-direction:column;gap:8px;overflow:hidden;
+  padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));padding-block:10px}
+[hidden]{display:none!important}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+h1{font-family:var(--display);font-size:clamp(20px,4vw,30px);margin:0;color:var(--sun);white-space:nowrap}
+.homelink{background:var(--sun);color:#1F2A44;padding:7px 12px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;white-space:nowrap}
+.stage{position:relative;flex:1;min-height:0;touch-action:none;user-select:none;-webkit-user-select:none}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.overlay{position:absolute;inset:0;display:grid;place-items:center;padding:12px;background:#0b1020aa}
+.card{background:var(--paper);color:#1F2A44;border-radius:22px;padding:clamp(16px,4vw,26px);display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;width:min(100%,500px);max-height:100%;overflow:auto}
+.card h2{font-family:var(--display);font-size:clamp(28px,6vw,40px);margin:0;color:var(--orange)}
+.card p{margin:0;line-height:1.5}
+.how{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.how div{border-radius:14px;padding:10px;font-size:14px;line-height:1.7}
+.how .b{background:#dff1fb}.how .r{background:#ffe3dc}
+.how b{display:block;font-size:16px}
+kbd{background:#fff;border-radius:6px;padding:1px 6px;font:700 13px var(--body);border:1px solid #d8ccb4}
+.legend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;font-size:13px;font-weight:600;color:#4A5568}
+.label{font-size:13px;font-weight:600;color:#6b7280}
+.seg{display:flex;gap:4px;background:#e9e1d1;padding:4px;border-radius:12px;flex-wrap:wrap;justify-content:center}
+.seg button{border:0;background:transparent;border-radius:9px;padding:8px 12px;font:600 15px var(--body);cursor:pointer;color:#1F2A44}
+.seg button[aria-pressed="true"]{background:#1F2A44;color:var(--paper)}
+.big{font-family:var(--display);font-weight:700;font-size:24px;border:0;border-radius:99px;padding:12px 40px;background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 5px 0 #a85c12}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #a85c12}
+.ghost{border:2px solid #d8ccb4;background:transparent;color:#1F2A44;border-radius:99px;padding:8px 18px;font:600 15px var(--body);cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.toggles{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.tg{border:2px solid #d8ccb4;background:#fff;color:#1F2A44;border-radius:12px;padding:8px 12px;font:600 14px var(--body);cursor:pointer}
+.tg[aria-pressed="true"]{border-color:#1F2A44;background:#1F2A44;color:var(--paper)}
+.pause{position:absolute;top:8px;left:50%;transform:translateX(-50%);border:0;border-radius:10px;background:#1F2A44dd;color:var(--paper);font:600 14px var(--body);padding:8px 12px;cursor:pointer;z-index:2}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>מרוץ הכדורים</h1>
+  <a class="homelink" href="index.html">🏠 דף הבית</a>
+</div>
+
+<div class="stage" id="stage">
+  <canvas id="cv" aria-label="שני מסכים, אחד לכל שחקן"></canvas>
+  <button class="pause" id="pauseBtn" type="button" hidden>⏸</button>
+  <div class="overlay" id="ov">
+    <div class="card">
+      <h2 id="cardT">מרוץ הכדורים</h2>
+      <p id="cardP">לכל שחקן יש מסך וכדור משלו. מגלגלים את הכדור דרך המכשולים, ומי שמגיע ראשון לקו הסיום מנצח! כשנתקעים במכשול, הכדור נזרק קצת אחורה.</p>
+      <div class="how" dir="rtl">
+        <div class="b"><b>🔵 שחקן כחול (מסך שמאל)</b><kbd>W</kbd> מהר · <kbd>S</kbd> לאט<br><kbd>A</kbd> שמאלה · <kbd>D</kbd> ימינה</div>
+        <div class="r"><b>🔴 שחקן אדום (מסך ימין)</b><kbd>↑</kbd> מהר · <kbd>↓</kbd> לאט<br><kbd>←</kbd> שמאלה · <kbd>→</kbd> ימינה</div>
+      </div>
+      <div class="legend"><span>⭐ כוכב = טורבו</span><span>🟥 מכשול = אחורה</span><span>📱 בטלפון: גוררים באצבע במסך שלכם</span></div>
+      <span class="label">אורך המסלול</span>
+      <div class="seg" id="lenSeg" role="group" aria-label="אורך המסלול">
+        <button type="button" data-v="short" aria-pressed="false">קצר</button>
+        <button type="button" data-v="mid" aria-pressed="true">בינוני</button>
+        <button type="button" data-v="long" aria-pressed="false">ארוך</button>
+      </div>
+      <span class="label">כמה מכשולים?</span>
+      <div class="seg" id="diffSeg" role="group" aria-label="קושי">
+        <button type="button" data-v="easy" aria-pressed="false">🐢 מעט</button>
+        <button type="button" data-v="mid" aria-pressed="true">🐇 רגיל</button>
+        <button type="button" data-v="hard" aria-pressed="false">🔥 המון</button>
+      </div>
+      <button class="big" id="go" type="button">מתחילים!</button>
+      <button class="ghost" id="resume" type="button" hidden>להמשיך</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const stage=$('stage'),cv=$('cv'),g=cv.getContext('2d');
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const VW=400,VH=700,BALL_Y=560,R=16;
+const LENS={short:5000,mid:8000,long:12000};
+const DIFF={easy:[380,460],mid:[290,360],hard:[220,280]};
+let len='mid',diff='mid';
+try{len=localStorage.getItem('balls-len')||len;diff=localStorage.getItem('balls-diff')||diff}catch(e){}
+let FIN=LENS[len],course=[],running=false,paused=false,countdown=0,frame=0,t0=0,winner=-1,pausedAt=0;
+
+/* ---------- players: 0 = blue (WASD, left screen), 1 = red (arrows, right screen) ---------- */
+const P=[{name:'כחול',col:'#3ec7ff',dark:'#1a6f95',bg:'#14324a',keys:['KeyW','KeyS','KeyA','KeyD']},
+         {name:'אדום',col:'#ff5a3c',dark:'#a3311d',bg:'#4a1d1a',keys:['ArrowUp','ArrowDown','ArrowLeft','ArrowRight']}];
+function resetPlayers(){P.forEach(p=>Object.assign(p,{x:VW/2,s:0,v:3,stun:0,boost:0,got:new Set(),done:false,time:0,hits:0,touchX:null,trail:[],shake:0,kb:0,ghost:0}))}
+// no shaking or blinking at all: when a ball hits something it just glides back smoothly
+P.forEach(p=>{p.shakeOn=false});
+
+/* ---------- course (the same for both players) ---------- */
+function rng(seed){let s=seed;return()=>{s=(s*16807)%2147483647;return(s-1)/2147483646}}
+function buildCourse(){
+  const r=rng(1+Math.floor(Math.random()*1e6)),out=[];let y=600;const[a,b]=DIFF[diff];
+  const types=['gap','gap','mover','spinner','blocks','zigzag','gate'];
+  while(y<FIN-250){
+    const t=types[Math.floor(r()*types.length)];
+    if(t==='gap'){const w=110+r()*50;out.push({t,y,gx:30+r()*(VW-60-w),gw:w})}
+    if(t==='mover'){out.push({t,y,w:120+r()*60,sp:.02+r()*.025,ph:r()*6})}
+    if(t==='spinner'){out.push({t,y,cx:110+r()*180,len:140+r()*40,sp:(r()<.5?-1:1)*(.025+r()*.02),ph:r()*6})}
+    if(t==='blocks'){const n=3+Math.floor(r()*2),bl=[];for(let i=0;i<n;i++)bl.push({x:40+r()*(VW-80),dy:r()*120-60,s:28+r()*14});out.push({t,y,bl})}
+    if(t==='zigzag'){out.push({t,y,side:r()<.5?0:1})}
+    if(t==='gate'){out.push({t,y,sp:.03+r()*.02,ph:r()*6})}
+    if(r()<.55)out.push({t:'star',y:y+(a+b)/4,x:50+r()*(VW-100),id:out.length});
+    y+=a+r()*(b-a);
+  }
+  return out;
+}
+
+/* ---------- collision shapes for an obstacle at time f ---------- */
+function shapes(o,f){
+  // returns rects [x,y,w,h] in world coords (y = world y of rect center line) and segments
+  const H=26;
+  if(o.t==='gap')return{rects:[[0,o.y,o.gx,H],[o.gx+o.gw,o.y,VW-o.gx-o.gw,H]]};
+  if(o.t==='mover'){const cx=VW/2+Math.sin(f*o.sp+o.ph)*(VW/2-o.w/2-10);return{rects:[[cx-o.w/2,o.y,o.w,H]]}}
+  if(o.t==='blocks')return{rects:o.bl.map(b=>[b.x-b.s/2,o.y+b.dy,b.s,b.s])};
+  if(o.t==='zigzag'){const w=VW*.62;return{rects:o.side?[[VW-w,o.y,w,H],[0,o.y+150,w,H]]:[[0,o.y,w,H],[VW-w,o.y+150,w,H]]}}
+  if(o.t==='gate'){const open=(Math.sin(f*o.sp+o.ph)+1)/2,gw=40+open*120;return{rects:[[0,o.y,VW/2-gw/2,H],[VW/2+gw/2,o.y,VW/2-gw/2,H]]}}
+  if(o.t==='spinner'){const a=f*o.sp+o.ph,dx=Math.cos(a)*o.len/2,dy=Math.sin(a)*o.len/2;return{seg:[o.cx-dx,o.y-dy,o.cx+dx,o.y+dy],hub:[o.cx,o.y]}}
+  return{};
+}
+function hitRect(px,py,[x,y,w,h]){const cx=Math.max(x,Math.min(px,x+w)),cy=Math.max(y-h/2,Math.min(py,y+h/2));return Math.hypot(px-cx,py-cy)<R}
+function hitSeg(px,py,[x1,y1,x2,y2]){const dx=x2-x1,dy=y2-y1,l=dx*dx+dy*dy,t=Math.max(0,Math.min(1,((px-x1)*dx+(py-y1)*dy)/l));return Math.hypot(px-(x1+t*dx),py-(y1+t*dy))<R+6}
+
+/* ---------- input ---------- */
+const keys={};
+addEventListener('keydown',e=>{keys[e.code]=true;if(running&&P.some(p=>p.keys.includes(e.code)))e.preventDefault();if((e.code==='Escape'||e.code==='KeyP')&&running)pause()});
+addEventListener('keyup',e=>{keys[e.code]=false});
+addEventListener('blur',()=>{for(const k in keys)keys[k]=false;if(running)pause()});
+let VP=[];// viewports in css px
+const ptrOwner={};
+function vpAt(cx){const r=cv.getBoundingClientRect(),x=cx-r.left;return x<r.width/2?0:1}
+function toLocal(i,cx){const r=cv.getBoundingClientRect(),v=VP[i];return(cx-r.left-v.x)/v.s}
+stage.addEventListener('pointerdown',e=>{if(!running||e.target!==cv)return;const i=vpAt(e.clientX);ptrOwner[e.pointerId]=i;cv.setPointerCapture(e.pointerId);P[i].touchX=toLocal(i,e.clientX)});
+stage.addEventListener('pointermove',e=>{const i=ptrOwner[e.pointerId];if(i===undefined)return;P[i].touchX=toLocal(i,e.clientX)});
+const up=e=>{const i=ptrOwner[e.pointerId];if(i!==undefined){P[i].touchX=null;delete ptrOwner[e.pointerId]}};
+stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
+
+/* ---------- update ---------- */
+function step(){
+  frame++;
+  P.forEach((p,i)=>{
+    if(p.done){p.v*=.95;p.s+=p.v;return}
+    const k=p.keys;
+    let target=keys[k[0]]?5.6:keys[k[1]]?1.6:3.2;
+    if(p.boost>0){p.boost--;target=7.5}
+    if(p.stun>0){p.stun--;target=0}
+    p.v+=(target-p.v)*.08;
+    if(p.stun===0){
+      let dx=(keys[k[3]]?1:0)-(keys[k[2]]?1:0);
+      if(p.touchX!==null){const d=p.touchX-p.x;dx=Math.max(-1,Math.min(1,d/30))}
+      p.x+=dx*5.2;
+    }
+    p.x=Math.max(R,Math.min(VW-R,p.x));
+    p.s+=p.v;
+    if(p.kb>0){const d=p.shakeOn?Math.max(2,p.kb*.35):Math.max(1,p.kb*.12);p.s-=Math.min(d,p.kb);p.kb-=Math.min(d,p.kb)}
+    if(!still){p.trail.push({x:p.x,s:p.s});if(p.trail.length>8)p.trail.shift()}
+    // collisions
+    if(p.ghost>0&&p.stun===0)p.ghost--;
+    if(p.stun===0&&p.ghost===0)for(const o of course){
+      if(Math.abs(o.y-p.s)>220)continue;
+      if(o.t==='star'){if(!p.got.has(o.id)&&Math.hypot(o.x-p.x,o.y-p.s)<R+16){p.got.add(o.id);p.boost=120;sfx('star',i)}continue}
+      const sh=shapes(o,frame);let hit=false;
+      if(sh.rects)hit=sh.rects.some(rc=>hitRect(p.x,p.s,rc));
+      if(sh.seg)hit=hitSeg(p.x,p.s,sh.seg)||Math.hypot(p.x-sh.hub[0],p.s-sh.hub[1])<R+12;
+      if(hit){let bottom=o.y;if(sh.rects)bottom=Math.min(...sh.rects.map(([x,ry,w,h])=>ry-h/2));if(sh.seg)bottom=Math.min(sh.seg[1],sh.seg[3],o.y-o.len/2);
+        p.kb=Math.max(40,p.s-(bottom-R-30));p.stun=40;p.ghost=70;p.v=0;p.hits++;p.boost=0;if(p.shakeOn&&!still)p.shake=22;sfx('hit',i);break}
+    }
+    if(p.s>=FIN){p.done=true;p.time=performance.now()-t0;sfx('fin',i);if(winner<0){winner=i;setTimeout(finish,1600)}}
+  });
+}
+
+/* ---------- drawing ---------- */
+function layout(){
+  const w=stage.clientWidth,h=stage.clientHeight,d=Math.min(2,devicePixelRatio||1);
+  cv.width=w*d;cv.height=h*d;
+  const gap=10,vw=(w-gap)/2,s=Math.min(vw/VW,h/VH);
+  VP=[0,1].map(i=>({x:i*(vw+gap)+(vw-VW*s)/2,y:(h-VH*s)/2,s}));VP.dpr=d;
+}
+new ResizeObserver(layout).observe(stage);layout();
+function rr(x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+function drawView(i){
+  const p=P[i],v=VP[i],d=VP.dpr;
+  let ox=0,oy=0;if(p.shake>0){const a=p.shake/22*12;ox=(Math.random()*2-1)*a;oy=(Math.random()*2-1)*a;if(running&&!paused)p.shake--}
+  g.setTransform(v.s*d,0,0,v.s*d,(v.x+ox*v.s)*d,(v.y+oy*v.s)*d);
+  g.save();rr(0,0,VW,VH,18);g.clip();
+  g.fillStyle=p.bg;g.fillRect(0,0,VW,VH);
+  const sy=wy=>BALL_Y-(wy-p.s); // world y -> screen y
+  // moving floor stripes
+  g.fillStyle='#ffffff0d';for(let k=-1;k<12;k++){const y=((k*80+p.s)%160+160)%160+k*0;const yy=k*80+((p.s)%80);g.fillRect(0,yy,VW,40)}
+  // lane edges
+  g.fillStyle=p.col+'55';g.fillRect(0,0,6,VH);g.fillRect(VW-6,0,6,VH);
+  // finish line
+  const fy=sy(FIN);if(fy>-40&&fy<VH+40){const sq=20;for(let c=0;c<VW/sq;c++)for(let r=0;r<2;r++){g.fillStyle=(c+r)%2?'#111':'#fff';g.fillRect(c*sq,fy-sq+r*sq,sq,sq)}
+    g.fillStyle='#FFC94A';g.font='700 30px Fredoka, Rubik, sans-serif';g.textAlign='center';g.fillText('🏁 סיום',VW/2,fy-34)}
+  // obstacles
+  for(const o of course){
+    const y=sy(o.y);if(y<-260||y>VH+120)continue;
+    if(o.t==='star'){if(p.got.has(o.id))continue;const pulse=still?1:1+Math.sin(frame*.15)*.12;g.save();g.translate(o.x,y);g.scale(pulse,pulse);star(0,0,17,'#FFC94A');g.restore();continue}
+    const sh=shapes(o,frame);
+    if(sh.rects)sh.rects.forEach(([x,ry,w,h])=>{g.fillStyle='#ff4a6e';rr(x,sy(ry)-h/2,w,h,8);g.fill();g.fillStyle='#ffffff33';rr(x+3,sy(ry)-h/2+3,Math.max(0,w-6),6,3);g.fill()});
+    if(sh.seg){const[x1,y1,x2,y2]=sh.seg;g.strokeStyle='#ff4a6e';g.lineWidth=16;g.lineCap='round';g.beginPath();g.moveTo(x1,sy(y1));g.lineTo(x2,sy(y2));g.stroke();
+      g.fillStyle='#FFC94A';g.beginPath();g.arc(sh.hub[0],sy(sh.hub[1]),12,0,7);g.fill()}
+  }
+  // trail + ball
+  p.trail.forEach((t,k)=>{g.globalAlpha=k/p.trail.length*.3;g.fillStyle=p.boost?'#FFC94A':p.col;g.beginPath();g.arc(t.x,sy(t.s),R*(.5+k/p.trail.length*.5),0,7);g.fill()});g.globalAlpha=1;
+  const blink=p.shakeOn&&p.stun>0&&Math.floor(frame/4)%2;
+  if(!blink){
+    g.globalAlpha=p.ghost>0&&p.stun===0?.5:1;
+    if(p.boost){g.fillStyle='#FFC94A55';g.beginPath();g.arc(p.x,BALL_Y,R+10,0,7);g.fill()}
+    const gr=g.createRadialGradient(p.x-5,BALL_Y-6,3,p.x,BALL_Y,R);gr.addColorStop(0,'#fff');gr.addColorStop(.35,p.col);gr.addColorStop(1,p.dark);
+    g.fillStyle=gr;g.beginPath();g.arc(p.x,BALL_Y,R,0,7);g.fill();
+    g.globalAlpha=1;
+  }
+  if(p.stun>0){g.font='22px sans-serif';g.textAlign='center';g.fillText('💫',p.x,BALL_Y-28)}
+  // top bar: name + progress
+  g.fillStyle='#0008';g.fillRect(0,0,VW,46);
+  g.fillStyle=p.col;g.font='700 20px Rubik, sans-serif';g.textAlign='right';g.fillText((i===0?'🔵 ':'🔴 ')+p.name,VW-12,30);
+  const bx=14,bw=VW*.52,by=18;g.fillStyle='#ffffff22';rr(bx,by,bw,12,6);g.fill();
+  P.forEach((q,j)=>{const px=bx+Math.min(1,q.s/FIN)*bw;g.fillStyle=q.col;g.beginPath();g.arc(px,by+6,j===i?8:6,0,7);g.fill();if(j===i){g.strokeStyle='#fff';g.lineWidth=2;g.stroke()}});
+  g.font='14px sans-serif';g.textAlign='center';g.fillText('🏁',bx+bw+12,by+11);
+  if(p.done){g.fillStyle='#000a';g.fillRect(0,VH/2-60,VW,120);g.fillStyle=winner===i?'#FFC94A':'#fff';g.font='700 44px Fredoka, Rubik, sans-serif';g.textAlign='center';
+    g.fillText(winner===i?'🏆 ראשון!':'הגעת!',VW/2,VH/2+15)}
+  g.restore();
+  g.strokeStyle=p.col;g.lineWidth=4;rr(2,2,VW-4,VH-4,18);g.stroke();
+}
+function star(x,y,r,c){g.fillStyle=c;g.beginPath();for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,rad=k%2?r*.45:r;g.lineTo(x+Math.cos(a)*rad,y+Math.sin(a)*rad)}g.closePath();g.fill()}
+function draw(){
+  g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height);
+  drawView(0);drawView(1);
+  if(countdown>0){const n=Math.ceil(countdown/60),d=VP.dpr,w=stage.clientWidth,h=stage.clientHeight;
+    g.setTransform(d,0,0,d,0,0);g.font=`700 ${Math.min(w,h)*.22}px Fredoka, Rubik, sans-serif`;g.textAlign='center';g.textBaseline='middle';
+    g.lineWidth=10;g.strokeStyle='#141C30';const txt=n>3?'':n;g.strokeText(txt,w/2,h/2);g.fillStyle='#FFC94A';g.fillText(txt,w/2,h/2);g.textBaseline='alphabetic'}
+}
+
+/* ---------- loop ---------- */
+let acc=0,last=0;
+function loop(t){
+  const dt=Math.min(100,t-(last||t));last=t;acc+=dt;
+  while(acc>=16.67){acc-=16.67;
+    if(running&&!paused){
+      if(countdown>0){countdown--;if(countdown%60===0&&countdown>0)sfx('tick');if(countdown===0){t0=performance.now();sfx('go')}}
+      else step();
+    }
+  }
+  draw();requestAnimationFrame(loop);
+}
+
+/* ---------- menu ---------- */
+function seg(id,key,set){const el=$(id);const sync=()=>el.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===(key==='len'?len:diff)));
+  el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;set(b.dataset.v);try{localStorage.setItem('balls-'+key,b.dataset.v)}catch(e){};sync()});sync()}
+seg('lenSeg','len',v=>len=v);seg('diffSeg','diff',v=>diff=v);
+function start(){FIN=LENS[len];course=buildCourse();resetPlayers();winner=-1;frame=0;countdown=4*60;running=true;paused=false;audio();
+  $('ov').hidden=true;$('pauseBtn').hidden=false}
+$('go').onclick=start;
+function finish(){
+  running=false;$('pauseBtn').hidden=true;
+  const w=P[winner],l=P[1-winner],sec=ms=>(ms/1000).toFixed(1);
+  $('cardT').textContent=`${winner===0?'🔵':'🔴'} ה${w.name} ניצח! 🏆`;
+  $('cardP').textContent=`ה${w.name} הגיע ב־${sec(w.time)} שניות (${w.hits} התנגשויות). ה${l.name}: ${l.done?sec(l.time)+' שניות':'עוד בדרך'} (${l.hits} התנגשויות).`;
+  $('go').textContent='מרוץ חדש';$('resume').hidden=true;$('ov').hidden=false;$('go').focus({preventScroll:true});
+  [523,659,784,1046].forEach((f,k)=>tone(f,k*.12,.35));
+}
+function pause(){if(!running||paused)return;paused=true;pausedAt=performance.now();$('cardT').textContent='הפסקה';$('cardP').textContent='המרוץ עצר. אפשר להמשיך או להתחיל מרוץ חדש.';
+  $('go').textContent='מרוץ חדש';$('resume').hidden=false;$('ov').hidden=false;$('pauseBtn').hidden=true}
+$('pauseBtn').onclick=pause;
+$('resume').onclick=()=>{paused=false;t0+=performance.now()-pausedAt;$('ov').hidden=true;$('pauseBtn').hidden=false};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pause()});
+resetPlayers();course=buildCourse();
+requestAnimationFrame(loop);
+
+/* ---------- sound ---------- */
+let ac=null,lastHit=[0,0];
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}return ac}
+function tone(f,t,d,type='triangle',v=.1){const a=ac;if(!a)return;const o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+t;
+  o.type=type;o.frequency.value=f;gn.gain.setValueAtTime(.0001,s);gn.gain.exponentialRampToValueAtTime(v,s+.01);gn.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(gn).connect(a.destination);o.start(s);o.stop(s+d+.05)}
+function sfx(k,i){
+  if(k==='tick')tone(523,0,.15,'square',.06);
+  if(k==='go')tone(1046,0,.4,'square',.07);
+  if(k==='star'){tone(880,0,.1);tone(1320,.07,.18)}
+  if(k==='hit'){tone(i?140:110,0,.25,'sawtooth',.08)}
+  if(k==='fin')[784,988,1175].forEach((f,j)=>tone(f,j*.08,.2));
+}
+})();
+</script>
+</body>
+</html>

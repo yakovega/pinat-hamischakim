@@ -1,0 +1,351 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>מסע החשבון הגדול – פינת המשחקים</title>
+<meta name="description" content="6 שאלות מילוליות בחיבור, חיסור, כפל, חילוק וכסף. לוחצים על התשובה ומגלים אם צדקתם.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/math.html">
+<meta property="og:title" content="מסע החשבון הגדול – פינת המשחקים">
+<meta property="og:description" content="6 שאלות מילוליות בחיבור, חיסור, כפל, חילוק וכסף. לוחצים על התשובה ומגלים אם צדקתם.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/math.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&family=Rubik:wght@400..700&display=swap">
+<style>
+/* Layout: a single 16:9 classroom "board" that scales to the window; one slide visible at a time, all jumps happen inside the page. Deliberate single bright look for kids. */
+:root {
+  color-scheme: dark;
+  --ink: #1F2A44;
+  --paper: #FFF8EC;
+  --sky: #E8F3FF;
+  --orange: #F28C28;
+  --blue: #2B7DE9;
+  --sun: #FFC94A;
+  --teal: #1E9E8A;
+  --muted: #4A5568;
+  --white: #FFFFFF;
+  --display: 'Fredoka', 'Arial Rounded MT Bold', Arial, sans-serif;
+  --body: 'Rubik', Arial, sans-serif;
+}
+html, body { height: 100%; }
+body {
+  background: #141C30;
+  color: var(--ink);
+  font-family: var(--body);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px;
+  padding-block: 12px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  box-sizing: border-box;
+}
+.stage {
+  position: relative;
+  width: min(100%, calc((100vh - 90px) * 16 / 9));
+  aspect-ratio: 16 / 9;
+  max-width: 100%;
+  container-type: inline-size;
+  border-radius: 1.2cqw;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,.35);
+}
+.slide {
+  position: absolute; inset: 0;
+  direction: rtl;
+  padding: 5.5cqw 6.5cqw;
+  display: flex; flex-direction: column;
+  gap: 2cqw;
+  box-sizing: border-box;
+  animation: pop .35s ease;
+}
+@keyframes pop { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .slide { animation: none; } }
+
+.dark { background: var(--ink); color: var(--paper); }
+.cream { background: var(--paper); }
+.sky { background: var(--sky); }
+.orangebg { background: var(--orange); }
+
+h1, h2, h3 { margin: 0; font-family: var(--display); text-wrap: balance; }
+p { margin: 0; }
+button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; }
+button:focus-visible { outline: .35cqw solid var(--sun); outline-offset: .3cqw; }
+
+.pill {
+  align-self: flex-start;
+  font-weight: 600; font-size: 1.5cqw;
+  padding: .4cqw 1.5cqw; border-radius: 99px;
+}
+.cta {
+  font-family: var(--display); font-weight: 600; font-size: 2.6cqw;
+  padding: 1cqw 3cqw; border-radius: 99px;
+  transition: transform .15s;
+}
+.cta:hover { transform: scale(1.05); }
+
+/* cover */
+.cover { justify-content: center; align-items: flex-start; }
+.cover .eyebrow { color: var(--sun); font-weight: 600; font-size: 1.7cqw; }
+.cover h1 { font-size: 7.3cqw; line-height: 1.05; font-weight: 700; max-width: 55cqw; }
+.cover .lead { font-size: 2.1cqw; color: #D9DEEA; max-width: 52cqw; }
+.bubble {
+  position: absolute; border-radius: 50%;
+  display: grid; place-items: center;
+  font-family: var(--display); font-weight: 700;
+}
+
+/* menu */
+.menu h2 { font-size: 4.2cqw; }
+.grid { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.7cqw; }
+.card {
+  background: var(--white); border: .25cqw solid; border-radius: 1.7cqw;
+  padding: 1.6cqw 2cqw; text-align: right;
+  display: flex; flex-direction: column; justify-content: center; gap: .4cqw;
+  position: relative;
+  transition: transform .15s, box-shadow .15s;
+}
+.card:hover { transform: translateY(-.3cqw); box-shadow: 0 .6cqw 1.6cqw rgba(31,42,68,.15); }
+.card b { font-family: var(--display); font-size: 3cqw; }
+.card span { font-size: 1.7cqw; color: var(--muted); }
+.card .done {
+  position: absolute; top: 1cqw; left: 1cqw;
+  background: var(--teal); color: var(--paper);
+  font-size: 1.3cqw; font-weight: 600; padding: .2cqw 1cqw; border-radius: 99px;
+}
+
+/* question */
+.q { justify-content: space-between; }
+.q h2 { font-size: 3.3cqw; font-weight: 600; line-height: 1.3; max-width: 80cqw; }
+.q .hint { font-size: 1.7cqw; color: var(--muted); }
+.answers { display: flex; gap: 2cqw; }
+.ans {
+  flex: 1; background: var(--white); border: .25cqw solid; border-radius: 1.7cqw;
+  padding: 1.4cqw; display: flex; flex-direction: column; align-items: center; gap: .2cqw;
+  transition: transform .15s;
+}
+.ans:hover { transform: scale(1.04); }
+.ans small { font-size: 1.7cqw; color: var(--muted); }
+.ans strong { font-family: var(--display); font-size: 5cqw; font-weight: 700; line-height: 1.1; }
+.back {
+  align-self: flex-end; font-size: 1.4cqw; color: var(--muted);
+  text-decoration: underline; text-underline-offset: .3cqw;
+}
+
+/* feedback */
+.fb { justify-content: center; align-items: center; text-align: center; }
+.fb h1 { font-size: 8cqw; font-weight: 700; line-height: 1.05; }
+.fb p { font-size: 2.5cqw; max-width: 62cqw; }
+.fb .explain { font-size: 2cqw; opacity: .9; }
+.fb .row { display: flex; gap: 1.5cqw; flex-wrap: wrap; justify-content: center; }
+.star { position: absolute; font-size: 6cqw; line-height: 1; }
+
+/* controls under the board */
+.bar {
+  width: min(100%, calc((100vh - 90px) * 16 / 9));
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  color: #C9D2E6; font-size: 14px; direction: rtl;
+}
+.bar .nav { display: flex; gap: 8px; }
+.bar button {
+  background: #26314F; color: #FFF8EC; padding: 8px 14px; border-radius: 8px; font-size: 14px;
+}
+.bar button:hover { background: #33416A; }
+.bar button:focus-visible { outline: 2px solid var(--sun); outline-offset: 2px; }
+.homelink{background:#FFC94A;color:#1F2A44;padding:8px 14px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none}
+.homelink:focus-visible{outline:2px solid #FFF8EC;outline-offset:2px}
+.count { font-variant-numeric: tabular-nums; }
+
+.stage:fullscreen { width: 100vw; height: 100vh; aspect-ratio: auto; border-radius: 0; background: #141C30; }
+</style>
+
+<div class="stage" id="stage" aria-live="polite"></div>
+<div class="bar">
+  <span class="count" id="count"></span>
+  <div class="nav">
+    <a class="homelink" href="index.html">🏠 דף הבית</a>
+    <button id="home" type="button">תפריט</button>
+    <button id="prev" type="button">→ הקודם</button>
+    <button id="next" type="button">הבא ←</button>
+    <button id="fs" type="button">מסך מלא</button>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  { topic: 'חיבור', title: 'התפוחים של דני', color: 'var(--orange)', bg: 'cream', pillBg: 'var(--orange)', pillFg: 'var(--ink)',
+    text: 'לדני היו 8 תפוחים בסל. אמא נתנה לו עוד 5 תפוחים. כמה תפוחים יש לדני עכשיו?',
+    options: ['12', '13', '15'], correct: 1, explain: '8 + 5 = 13' },
+  { topic: 'חיסור', title: 'הציפורים על העץ', color: 'var(--blue)', bg: 'sky', pillBg: 'var(--blue)', pillFg: 'var(--paper)',
+    text: 'על העץ ישבו 15 ציפורים. 7 ציפורים עפו משם. כמה ציפורים נשארו על העץ?',
+    options: ['22', '9', '8'], correct: 2, explain: '15 − 7 = 8' },
+  { topic: 'כפל', title: 'קופסאות העפרונות', color: 'var(--teal)', bg: 'cream', pillBg: 'var(--teal)', pillFg: 'var(--paper)',
+    text: 'לנועה יש 3 קופסאות. בכל קופסה יש 4 עפרונות צבעוניים. כמה עפרונות יש לנועה בסך הכול?',
+    options: ['12', '7', '16'], correct: 0, explain: '3 × 4 = 12, כמו 4 + 4 + 4' },
+  { topic: 'חילוק', title: 'מחלקים סוכריות', color: 'var(--orange)', bg: 'sky', pillBg: 'var(--orange)', pillFg: 'var(--ink)',
+    text: 'המורה חילקה 20 סוכריות שווה בשווה בין 5 ילדים. כמה סוכריות קיבל כל ילד?',
+    options: ['15', '4', '5'], correct: 1, explain: '20 : 5 = 4, כי 5 × 4 = 20' },
+  { topic: 'כסף', title: 'קניות בחנות', color: 'var(--blue)', bg: 'cream', pillBg: 'var(--blue)', pillFg: 'var(--paper)',
+    text: 'מאיה קנתה מחברת ב-6 שקלים ועט ב-3 שקלים. היא שילמה בשטר של 10 שקלים. כמה עודף קיבלה?',
+    options: ['9 ₪', '3 ₪', '1 ₪'], correct: 2, explain: '6 + 3 = 9, ואז 10 − 9 = 1' },
+  { topic: 'אתגר', title: 'יוצאים לטיול', color: 'var(--teal)', bg: 'sky', pillBg: 'var(--teal)', pillFg: 'var(--paper)',
+    text: 'בכיתה יש 12 בנים ו-14 בנות. כל הכיתה יצאה לטיול ב-2 אוטובוסים, ובכל אוטובוס ישב אותו מספר ילדים. כמה ילדים ישבו בכל אוטובוס?',
+    options: ['13', '26', '14'], correct: 0, explain: '12 + 14 = 26, ואז 26 : 2 = 13' },
+];
+const LETTERS = ['א', 'ב', 'ג'];
+// Linear order used by the prev/next buttons: cover, menu, q1..q6
+const ORDER = ['cover', 'menu', 'q1', 'q2', 'q3', 'q4', 'q5', 'q6'];
+const solved = new Set();
+let view = 'cover';
+let lastQ = 0;
+
+const stage = document.getElementById('stage');
+const count = document.getElementById('count');
+
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+function cover() {
+  return `<section class="slide dark cover">
+    <div class="bubble" style="left:6.5cqw;top:7cqw;width:10.5cqw;height:10.5cqw;background:var(--orange);color:var(--ink);font-size:6.5cqw">+</div>
+    <div class="bubble" style="left:20cqw;top:16cqw;width:8.5cqw;height:8.5cqw;background:var(--blue);color:var(--paper);font-size:5cqw">×</div>
+    <div class="bubble" style="left:9cqw;top:29cqw;width:9.5cqw;height:9.5cqw;background:var(--sun);color:var(--ink);font-size:6cqw">÷</div>
+    <div class="bubble" style="left:27cqw;top:37cqw;width:7.5cqw;height:7.5cqw;background:var(--teal);color:var(--paper);font-size:5cqw">−</div>
+    <p class="eyebrow">משחק שאלות בחשבון</p>
+    <h1>מסע החשבון הגדול</h1>
+    <p class="lead">פותרים שאלות מילוליות, לוחצים על התשובה ומגלים אם צדקתם</p>
+    <button class="cta" style="background:var(--orange);color:var(--ink)" data-go="menu">יוצאים לדרך!</button>
+  </section>`;
+}
+
+function menu() {
+  const cards = QUESTIONS.map((q, i) => `
+    <button class="card" style="border-color:${q.color}" data-go="q${i + 1}">
+      ${solved.has(i) ? '<em class="done">✓ נפתר</em>' : ''}
+      <b>שאלה ${i + 1}</b>
+      <span>${esc(q.topic)} · ${esc(q.title)}</span>
+    </button>`).join('');
+  const all = solved.size === QUESTIONS.length
+    ? `<p style="font-size:1.8cqw;font-weight:600;color:var(--teal)">פתרתם את כל השאלות. כל הכבוד!</p>`
+    : `<p style="font-size:1.7cqw;color:var(--muted)">נפתרו ${solved.size} מתוך ${QUESTIONS.length}</p>`;
+  return `<section class="slide sky menu">
+    <span class="pill" style="background:var(--orange);color:var(--ink)">תפריט</span>
+    <h2>בחרו שאלה</h2>
+    <div class="grid">${cards}</div>
+    ${all}
+  </section>`;
+}
+
+function question(i) {
+  const q = QUESTIONS[i];
+  const border = q.bg === 'cream' ? 'var(--blue)' : 'var(--orange)';
+  const opts = q.options.map((o, k) => `
+    <button class="ans" style="border-color:${border}" data-answer="${k}" aria-label="תשובה ${LETTERS[k]}: ${esc(o)}">
+      <small>${LETTERS[k]}</small><strong>${esc(o)}</strong>
+    </button>`).join('');
+  return `<section class="slide ${q.bg} q">
+    <div style="display:flex;flex-direction:column;gap:1.4cqw">
+      <span class="pill" style="background:${q.pillBg};color:${q.pillFg}">שאלה ${i + 1} · ${esc(q.topic)}</span>
+      <h2>${esc(q.text)}</h2>
+    </div>
+    <p class="hint">לחצו על התשובה הנכונה:</p>
+    <div class="answers">${opts}</div>
+    <button class="back" data-go="menu">חזרה לתפריט</button>
+  </section>`;
+}
+
+function correct() {
+  const q = QUESTIONS[lastQ];
+  const isLast = lastQ === QUESTIONS.length - 1;
+  return `<section class="slide dark fb">
+    <span class="star" style="left:9cqw;top:9cqw;color:var(--sun)">★</span>
+    <span class="star" style="right:9cqw;top:12cqw;color:var(--orange);font-size:5cqw">★</span>
+    <span class="star" style="left:14cqw;bottom:9cqw;color:var(--blue);font-size:4cqw">★</span>
+    <span class="star" style="right:12cqw;bottom:8cqw;color:var(--sun);font-size:7cqw">★</span>
+    <h1 style="color:var(--sun)">כל הכבוד!</h1>
+    <p>זו התשובה הנכונה. אתם אלופי חשבון!</p>
+    <p class="explain" dir="rtl">${esc(q.explain)}</p>
+    <div class="row">
+      ${isLast ? '' : `<button class="cta" style="background:var(--orange);color:var(--ink)" data-go="q${lastQ + 2}">לשאלה הבאה</button>`}
+      <button class="cta" style="background:#33416A;color:var(--paper)" data-go="menu">לתפריט</button>
+    </div>
+  </section>`;
+}
+
+function retry() {
+  return `<section class="slide orangebg fb">
+    <h1>אופס, כמעט!</h1>
+    <p>זו לא התשובה הנכונה. קראו שוב את השאלה, חשבו לאט ונסו שוב.</p>
+    <div class="row">
+      <button class="cta" style="background:var(--ink);color:var(--paper)" data-go="q${lastQ + 1}">נסו שוב</button>
+      <button class="cta" style="background:var(--paper);color:var(--ink)" data-go="menu">לתפריט</button>
+    </div>
+  </section>`;
+}
+
+function render() {
+  let html;
+  if (view === 'cover') html = cover();
+  else if (view === 'menu') html = menu();
+  else if (view === 'correct') html = correct();
+  else if (view === 'retry') html = retry();
+  else { const i = Number(view.slice(1)) - 1; lastQ = i; html = question(i); }
+  stage.innerHTML = html;
+  const pos = ORDER.indexOf(view);
+  count.textContent = view.startsWith('q') ? `שאלה ${lastQ + 1} מתוך ${QUESTIONS.length}`
+    : view === 'menu' ? `נפתרו ${solved.size} מתוך ${QUESTIONS.length}` : '';
+  document.getElementById('prev').disabled = pos <= 0;
+  const first = stage.querySelector('button');
+  if (first && document.activeElement && document.activeElement !== document.body) first.focus({ preventScroll: true });
+}
+
+function go(v) {
+  view = v;
+  if (['cover', 'menu', 'q1', 'q2', 'q3', 'q4', 'q5', 'q6'].includes(v)) {
+    try { history.replaceState(null, '', '#' + v); } catch (e) {}
+  }
+  render();
+}
+
+stage.addEventListener('click', e => {
+  const t = e.target.closest('button');
+  if (!t) return;
+  if (t.dataset.go) return go(t.dataset.go);
+  if (t.dataset.answer !== undefined) {
+    const ok = Number(t.dataset.answer) === QUESTIONS[lastQ].correct;
+    if (ok) solved.add(lastQ);
+    go(ok ? 'correct' : 'retry');
+  }
+});
+
+function step(d) {
+  let pos = ORDER.indexOf(view);
+  if (pos < 0) pos = ORDER.indexOf('q' + (lastQ + 1));
+  const n = Math.min(ORDER.length - 1, Math.max(0, pos + d));
+  go(ORDER[n]);
+}
+document.getElementById('prev').onclick = () => step(-1);
+document.getElementById('next').onclick = () => step(1);
+document.getElementById('home').onclick = () => go('menu');
+document.getElementById('fs').onclick = () => {
+  try {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else stage.requestFullscreen().catch(() => {});
+  } catch (e) {}
+};
+// RTL presentation: left arrow = forward
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft' || e.key === 'PageDown') step(1);
+  if (e.key === 'ArrowRight' || e.key === 'PageUp') step(-1);
+});
+
+function fromHash() {
+  const h = location.hash.slice(1);
+  go(ORDER.includes(h) ? h : 'cover');
+}
+window.addEventListener('hashchange', () => {
+  const h = location.hash.slice(1);
+  if (ORDER.includes(h) && h !== view) { view = h; render(); }
+});
+fromHash();
+</script>
+
+</body></html>

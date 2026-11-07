@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>אלוף התרגילים – פינת המשחקים</title>
+<meta name="description" content="כל פעם תרגיל חדש ואקראי. בוחרים רמה, סוגי תרגילים ושעון, ובסוף מקבלים ציון.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/drill.html">
+<meta property="og:title" content="אלוף התרגילים – פינת המשחקים">
+<meta property="og:description" content="כל פעם תרגיל חדש ואקראי. בוחרים רמה, סוגי תרגילים ושעון, ובסוף מקבלים ציון.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/drill.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: one centered "chalk card" that switches between setup, play and score screens. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28; --blue:#2B7DE9;
+  --teal:#1E9E8A; --red:#ff5a3c; --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);min-height:100vh;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px}
+[hidden]{display:none!important}
+main{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:clamp(28px,5vw,40px);margin:0;color:var(--sun)}
+.homelink{background:var(--sun);color:#1F2A44;padding:8px 14px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px}
+.card{background:var(--card);border-radius:22px;padding:clamp(18px,4vw,30px);display:flex;flex-direction:column;gap:18px}
+h2{font-family:var(--display);font-size:24px;margin:0}
+.group{display:flex;flex-direction:column;gap:8px}
+.group>span{font-weight:600;color:var(--muted);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:12px;padding:10px 16px;font:600 16px var(--body);cursor:pointer;min-width:56px}
+.chip[aria-pressed="true"]{background:var(--sun);border-color:var(--sun);color:#1F2A44}
+.chip .sub{display:block;font-size:12px;font-weight:400;opacity:.8}
+.big{font-family:var(--display);font-weight:700;font-size:24px;border:0;border-radius:99px;padding:14px 40px;background:var(--orange);color:#1F2A44;
+  cursor:pointer;box-shadow:0 6px 0 #a85c12;align-self:center}
+.big:active{transform:translateY(4px);box-shadow:0 2px 0 #a85c12}
+.big:disabled{opacity:.5;cursor:default}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.warn{color:var(--red);font-size:14px;margin:0;text-align:center}
+/* play */
+.status{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.progress{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--teal);transition:width .3s}
+.timer{height:6px;background:var(--line);border-radius:99px;overflow:hidden}
+.timer i{display:block;height:100%;width:100%;background:var(--sun)}
+.q{font-family:var(--display);font-weight:700;font-size:clamp(48px,13vw,96px);text-align:center;direction:ltr;line-height:1.1;font-variant-numeric:tabular-nums;padding-block:10px}
+.answer{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.answer input{width:min(100%,220px);font:700 40px var(--display);text-align:center;border-radius:14px;border:3px solid var(--line);background:var(--paper);color:#1F2A44;padding:8px;direction:ltr}
+.answer input::-webkit-outer-spin-button,.answer input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.answer input{-moz-appearance:textfield}
+.answer .big{font-size:22px;padding:12px 28px}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:320px;margin:0 auto;width:100%;direction:ltr}
+.pad button{font:700 24px var(--display);border:0;border-radius:12px;padding:12px 0;background:var(--line);color:var(--paper);cursor:pointer}
+.pad button:active{background:#46578a}
+@media (hover:hover) and (pointer:fine){.pad{display:none}}
+.fb{min-height:64px;display:grid;place-items:center;text-align:center}
+.fb b{font-family:var(--display);font-size:clamp(28px,6vw,40px)}
+.fb .good{color:var(--sun);animation:pop .4s cubic-bezier(.2,1.6,.4,1)}
+.fb .bad{color:var(--red)}
+.fb small{display:block;color:var(--muted);font-size:16px;margin-top:2px}
+.streak{color:var(--orange)}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.shake{animation:shake .35s}
+/* score */
+.score{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.grade{font-family:var(--display);font-weight:700;font-size:clamp(72px,18vw,120px);line-height:1;color:var(--sun);font-variant-numeric:tabular-nums}
+.stars{font-size:40px;letter-spacing:6px}
+.score p{margin:0;font-size:18px}
+.stats{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.stat{background:var(--line);border-radius:12px;padding:8px 14px;font-size:14px;font-variant-numeric:tabular-nums}
+.stat b{display:block;font-family:var(--display);font-size:22px}
+.review{display:flex;flex-direction:column;gap:6px;max-height:240px;overflow:auto}
+.review div{display:flex;justify-content:space-between;gap:10px;background:#26314F;border-radius:10px;padding:8px 12px;font-variant-numeric:tabular-nums}
+.review .x{color:var(--red)}.review .v{color:var(--teal)}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.ghost{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:99px;padding:12px 24px;font:600 16px var(--body);cursor:pointer}
+.best{color:var(--muted);font-size:14px}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:6;width:100%;height:100%}
+@media (prefers-reduced-motion:reduce){.fb .good,.shake{animation:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <h1>אלוף התרגילים</h1>
+    <a class="homelink" href="index.html">🏠 דף הבית</a>
+  </div>
+
+  <!-- setup -->
+  <section class="card" id="setup">
+    <h2>בוחרים איך לשחק</h2>
+    <div class="group"><span>רמה</span>
+      <div class="chips" data-name="level">
+        <button class="chip" type="button" data-v="1" aria-pressed="true">קל<span class="sub">מספרים עד 10</span></button>
+        <button class="chip" type="button" data-v="2" aria-pressed="false">בינוני<span class="sub">עד 20, לוח הכפל</span></button>
+        <button class="chip" type="button" data-v="3" aria-pressed="false">קשה<span class="sub">עד 100</span></button>
+        <button class="chip" type="button" data-v="4" aria-pressed="false">אלופים<span class="sub">עד 1000</span></button>
+      </div>
+    </div>
+    <div class="group"><span>סוגי תרגילים (אפשר כמה)</span>
+      <div class="chips" data-name="ops" data-multi>
+        <button class="chip" type="button" data-v="+" aria-pressed="true">+ חיבור</button>
+        <button class="chip" type="button" data-v="-" aria-pressed="true">− חיסור</button>
+        <button class="chip" type="button" data-v="*" aria-pressed="false">× כפל</button>
+        <button class="chip" type="button" data-v="/" aria-pressed="false">÷ חילוק</button>
+      </div>
+    </div>
+    <div class="group"><span>כמה תרגילים</span>
+      <div class="chips" data-name="count">
+        <button class="chip" type="button" data-v="5" aria-pressed="false">5</button>
+        <button class="chip" type="button" data-v="10" aria-pressed="true">10</button>
+        <button class="chip" type="button" data-v="20" aria-pressed="false">20</button>
+      </div>
+    </div>
+    <div class="group"><span>זמן לכל תרגיל</span>
+      <div class="chips" data-name="time">
+        <button class="chip" type="button" data-v="0" aria-pressed="true">בלי שעון</button>
+        <button class="chip" type="button" data-v="20" aria-pressed="false">20 שניות</button>
+        <button class="chip" type="button" data-v="10" aria-pressed="false">10 שניות</button>
+      </div>
+    </div>
+    <p class="warn" id="warn" hidden>בחרו לפחות סוג תרגיל אחד</p>
+    <button class="big" id="start" type="button">מתחילים!</button>
+    <p class="best" id="best" style="text-align:center;margin:0"></p>
+  </section>
+
+  <!-- play -->
+  <section class="card" id="play" hidden>
+    <div class="status"><span id="qnum"></span><span class="streak" id="streak"></span><span id="pts"></span></div>
+    <div class="progress"><i id="prog"></i></div>
+    <div class="timer" id="timerBar" hidden><i id="timer"></i></div>
+    <div class="q" id="q" aria-live="polite"></div>
+    <form class="answer" id="form" autocomplete="off">
+      <input id="ans" type="text" inputmode="numeric" pattern="-?[0-9]*" aria-label="התשובה שלך" placeholder="?">
+      <button class="big" type="submit" id="check">בדיקה</button>
+    </form>
+    <div class="pad" id="pad">
+      <button type="button">1</button><button type="button">2</button><button type="button">3</button>
+      <button type="button">4</button><button type="button">5</button><button type="button">6</button>
+      <button type="button">7</button><button type="button">8</button><button type="button">9</button>
+      <button type="button" data-k="back">⌫</button><button type="button">0</button><button type="button" data-k="ok" style="background:var(--orange);color:#1F2A44">✓</button>
+    </div>
+    <div class="fb" id="fb" aria-live="assertive"></div>
+    <button class="ghost" id="quit" type="button" style="align-self:center">לסיים ולראות ציון</button>
+  </section>
+
+  <!-- score -->
+  <section class="card" id="end" hidden>
+    <div class="score">
+      <span style="color:var(--muted);font-weight:600">הציון שלך</span>
+      <div class="grade" id="grade">0</div>
+      <div class="stars" id="stars"></div>
+      <p id="msg"></p>
+      <div class="stats" id="stats"></div>
+    </div>
+    <div class="group"><span>התרגילים שלך</span><div class="review" id="review"></div></div>
+    <div class="row">
+      <button class="big" id="again" type="button">עוד פעם!</button>
+      <button class="ghost" id="settings" type="button">לשנות רמה</button>
+    </div>
+  </section>
+</main>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const PRAISE=['כל הכבוד!','מעולה!','אלוף!','יפה מאוד!','בדיוק!','וואו, מצוין!','גאון!','נכון!'];
+const OOPS=['כמעט!','לא נורא!','ננסה בפעם הבאה!'];
+const SYM={'+':'+','-':'−','*':'×','/':'÷'};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+
+// ----- setup chips -----
+const cfg={level:'1',ops:['+','-'],count:'10',time:'0'};
+try{const s=JSON.parse(localStorage.getItem('drill-cfg')||'null');if(s)Object.assign(cfg,s)}catch(e){}
+document.querySelectorAll('.chips').forEach(g=>{
+  const name=g.dataset.name,multi=g.hasAttribute('data-multi');
+  const sync=()=>g.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',multi?cfg[name].includes(c.dataset.v):cfg[name]===c.dataset.v));
+  sync();
+  g.addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;
+    if(multi){const i=cfg[name].indexOf(c.dataset.v);i>=0?cfg[name].splice(i,1):cfg[name].push(c.dataset.v)}else cfg[name]=c.dataset.v;
+    sync();$('warn').hidden=cfg.ops.length>0;$('start').disabled=!cfg.ops.length;
+    try{localStorage.setItem('drill-cfg',JSON.stringify(cfg))}catch(e){}
+    showBest();
+  });
+});
+const LEVELNAME={1:'קל',2:'בינוני',3:'קשה',4:'אלופים'};
+function bestKey(){return 'drill-best-'+cfg.level}
+function showBest(){let b=null;try{b=localStorage.getItem(bestKey())}catch(e){}
+  $('best').textContent=b?`השיא שלך ברמה ${LEVELNAME[cfg.level]}: ${b}`:''}
+showBest();
+
+// ----- exercise generator -----
+function make(op,lv){
+  let a,b;
+  const max={1:10,2:20,3:100,4:1000}[lv];
+  if(op==='+'){a=rnd(lv===1?0:1,max);b=rnd(lv===1?0:1,max-(lv===1?a:0));if(lv===1&&a+b>10)b=10-a}
+  if(op==='-'){a=rnd(1,max);b=rnd(0,a)}
+  if(op==='*'){const m={1:[0,5,0,5],2:[1,10,1,10],3:[2,12,2,12],4:[11,30,2,12]}[lv];a=rnd(m[0],m[1]);b=rnd(m[2],m[3])}
+  if(op==='/'){const m={1:[1,5,1,5],2:[1,10,1,10],3:[2,12,2,12],4:[2,25,2,15]}[lv];b=rnd(m[0],m[1]);const q=rnd(m[2],m[3]);a=b*q}
+  const ans={'+':a+b,'-':a-b,'*':a*b,'/':a/b}[op];
+  return{a,b,op,ans,text:`${a} ${SYM[op]} ${b}`};
+}
+
+// ----- game -----
+let qs=[],i=0,correct=0,streak=0,best=0,points=0,timerT=null,tStart=0,locked=false,t0=0;
+function show(id){['setup','play','end'].forEach(s=>$(s).hidden=s!==id)}
+function start(){
+  if(!cfg.ops.length)return;
+  const n=+cfg.count;qs=[];let lastText='';
+  for(let k=0;k<n;k++){let e;do{e=make(cfg.ops[rnd(0,cfg.ops.length-1)],+cfg.level)}while(e.text===lastText);lastText=e.text;qs.push(e)}
+  i=0;correct=0;streak=0;best=0;points=0;t0=performance.now();
+  show('play');next();
+}
+function next(){
+  locked=false;const e=qs[i];
+  $('q').textContent=e.text+' = ?';
+  $('qnum').textContent=`תרגיל ${i+1} מתוך ${qs.length}`;
+  $('prog').style.width=(i/qs.length*100)+'%';
+  $('pts').textContent=`⭐ ${points}`;
+  $('streak').textContent=streak>=3?`🔥 ${streak} ברצף`:'';
+  $('fb').innerHTML='';$('ans').value='';
+  if(matchMedia('(hover:hover) and (pointer:fine)').matches)$('ans').focus({preventScroll:true});
+  startTimer();
+}
+function startTimer(){
+  clearInterval(timerT);const T=+cfg.time;$('timerBar').hidden=!T;if(!T)return;
+  tStart=performance.now();
+  timerT=setInterval(()=>{const left=1-(performance.now()-tStart)/(T*1000);
+    $('timer').style.width=Math.max(0,left*100)+'%';
+    $('timer').style.background=left<.3?'var(--red)':'var(--sun)';
+    if(left<=0){clearInterval(timerT);answer(null)}},50);
+}
+function answer(val){
+  if(locked)return;
+  const e=qs[i];
+  if(val!==null&&val.trim()===''){$('ans').classList.remove('shake');void $('ans').offsetWidth;$('ans').classList.add('shake');return}
+  locked=true;clearInterval(timerT);
+  e.given=val===null?null:Number(val);
+  e.ok=e.given===e.ans;
+  if(e.ok){
+    correct++;streak++;best=Math.max(best,streak);
+    const bonus=cfg.time!=='0'?Math.max(0,Math.round((1-(performance.now()-tStart)/(+cfg.time*1000))*5)):0;
+    points+=10+bonus+(streak>=3?5:0);
+    const extra=streak>=3?`<small>🔥 ${streak} תשובות נכונות ברצף!</small>`:'';
+    $('fb').innerHTML=`<div><b class="good">${PRAISE[rnd(0,PRAISE.length-1)]} 🎉</b>${extra}</div>`;
+    ding(true);if(streak%5===0)confetti(60);
+  }else{
+    streak=0;
+    $('fb').innerHTML=`<div><b class="bad">${val===null?'נגמר הזמן!':OOPS[rnd(0,OOPS.length-1)]}</b><small>התשובה הנכונה: ${e.text} = ${e.ans}</small></div>`;
+    ding(false);
+  }
+  $('pts').textContent=`⭐ ${points}`;
+  setTimeout(()=>{i++;if(i>=qs.length)finish();else next()},e.ok?900:2000);
+}
+function finish(){
+  clearInterval(timerT);
+  const done=qs.slice(0,i),n=done.length||1,grade=Math.round(correct/n*100);
+  $('prog').style.width='100%';
+  $('grade').textContent=grade;
+  const st=grade>=90?3:grade>=70?2:grade>=50?1:0;
+  $('stars').textContent='★'.repeat(st)+'☆'.repeat(3-st);
+  $('msg').textContent=grade===100?'מושלם! פתרת הכול נכון. אתה אלוף התרגילים!':grade>=90?'מצוין! כמעט מושלם.':grade>=70?'יפה מאוד! עוד קצת אימון ואתה בטופ.':grade>=50?'לא רע! כדאי לנסות שוב.':'אל תוותר! כל ניסיון מחזק אותך.';
+  const secs=Math.round((performance.now()-t0)/1000);
+  $('stats').innerHTML=`<div class="stat"><b>${correct}/${done.length}</b>נכונות</div><div class="stat"><b>${points}</b>נקודות</div><div class="stat"><b>${best}</b>רצף הכי ארוך</div><div class="stat"><b>${secs}</b>שניות</div>`;
+  $('review').innerHTML=done.map(e=>`<div><span dir="ltr">${e.text} = ${e.ans}</span><span class="${e.ok?'v':'x'}">${e.ok?'✓ נכון':(e.given===null?'✗ נגמר הזמן':'✗ ענית '+e.given)}</span></div>`).join('');
+  let prev=0;try{prev=+localStorage.getItem(bestKey())||0;if(grade>prev)localStorage.setItem(bestKey(),grade)}catch(e){}
+  if(grade>prev&&prev>0)$('msg').textContent+=' שיא חדש! 🏆';
+  show('end');showBest();
+  if(grade>=70){confetti(200);fanfare()}
+}
+$('start').onclick=start;
+$('again').onclick=start;
+$('settings').onclick=()=>show('setup');
+$('quit').onclick=()=>{locked=true;finish()};
+$('form').addEventListener('submit',e=>{e.preventDefault();answer($('ans').value)});
+$('ans').addEventListener('input',()=>{$('ans').value=$('ans').value.replace(/[^0-9-]/g,'')});
+$('pad').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||locked)return;
+  const inp=$('ans');
+  if(b.dataset.k==='back')inp.value=inp.value.slice(0,-1);
+  else if(b.dataset.k==='ok')answer(inp.value);
+  else if(inp.value.length<6)inp.value+=b.textContent;});
+
+// ----- sound -----
+let ac=null;
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}return ac}
+function tone(f,t,d,type='triangle',v=.15){const a=audio();if(!a)return;const o=a.createOscillator(),g=a.createGain(),s=a.currentTime+t;
+  o.type=type;o.frequency.value=f;g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(v,s+.02);g.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(g).connect(a.destination);o.start(s);o.stop(s+d+.05)}
+function ding(ok){if(ok){tone(660,0,.15);tone(990,.1,.25)}else{tone(220,0,.3,'sawtooth',.06)}}
+function fanfare(){[523,659,784,1046].forEach((f,k)=>tone(f,k*.12,.35))}
+
+// ----- confetti -----
+const cc=$('confetti'),cx=cc.getContext('2d'),COLORS=['#F28C28','#2B7DE9','#FFC94A','#1E9E8A','#ff5a3c','#3ec7ff'];
+function confetti(n){
+  if(still)return;cc.width=innerWidth;cc.height=innerHeight;
+  const parts=Array.from({length:n},()=>({x:innerWidth/2,y:innerHeight/3,vx:(Math.random()-.5)*16,vy:-Math.random()*14-4,
+    r:Math.random()*6+4,c:COLORS[rnd(0,COLORS.length-1)],a:Math.random()*6,va:(Math.random()-.5)*.3}));
+  let f=0;(function tick(){cx.clearRect(0,0,cc.width,cc.height);
+    parts.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillStyle=p.c;cx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);cx.restore()});
+    if(++f<140)requestAnimationFrame(tick);else cx.clearRect(0,0,cc.width,cc.height)})();
+}
+})();
+</script>
+</body>
+</html>

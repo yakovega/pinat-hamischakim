@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ציפור מעופפת – פינת המשחקים</title>
+<meta name="description" content="לוחצים כדי שהציפור תעוף, ועוברים בין הצינורות בלי לגעת בהם. קל להבין, קשה להפסיק! מדליות ושיא אישי.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/flappy.html">
+<meta property="og:title" content="ציפור מעופפת – פינת המשחקים">
+<meta property="og:description" content="לוחצים כדי שהציפור תעוף, ועוברים בין הצינורות בלי לגעת בהם. קל להבין, קשה להפסיק! מדליות ושיא אישי.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/flappy.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: slim bar on top, a tall sky window centered below and sized to the screen, menu cards float over it. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28;
+  --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);display:flex;flex-direction:column;gap:8px;overflow:hidden;
+  padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));padding-block:10px}
+[hidden]{display:none!important}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+h1{font-family:var(--display);font-size:clamp(20px,4vw,30px);margin:0;color:var(--sun);white-space:nowrap}
+.homelink{background:var(--sun);color:#1F2A44;padding:7px 12px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;white-space:nowrap}
+.pill{background:var(--card);border-radius:12px;padding:5px 12px;display:flex;align-items:baseline;gap:6px;font-variant-numeric:tabular-nums}
+.pill span{color:var(--muted);font-size:12px;font-weight:600}.pill b{font-family:var(--display);font-size:20px}
+.stage{position:relative;flex:1;min-height:0;touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.overlay{position:absolute;inset:0;display:grid;place-items:center;padding:12px;background:#0b102088;cursor:default}
+.card{background:var(--paper);color:#1F2A44;border-radius:22px;padding:clamp(16px,4vw,26px);display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;width:min(100%,420px);max-height:100%;overflow:auto}
+.card h2{font-family:var(--display);font-size:clamp(28px,6vw,40px);margin:0;color:var(--orange)}
+.card p{margin:0;line-height:1.5}
+.label{font-size:13px;font-weight:600;color:#6b7280}
+.seg{display:flex;gap:4px;background:#e9e1d1;padding:4px;border-radius:12px;flex-wrap:wrap;justify-content:center}
+.seg button{border:0;background:transparent;border-radius:9px;padding:8px 11px;font:600 14px var(--body);cursor:pointer;color:#1F2A44}
+.seg button[aria-pressed="true"]{background:#1F2A44;color:var(--paper)}
+.big{font-family:var(--display);font-weight:700;font-size:24px;border:0;border-radius:99px;padding:12px 40px;background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 5px 0 #a85c12}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #a85c12}
+button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.final{font-family:var(--display);font-weight:700;font-size:clamp(56px,14vw,84px);line-height:1;color:var(--orange);font-variant-numeric:tabular-nums}
+.medal{font-size:54px;line-height:1}
+.small{font-size:13px;color:#4A5568;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>ציפור מעופפת</h1>
+  <div class="pill"><span>שיא</span><b id="best">0</b></div>
+  <a class="homelink" href="index.html">🏠 דף הבית</a>
+</div>
+
+<div class="stage" id="stage">
+  <canvas id="cv" aria-label="השמיים של הציפור"></canvas>
+  <div class="overlay" id="ov">
+    <div class="card">
+      <h2 id="cardT">ציפור מעופפת 🐤</h2>
+      <div id="result" hidden style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div class="medal" id="medal"></div>
+        <div class="final" id="final">0</div>
+        <p id="resP"></p>
+      </div>
+      <p id="cardP">לוחצים כדי שהציפור תעוף למעלה, ועוברים בין הצינורות בלי לגעת בהם. כל צינור שעוברים שווה נקודה!</p>
+      <span class="small">🖱️ קליק · ⌨️ רווח או חץ למעלה · 📱 נגיעה במסך</span>
+      <span class="label">רמה</span>
+      <div class="seg" id="levels" role="group" aria-label="רמה">
+        <button type="button" data-v="veryeasy">🐣 ממש קל</button>
+        <button type="button" data-v="easy">🐥 קל</button>
+        <button type="button" data-v="mid">🐇 בינוני</button>
+        <button type="button" data-v="hard">🦊 קשה</button>
+        <button type="button" data-v="champ">🏆 אלופים</button>
+      </div>
+      <button class="big" id="go" type="button">🐤 לעוף!</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const stage=$('stage'),cv=$('cv'),g=cv.getContext('2d');
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const W=400,H=700,GROUND=H-70,BX=110,BR=15,PW=64;
+// gap = opening between pipes, sp = speed, dist = space between pipes, grav/flap = how the bird moves
+const LV={
+  veryeasy:{gap:230,sp:1.7,dist:270,grav:.32,flap:-6.4,move:0},
+  easy:    {gap:195,sp:2.1,dist:250,grav:.36,flap:-6.8,move:0},
+  mid:     {gap:165,sp:2.5,dist:235,grav:.4, flap:-7.2,move:0},
+  hard:    {gap:145,sp:3,  dist:220,grav:.44,flap:-7.5,move:.6},
+  champ:   {gap:130,sp:3.5,dist:210,grav:.47,flap:-7.8,move:1.1}
+};
+let level='mid';try{level=localStorage.getItem('flappy-level')||level}catch(e){}
+let state='menu',bird,pipes,score,frame,scroll,clouds=[],hills=[],newBest=false;
+const L=()=>LV[level]||LV.mid;
+const bestKey=()=>'flappy-best-'+level;
+function getBest(){try{return +localStorage.getItem(bestKey())||0}catch(e){return 0}}
+function showBest(){$('best').textContent=getBest()}
+for(let i=0;i<5;i++)clouds.push({x:Math.random()*W,y:40+Math.random()*260,s:.6+Math.random()*.8});
+for(let i=0;i<6;i++)hills.push({x:i*90,r:60+Math.random()*50});
+
+function reset(){bird={y:H*.42,vy:0,rot:0,wing:0};pipes=[];score=0;frame=0;scroll=0;newBest=false;
+  for(let i=0;i<3;i++)addPipe(W+120+i*L().dist)}
+function addPipe(x){const gap=L().gap,min=80,max=GROUND-80-gap;pipes.push({x,top:min+Math.random()*(max-min),gap,passed:false,ph:Math.random()*6})}
+function flap(){
+  if(state==='ready'){state='play'}
+  if(state!=='play')return;
+  bird.vy=L().flap;bird.wing=10;sfx('flap');
+}
+function die(){if(state!=='play')return;state='dead';sfx('hit');
+  const prev=getBest();if(score>prev){try{localStorage.setItem(bestKey(),score)}catch(e){};newBest=prev>0||score>0}
+  setTimeout(showResult,900)}
+function showResult(){
+  showBest();
+  const m=score>=40?'🏆':score>=25?'🥇':score>=12?'🥈':score>=5?'🥉':'';
+  $('cardT').textContent=newBest&&score>0?'שיא חדש! 🎉':'אוי, נפלת!';
+  $('medal').textContent=m;$('final').textContent=score;
+  $('resP').textContent=`${score===1?'צינור אחד':score+' צינורות'} · השיא שלך ברמה הזאת: ${getBest()}`+(m?'':' · ב־5 צינורות מקבלים מדליה!');
+  $('result').hidden=false;$('cardP').hidden=true;$('go').textContent='🐤 עוד פעם';$('ov').hidden=false;$('go').focus({preventScroll:true});
+  if(newBest&&score>0)[523,659,784,1046].forEach((f,k)=>tone(f,k*.12,.35));
+}
+
+/* ---------- input ---------- */
+stage.addEventListener('pointerdown',e=>{if(e.target!==cv)return;e.preventDefault();flap()});
+addEventListener('keydown',e=>{if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW'){if(state==='play'||state==='ready'){e.preventDefault();flap()}}});
+
+/* ---------- update ---------- */
+function step(){
+  frame++;
+  if(state==='ready'){bird.y=H*.42+Math.sin(frame*.08)*8;bird.rot=0;return}
+  if(state==='play'||state==='dead'){
+    bird.vy+=L().grav;bird.y+=bird.vy;bird.rot=Math.max(-.5,Math.min(1.3,bird.vy*.08));if(bird.wing>0)bird.wing--;
+    if(bird.y>GROUND-BR){bird.y=GROUND-BR;bird.vy=0;if(state==='play')die()}
+    if(bird.y<BR){bird.y=BR;bird.vy=0}
+  }
+  if(state!=='play')return;
+  const sp=L().sp;scroll+=sp;
+  pipes.forEach(p=>{p.x-=sp;if(L().move)p.top+=Math.sin(frame*.03+p.ph)*L().move*.5;
+    p.top=Math.max(60,Math.min(GROUND-60-p.gap,p.top));
+    if(!p.passed&&p.x+PW<BX-BR){p.passed=true;score++;sfx('point')}
+    // hit test (a little forgiving)
+    const r=BR-3;if(BX+r>p.x&&BX-r<p.x+PW&&(bird.y-r<p.top||bird.y+r>p.top+p.gap))die()});
+  if(pipes[0].x<-PW-10){pipes.shift();addPipe(pipes[pipes.length-1].x+L().dist)}
+}
+
+/* ---------- draw ---------- */
+let V={s:1,ox:0,oy:0,d:1};
+function resize(){const w=stage.clientWidth,h=stage.clientHeight,d=Math.min(2,devicePixelRatio||1);cv.width=w*d;cv.height=h*d;
+  V={s:Math.min(w/W,h/H),d};V.ox=(w-W*V.s)/2;V.oy=(h-H*V.s)/2}
+new ResizeObserver(resize).observe(stage);resize();
+function rr(x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+function pipe(x,y,h,top){
+  const gr=g.createLinearGradient(x,0,x+PW,0);gr.addColorStop(0,'#2e9e57');gr.addColorStop(.35,'#5fd38a');gr.addColorStop(1,'#1f7a42');
+  g.fillStyle=gr;g.fillRect(x+4,y,PW-8,h);
+  const lipY=top?y+h-26:y;g.fillStyle=gr;rr(x,lipY,PW,26,6);g.fill();g.strokeStyle='#17623a';g.lineWidth=3;g.stroke();
+  g.strokeStyle='#17623a';g.beginPath();g.moveTo(x+4,top?y:y+26);g.lineTo(x+4,top?lipY:y+h);g.moveTo(x+PW-4,top?y:y+26);g.lineTo(x+PW-4,top?lipY:y+h);g.stroke();
+}
+function drawBird(){
+  g.save();g.translate(BX,bird.y);g.rotate(bird.rot);
+  // body
+  g.fillStyle='#FFC94A';g.beginPath();g.ellipse(0,0,BR+3,BR,0,0,7);g.fill();g.strokeStyle='#c98a12';g.lineWidth=2.5;g.stroke();
+  // belly
+  g.fillStyle='#fff3c8';g.beginPath();g.ellipse(-2,5,10,7,0,0,7);g.fill();
+  // wing flaps
+  const wy=bird.wing>5?-8:bird.wing>0?0:4;
+  g.fillStyle='#F28C28';g.beginPath();g.ellipse(-6,wy,9,5.5,-.3,0,7);g.fill();
+  // eye
+  g.fillStyle='#fff';g.beginPath();g.arc(8,-6,6,0,7);g.fill();g.fillStyle='#1F2A44';g.beginPath();g.arc(10,-6,3,0,7);g.fill();
+  // beak
+  g.fillStyle='#ff5a3c';g.beginPath();g.moveTo(14,-1);g.lineTo(25,3);g.lineTo(14,7);g.closePath();g.fill();
+  // little tuft
+  g.strokeStyle='#c98a12';g.lineWidth=2.5;g.beginPath();g.moveTo(-2,-BR);g.quadraticCurveTo(2,-BR-9,6,-BR-4);g.stroke();
+  g.restore();
+}
+function draw(){
+  g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height);
+  g.setTransform(V.s*V.d,0,0,V.s*V.d,V.ox*V.d,V.oy*V.d);
+  g.save();rr(0,0,W,H,18);g.clip();
+  const sky=g.createLinearGradient(0,0,0,GROUND);sky.addColorStop(0,'#7fd0ff');sky.addColorStop(1,'#d7f1ff');g.fillStyle=sky;g.fillRect(0,0,W,GROUND);
+  // sun
+  g.fillStyle='#fff3b0';g.beginPath();g.arc(W-70,90,34,0,7);g.fill();
+  // clouds (slow)
+  clouds.forEach(c=>{const x=((c.x-scroll*.15*c.s)%(W+120)+W+120)%(W+120)-60;g.fillStyle='#ffffffdd';
+    [[0,0,22],[20,-8,26],[44,0,20]].forEach(([dx,dy,r])=>{g.beginPath();g.arc(x+dx,c.y+dy,r*c.s,0,7);g.fill()})});
+  // hills
+  hills.forEach((h,i)=>{const x=((h.x-scroll*.35)%(W+180)+W+180)%(W+180)-90;g.fillStyle=i%2?'#8fd19e':'#7cc48d';g.beginPath();g.arc(x,GROUND,h.r,Math.PI,0);g.fill()});
+  // pipes
+  pipes.forEach(p=>{pipe(p.x,0,p.top,true);pipe(p.x,p.top+p.gap,GROUND-p.top-p.gap,false)});
+  // ground
+  g.fillStyle='#d9b77a';g.fillRect(0,GROUND,W,H-GROUND);g.fillStyle='#6cc070';g.fillRect(0,GROUND,W,14);
+  g.fillStyle='#5aab5f';for(let x=-(scroll%28);x<W;x+=28){g.beginPath();g.moveTo(x,GROUND+14);g.lineTo(x+14,GROUND+14);g.lineTo(x+7,GROUND+4);g.closePath();g.fill()}
+  drawBird();
+  // score
+  if(state==='play'||state==='dead'){g.font='700 64px Fredoka, Rubik, sans-serif';g.textAlign='center';g.textBaseline='top';g.lineWidth=8;g.strokeStyle='#1F2A44';g.strokeText(score,W/2,40);g.fillStyle='#fff';g.fillText(score,W/2,40)}
+  if(state==='ready'){g.font='700 30px Fredoka, Rubik, sans-serif';g.textAlign='center';g.textBaseline='middle';g.lineWidth=6;g.strokeStyle='#1F2A44';
+    g.strokeText('לחצו כדי לעוף! 👆',W/2,H*.62);g.fillStyle='#FFC94A';g.fillText('לחצו כדי לעוף! 👆',W/2,H*.62)}
+  g.restore();g.textBaseline='alphabetic';
+}
+let acc=0,last=0;
+function loop(t){const dt=Math.min(100,t-(last||t));last=t;acc+=dt;while(acc>=16.67){acc-=16.67;step()}draw();requestAnimationFrame(loop)}
+
+/* ---------- menu ---------- */
+(function(){const el=$('levels');const sync=()=>{el.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===level));showBest()};
+  el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;level=b.dataset.v;try{localStorage.setItem('flappy-level',level)}catch(e){};sync()});sync()})();
+$('go').onclick=()=>{audio();reset();state='ready';$('ov').hidden=true;$('go').blur()};
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='play'){state='dead';setTimeout(showResult,100)}});
+reset();state='menu';requestAnimationFrame(loop);
+
+/* ---------- sound ---------- */
+let ac=null;
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}return ac}
+function tone(f,t,d,type='triangle',v=.1){const a=ac;if(!a)return;const o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+t;
+  o.type=type;o.frequency.value=f;gn.gain.setValueAtTime(.0001,s);gn.gain.exponentialRampToValueAtTime(v,s+.01);gn.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(gn).connect(a.destination);o.start(s);o.stop(s+d+.05)}
+function sfx(k){
+  if(k==='flap'){const a=ac;if(!a)return;const o=a.createOscillator(),gn=a.createGain(),s=a.currentTime;o.type='sine';o.frequency.setValueAtTime(380,s);o.frequency.exponentialRampToValueAtTime(700,s+.08);
+    gn.gain.setValueAtTime(.06,s);gn.gain.exponentialRampToValueAtTime(.001,s+.1);o.connect(gn).connect(a.destination);o.start(s);o.stop(s+.12)}
+  if(k==='point'){tone(880,0,.08);tone(1320,.07,.14)}
+  if(k==='hit'){tone(200,0,.2,'sawtooth',.08);tone(120,.15,.35,'triangle',.08)}
+}
+})();
+</script>
+</body>
+</html>

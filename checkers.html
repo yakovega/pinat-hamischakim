@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>דמקה – פינת המשחקים</title>
+<meta name="description" content="זזים באלכסון ואוכלים בקפיצה, גם כמה ברצף. מי שמגיע לצד השני הופך למלך 👑. יש חוקים פשוטים ומלאים.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/checkers.html">
+<meta property="og:title" content="דמקה – פינת המשחקים">
+<meta property="og:description" content="זזים באלכסון ואוכלים בקפיצה, גם כמה ברצף. מי שמגיע לצד השני הופך למלך 👑. יש חוקים פשוטים ומלאים.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/checkers.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: turn/score strip on top, the wooden board centered and sized to the screen, options and buttons under it. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28;
+  --red:#ff5a3c; --blue:#3ec7ff; --muted:#C9D2E6; --line:#33416A;
+  --light:#ecd6ad; --dark:#8a5a3b; --frame:#5b3a24;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{min-height:100%}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);display:flex;flex-direction:column;align-items:center;gap:10px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px}
+[hidden]{display:none!important}
+.top{width:100%;max-width:640px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:clamp(26px,5vw,38px);margin:0;color:var(--sun)}
+.homelink{background:var(--sun);color:#1F2A44;padding:8px 14px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px}
+.bar{width:100%;max-width:640px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pl{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:14px;padding:7px 12px;border:3px solid transparent;transition:border-color .2s;min-width:0}
+.pl.turn{border-color:var(--sun)}
+.pl .disc{width:24px;height:24px;border-radius:50%;flex:none;box-shadow:inset 0 -3px 0 #0004}
+.pl .name{font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl .cnt{font-family:var(--display);font-size:20px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.msg{font-weight:800;font-size:15px;text-align:center;min-height:20px;flex:1}
+.msg.must{color:var(--orange)}
+.boardWrap{width:min(100%,640px,calc(100vh - 260px));aspect-ratio:1;max-width:100%;background:var(--frame);border-radius:14px;padding:2.2%;box-shadow:0 10px 0 #3b2516,0 20px 40px #0008;position:relative}
+.board{display:grid;grid-template-columns:repeat(8,1fr);width:100%;height:100%;border-radius:6px;overflow:hidden;direction:ltr}
+.sq{position:relative;border:0;padding:0;background:var(--light);display:grid;place-items:center}
+.sq.d{background:var(--dark);cursor:pointer}
+.sq.last{box-shadow:inset 0 0 0 999px #ffd54a33}
+.sq.dest::after{content:"";width:30%;height:30%;border-radius:50%;background:#FFC94Acc;box-shadow:0 0 0 4px #FFC94A44}
+.sq.dest.capdest::after{background:#ff5a3c;box-shadow:0 0 0 4px #ff5a3c55}
+.sq:focus-visible{outline:3px solid var(--sun);outline-offset:-3px;z-index:2}
+.pc{position:absolute;width:78%;height:78%;border-radius:50%;display:grid;place-items:center;font-size:clamp(14px,4vw,28px);transition:transform .15s,box-shadow .15s;pointer-events:none}
+.pc.p0{background:radial-gradient(circle at 35% 30%,#ff9a85,#ff5a3c 45%,#b93a22);box-shadow:inset 0 -5px 0 #8e2a17,0 4px 6px #0006}
+.pc.p1{background:radial-gradient(circle at 35% 30%,#9fe4ff,#3ec7ff 45%,#1b7fa8);box-shadow:inset 0 -5px 0 #135f80,0 4px 6px #0006}
+.pc::before{content:"";position:absolute;inset:16%;border-radius:50%;border:2px solid #ffffff55}
+.pc.can{box-shadow:inset 0 -5px 0 #0004,0 0 0 3px #FFC94A,0 4px 6px #0006}
+.pc.sel{transform:scale(1.12);box-shadow:inset 0 -5px 0 #0004,0 0 0 4px #FFF8EC,0 8px 14px #0008}
+.pc.taken{opacity:.35}
+.pc .crown{position:relative;z-index:1;filter:drop-shadow(0 1px 1px #0008)}
+.controls{width:100%;max-width:640px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.seg{display:flex;gap:4px;background:var(--card);padding:4px;border-radius:12px;flex-wrap:wrap;justify-content:center}
+.seg button{border:0;background:transparent;color:var(--paper);border-radius:9px;padding:7px 11px;font:600 14px var(--body);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--sun);color:#1F2A44}
+.btn{border:0;border-radius:10px;padding:9px 14px;font:600 14px var(--body);cursor:pointer;background:var(--card);color:var(--paper)}
+.btn:hover{background:#2b3a5e}.btn:disabled{opacity:.45;cursor:default}
+button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.rules{width:100%;max-width:640px;color:var(--muted);font-size:13px;line-height:1.6;text-align:center;margin:0}
+.over{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.over .box{pointer-events:auto;background:var(--paper);color:#1F2A44;border-radius:20px;padding:20px 28px;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center;box-shadow:0 12px 40px #000a;animation:pop .4s cubic-bezier(.2,1.6,.4,1);max-width:90%}
+.over b{font-family:var(--display);font-size:clamp(28px,6vw,42px);line-height:1.1}
+.over .btn{background:#1F2A44}
+@keyframes pop{from{transform:scale(.5);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.pc{transition:none}.over .box{animation:none}}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:6;width:100%;height:100%}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>דמקה</h1>
+  <a class="homelink" href="index.html">🏠 דף הבית</a>
+</div>
+<div class="bar">
+  <div class="pl" id="pl1"><span class="disc" style="background:var(--blue)"></span><span class="name" id="n1">כחול</span><span class="cnt" id="c1">12</span></div>
+  <div class="msg" id="msg" aria-live="polite"></div>
+  <div class="pl" id="pl0"><span class="cnt" id="c0">12</span><span class="name" id="n0">אדום</span><span class="disc" style="background:var(--red)"></span></div>
+</div>
+<div class="boardWrap">
+  <div class="board" id="board" role="grid" aria-label="לוח דמקה"></div>
+  <div class="over" id="over" hidden><div class="box" role="dialog"><b id="overT"></b><span id="overP"></span><button class="btn" id="again" type="button">משחק חדש</button></div></div>
+</div>
+<div class="controls">
+  <div class="seg" id="modeSeg" role="group" aria-label="נגד מי">
+    <button type="button" data-v="2p">👫 שני שחקנים</button>
+    <button type="button" data-v="easy">🤖 מחשב קל</button>
+    <button type="button" data-v="hard">🤖 מחשב חכם</button>
+  </div>
+  <div class="seg" id="rulesSeg" role="group" aria-label="חוקים">
+    <button type="button" data-v="simple">חוקים פשוטים</button>
+    <button type="button" data-v="full">חוקים מלאים</button>
+  </div>
+</div>
+<div class="controls">
+  <button class="btn" id="undo" type="button">↩ בטל מהלך</button>
+  <button class="btn" id="newg" type="button">משחק חדש</button>
+</div>
+<p class="rules" id="rulesTxt"></p>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+// player 0 = red, bottom, moves up (r-1). player 1 = blue, top, moves down.
+let mode='2p',rules='simple';
+try{mode=localStorage.getItem('ck-mode')||mode;rules=localStorage.getItem('ck-rules')||rules}catch(e){}
+let board,turn,hist=[],sel=null,path=[],legal=[],over=false,busy=false,lastMove=[];
+const DIRS=[[-1,-1],[-1,1],[1,-1],[1,1]];
+const inB=(r,c)=>r>=0&&r<8&&c>=0&&c<8;
+const clone=b=>b.map(row=>row.map(p=>p?{...p}:null));
+
+function initial(){const b=Array.from({length:8},()=>Array(8).fill(null));
+  for(let r=0;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2===1){if(r<3)b[r][c]={p:1,k:false};else if(r>4)b[r][c]={p:0,k:false}}return b}
+
+/* ---------- move generation: each move is a full sequence {path:[[r,c],...], caps:[[r,c],...]} ---------- */
+function captures(b,r,c,piece,taken,pathSoFar,out){
+  const full=rules==='full',fwd=piece.p===0?-1:1;let found=false;
+  for(const[dr,dc]of DIRS){
+    if(!piece.k){
+      if(!full&&dr!==fwd)continue; // simple rules: men only capture forward
+      const mr=r+dr,mc=c+dc,lr=r+2*dr,lc=c+2*dc;
+      if(!inB(lr,lc))continue;const m=b[mr][mc];
+      if(m&&m.p!==piece.p&&!taken.some(([a,bb])=>a===mr&&bb===mc)&&!b[lr][lc]){
+        found=true;const t2=taken.concat([[mr,mc]]),p2=pathSoFar.concat([[lr,lc]]);
+        // keep jumping if possible
+        if(!captures(b,lr,lc,piece,t2,p2,out))out.push({path:p2,caps:t2});
+      }
+    }else if(full){ // flying king
+      let rr=r+dr,cc=c+dc;
+      while(inB(rr,cc)&&!b[rr][cc]){rr+=dr;cc+=dc}
+      if(!inB(rr,cc))continue;const m=b[rr][cc];
+      if(!m||m.p===piece.p||taken.some(([a,bb])=>a===rr&&bb===cc))continue;
+      let lr=rr+dr,lc=cc+dc;
+      while(inB(lr,lc)&&!b[lr][lc]){
+        found=true;const t2=taken.concat([[rr,cc]]),p2=pathSoFar.concat([[lr,lc]]);
+        if(!captures(b,lr,lc,piece,t2,p2,out))out.push({path:p2,caps:t2});
+        lr+=dr;lc+=dc;
+      }
+    }else{ // king, simple rules: one jump in any direction
+      const mr=r+dr,mc=c+dc,lr=r+2*dr,lc=c+2*dc;
+      if(!inB(lr,lc))continue;const m=b[mr][mc];
+      if(m&&m.p!==piece.p&&!taken.some(([a,bb])=>a===mr&&bb===mc)&&!b[lr][lc]){
+        found=true;const t2=taken.concat([[mr,mc]]),p2=pathSoFar.concat([[lr,lc]]);
+        if(!captures(b,lr,lc,piece,t2,p2,out))out.push({path:p2,caps:t2});
+      }
+    }
+  }
+  return found;
+}
+function pieceMoves(b,r,c){
+  const piece=b[r][c];if(!piece)return{caps:[],steps:[]};
+  // the moving piece's start square counts as empty while it jumps
+  const b2=clone(b);b2[r][c]=null;const caps=[];captures(b2,r,c,piece,[],[[r,c]],caps);
+  const steps=[];const fwd=piece.p===0?-1:1;
+  for(const[dr,dc]of DIRS){
+    if(!piece.k&&dr!==fwd)continue;
+    let rr=r+dr,cc=c+dc;
+    while(inB(rr,cc)&&!b[rr][cc]){steps.push({path:[[r,c],[rr,cc]],caps:[]});if(!(piece.k&&rules==='full'))break;rr+=dr;cc+=dc}
+  }
+  return{caps,steps};
+}
+function allMoves(b,p){
+  let caps=[],steps=[];
+  for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(b[r][c]&&b[r][c].p===p){const m=pieceMoves(b,r,c);caps=caps.concat(m.caps);steps=steps.concat(m.steps)}
+  if(rules==='full'&&caps.length)return caps; // capture is mandatory
+  return caps.concat(steps);
+}
+function apply(b,m){
+  const nb=clone(b),[sr,sc]=m.path[0],[er,ec]=m.path[m.path.length-1],piece=nb[sr][sc];
+  nb[sr][sc]=null;m.caps.forEach(([r,c])=>nb[r][c]=null);nb[er][ec]=piece;
+  if(!piece.k&&((piece.p===0&&er===0)||(piece.p===1&&er===7)))piece.k=true;
+  return nb;
+}
+const count=(b,p)=>b.flat().filter(x=>x&&x.p===p).length;
+
+/* ---------- UI ---------- */
+const boardEl=$('board'),cells=[];
+for(let r=0;r<8;r++)for(let c=0;c<8;c++){const b=document.createElement('button');b.type='button';b.className='sq'+((r+c)%2?' d':'');
+  if((r+c)%2){b.onclick=()=>tap(r,c);b.setAttribute('aria-label',`משבצת ${'abcdefgh'[c]}${8-r}`)}else b.tabIndex=-1;
+  boardEl.appendChild(b);cells.push(b)}
+const cellEl=(r,c)=>cells[r*8+c];
+const isAI=p=>mode!=='2p'&&p===1;
+function newGame(){board=initial();turn=0;hist=[];sel=null;path=[];over=false;busy=false;lastMove=[];$('over').hidden=true;refresh()}
+function refresh(){legal=over?[]:allMoves(board,turn);render();hud()}
+function render(){
+  const matching=sel?legal.filter(m=>prefixMatch(m)):[];
+  const nextSq=new Map();matching.forEach(m=>{if(m.path.length>path.length){const[r,c]=m.path[path.length];nextSq.set(r+','+c,m.caps.length>0)}});
+  const canMove=new Set(legal.map(m=>m.path[0].join(',')));
+  const takenNow=new Set();if(sel){matching.forEach(m=>{const k=path.length-1;m.caps.slice(0,k).forEach(([r,c])=>takenNow.add(r+','+c))})}
+  for(let r=0;r<8;r++)for(let c=0;c<8;c++){const el=cellEl(r,c),k=r+','+c;el.innerHTML='';
+    el.classList.toggle('dest',nextSq.has(k));el.classList.toggle('capdest',!!nextSq.get(k));
+    el.classList.toggle('last',lastMove.some(([a,b])=>a===r&&b===c));
+    let piece=board[r][c];
+    // while jumping, show the jumping piece where it currently stands
+    if(sel&&path.length>1){if(r===sel[0]&&c===sel[1])piece=null;const[pr,pc]=path[path.length-1];if(r===pr&&c===pc)piece=board[sel[0]][sel[1]]}
+    if(piece){const d=document.createElement('div');d.className='pc p'+piece.p;
+      if(!sel&&!over&&!isAI(turn)&&piece.p===turn&&canMove.has(k))d.classList.add('can');
+      if(sel&&path.length&&r===path[path.length-1][0]&&c===path[path.length-1][1])d.classList.add('sel');
+      if(takenNow.has(k))d.classList.add('taken');
+      if(piece.k)d.innerHTML='<span class="crown">👑</span>';el.appendChild(d)}
+  }
+}
+function prefixMatch(m){if(m.path.length<path.length)return false;for(let i=0;i<path.length;i++)if(m.path[i][0]!==path[i][0]||m.path[i][1]!==path[i][1])return false;return true}
+function hud(){
+  $('c0').textContent=count(board,0);$('c1').textContent=count(board,1);
+  $('pl0').classList.toggle('turn',!over&&turn===0);$('pl1').classList.toggle('turn',!over&&turn===1);
+  $('n0').textContent=mode==='2p'?'אדום':'אתה';$('n1').textContent=mode==='2p'?'כחול':(mode==='easy'?'מחשב קל':'מחשב חכם');
+  const mustCap=legal.length&&legal[0].caps.length&&rules==='full';
+  const m=$('msg');m.classList.toggle('must',!!mustCap&&!isAI(turn));
+  m.textContent=over?'':isAI(turn)?'המחשב חושב...':sel&&path.length>1?'אפשר להמשיך לאכול! 🔥':mustCap?'חובה לאכול!':(turn===0?'תור האדום':'תור הכחול');
+  $('undo').disabled=!hist.length||busy;
+  document.querySelectorAll('#modeSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===mode));
+  document.querySelectorAll('#rulesSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===rules));
+  $('rulesTxt').textContent=rules==='full'
+    ?'חוקים מלאים: חובה לאכול כשאפשר, רגילים אוכלים גם אחורה, והמלך 👑 "מעופף" – זז כמה משבצות שרוצה באלכסון.'
+    :'חוקים פשוטים: זזים באלכסון קדימה, אוכלים בקפיצה מעל כלי של היריב (אפשר כמה ברצף). מי שמגיע לצד השני הופך למלך 👑 שזז גם אחורה.';
+}
+function tap(r,c){
+  if(over||busy||isAI(turn))return;
+  const piece=board[r][c];
+  // pick / switch piece (not in the middle of a multi-jump)
+  if(piece&&piece.p===turn&&path.length<=1){
+    if(legal.some(m=>m.path[0][0]===r&&m.path[0][1]===c)){sel=[r,c];path=[[r,c]];click();render();hud()}
+    else{bad();flashMsg(rules==='full'&&legal[0]&&legal[0].caps.length?'חובה לאכול עם כלי אחר!':'לכלי הזה אין לאן לזוז')}
+    return;
+  }
+  if(!sel)return;
+  const cand=legal.filter(m=>prefixMatch(m)&&m.path.length>path.length&&m.path[path.length][0]===r&&m.path[path.length][1]===c);
+  if(!cand.length){if(path.length<=1){sel=null;path=[];render();hud()}return}
+  path.push([r,c]);
+  const done=cand.find(m=>m.path.length===path.length);
+  const more=cand.some(m=>m.path.length>path.length);
+  if(cand.some(m=>m.caps.length))chomp();else click();
+  if(done&&!more){commit(done)}else{render();hud()}
+}
+function flashMsg(t){const m=$('msg');m.textContent=t;clearTimeout(flashMsg.t);flashMsg.t=setTimeout(hud,1400)}
+function commit(m){
+  hist.push({board:clone(board),turn,lastMove:lastMove.slice()});
+  const wasKing=board[m.path[0][0]][m.path[0][1]].k;
+  board=apply(board,m);lastMove=[m.path[0],m.path[m.path.length-1]];
+  const[er,ec]=m.path[m.path.length-1];if(!wasKing&&board[er][ec].k)crown();
+  sel=null;path=[];turn=1-turn;refresh();
+  if(!legal.length){endGame(1-turn);return}
+  if(isAI(turn)){busy=true;hud();setTimeout(aiMove,550)}
+}
+function endGame(w){
+  over=true;render();hud();
+  const name=mode==='2p'?(w===0?'האדום':'הכחול')+' ניצח! 🎉':(w===0?'ניצחת! 🎉':'המחשב ניצח');
+  $('overT').textContent=name;$('overP').textContent=count(board,1-w)?'ליריב לא נשארו מהלכים':'כל הכלים של היריב נאכלו';
+  setTimeout(()=>{$('over').hidden=false;$('again').focus({preventScroll:true})},500);
+  if(!(mode!=='2p'&&w===1)){confetti();[523,659,784,1046].forEach((f,k)=>tone(f,k*.12,.35))}
+}
+
+/* ---------- computer ---------- */
+function evalB(b){let s=0;for(let r=0;r<8;r++)for(let c=0;c<8;c++){const p=b[r][c];if(!p)continue;
+  let v=p.k?3.2:1+(p.p===1?r:7-r)*.04+(c>1&&c<6?.03:0);s+=p.p===1?v:-v}return s}
+function minimax(b,depth,p,a,bt){
+  const ms=allMoves(b,p);if(!ms.length)return p===1?-1000:1000;if(depth===0)return evalB(b);
+  if(p===1){let v=-Infinity;for(const m of ms){v=Math.max(v,minimax(apply(b,m),depth-1,0,a,bt));a=Math.max(a,v);if(a>=bt)break}return v}
+  let v=Infinity;for(const m of ms){v=Math.min(v,minimax(apply(b,m),depth-1,1,a,bt));bt=Math.min(bt,v);if(a>=bt)break}return v;
+}
+function aiMove(){
+  const ms=allMoves(board,1);if(!ms.length){busy=false;return}
+  let pick;
+  if(mode==='easy'){
+    const caps=ms.filter(m=>m.caps.length);pick=caps.length&&Math.random()<.8?caps[Math.floor(Math.random()*caps.length)]:ms[Math.floor(Math.random()*ms.length)];
+  }else{
+    let best=-Infinity,bests=[];for(const m of ms){const v=minimax(apply(board,m),4,0,-Infinity,Infinity)+m.caps.length*.01;if(v>best+1e-9){best=v;bests=[m]}else if(Math.abs(v-best)<1e-9)bests.push(m)}
+    pick=bests[Math.floor(Math.random()*bests.length)];
+  }
+  // play it step by step so you can follow the jumps
+  sel=pick.path[0];path=[pick.path[0]];render();
+  let i=1;const stepT=()=>{path.push(pick.path[i]);if(pick.caps.length)chomp();else click();render();i++;
+    if(i<pick.path.length)setTimeout(stepT,380);else setTimeout(()=>{busy=false;commit(pick)},300)};
+  setTimeout(stepT,300);
+}
+
+/* ---------- controls ---------- */
+$('modeSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.dataset.v===mode)return;mode=b.dataset.v;try{localStorage.setItem('ck-mode',mode)}catch(e){};newGame()});
+$('rulesSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.dataset.v===rules)return;rules=b.dataset.v;try{localStorage.setItem('ck-rules',rules)}catch(e){};newGame()});
+$('newg').onclick=newGame;$('again').onclick=newGame;
+$('undo').onclick=()=>{if(!hist.length||busy)return;
+  let h=hist.pop();if(mode!=='2p'&&h.turn===1&&hist.length)h=hist.pop(); // vs computer: go back to your own move
+  board=h.board;turn=h.turn;lastMove=h.lastMove;sel=null;path=[];over=false;$('over').hidden=true;refresh()};
+addEventListener('keydown',e=>{if(e.key==='Escape'&&path.length<=1){sel=null;path=[];render();hud()}});
+
+/* ---------- sound & confetti ---------- */
+let ac=null;
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}return ac}
+function tone(f,t,d,type='triangle',v=.1){const a=audio();if(!a)return;const o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+t;
+  o.type=type;o.frequency.value=f;gn.gain.setValueAtTime(.0001,s);gn.gain.exponentialRampToValueAtTime(v,s+.01);gn.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(gn).connect(a.destination);o.start(s);o.stop(s+d+.05)}
+const click=()=>tone(420,0,.06,'sine',.07),chomp=()=>{tone(300,0,.08,'square',.05);tone(500,.06,.1,'square',.05)},bad=()=>tone(180,0,.15,'sawtooth',.05);
+const crown=()=>[784,988,1175].forEach((f,i)=>tone(f,i*.08,.2));
+const cc=$('confetti'),cx=cc.getContext('2d'),COLS=['#F28C28','#2B7DE9','#FFC94A','#1E9E8A','#ff5a3c','#3ec7ff'];
+function confetti(){if(still)return;cc.width=innerWidth;cc.height=innerHeight;
+  const ps=Array.from({length:170},()=>({x:innerWidth/2,y:innerHeight/3,vx:(Math.random()-.5)*16,vy:-Math.random()*14-4,r:Math.random()*6+4,c:COLS[Math.floor(Math.random()*6)],a:Math.random()*6,va:(Math.random()-.5)*.3}));
+  let f=0;(function t(){cx.clearRect(0,0,cc.width,cc.height);ps.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillStyle=p.c;cx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);cx.restore()});
+    if(++f<140)requestAnimationFrame(t);else cx.clearRect(0,0,cc.width,cc.height)})()}
+
+newGame();
+})();
+</script>
+</body>
+</html>

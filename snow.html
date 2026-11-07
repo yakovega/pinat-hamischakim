@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>מלחמת שלג – פינת המשחקים</title>
+<meta name="description" content="כל שחקן בצד שלו: זורקים כדורי שלג, מתחבאים מאחורי מבצרי השלג ואוספים כוכבים ושוקו חם. מי שנגמרים לו הלבבות מפסיד!">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/snow.html">
+<meta property="og:title" content="מלחמת שלג – פינת המשחקים">
+<meta property="og:description" content="כל שחקן בצד שלו: זורקים כדורי שלג, מתחבאים מאחורי מבצרי השלג ואוספים כוכבים ושוקו חם. מי שנגמרים לו הלבבות מפסיד!">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/snow.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: slim bar on top, a wide snowy field fills the rest (letterboxed), menu card floats over it; touch throw buttons sit in the bottom corners on phones. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28;
+  --red:#ff5a3c; --blue:#3ec7ff; --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);display:flex;flex-direction:column;gap:8px;overflow:hidden;
+  padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));padding-block:10px}
+[hidden]{display:none!important}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+h1{font-family:var(--display);font-size:clamp(20px,4vw,30px);margin:0;color:var(--sun);white-space:nowrap}
+.homelink{background:var(--sun);color:#1F2A44;padding:7px 12px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;white-space:nowrap}
+.stage{position:relative;flex:1;min-height:0;touch-action:none;user-select:none;-webkit-user-select:none}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.overlay{position:absolute;inset:0;display:grid;place-items:center;padding:12px;background:#0b1020aa}
+.card{background:var(--paper);color:#1F2A44;border-radius:22px;padding:clamp(16px,4vw,26px);display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;width:min(100%,520px);max-height:100%;overflow:auto}
+.card h2{font-family:var(--display);font-size:clamp(28px,6vw,40px);margin:0;color:var(--orange)}
+.card p{margin:0;line-height:1.5}
+.how{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.how div{border-radius:14px;padding:10px;font-size:14px;line-height:1.8}
+.how .b{background:#dff1fb}.how .r{background:#ffe3dc}
+.how b{display:block;font-size:16px}
+kbd{background:#fff;border-radius:6px;padding:1px 6px;font:700 13px var(--body);border:1px solid #d8ccb4}
+.small{font-size:13px;color:#4A5568;line-height:1.6}
+.label{font-size:13px;font-weight:600;color:#6b7280}
+.seg{display:flex;gap:4px;background:#e9e1d1;padding:4px;border-radius:12px;flex-wrap:wrap;justify-content:center}
+.seg button{border:0;background:transparent;border-radius:9px;padding:8px 12px;font:600 15px var(--body);cursor:pointer;color:#1F2A44}
+.seg button[aria-pressed="true"]{background:#1F2A44;color:var(--paper)}
+.big{font-family:var(--display);font-weight:700;font-size:24px;border:0;border-radius:99px;padding:12px 40px;background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 5px 0 #a85c12}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #a85c12}
+.ghost{border:2px solid #d8ccb4;background:transparent;color:#1F2A44;border-radius:99px;padding:8px 18px;font:600 15px var(--body);cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.pause{position:absolute;top:8px;left:50%;transform:translateX(-50%);border:0;border-radius:10px;background:#1F2A44dd;color:var(--paper);font:600 14px var(--body);padding:8px 12px;cursor:pointer;z-index:2}
+.throw{position:absolute;bottom:12px;width:clamp(64px,16vw,90px);height:clamp(64px,16vw,90px);border-radius:50%;border:4px solid currentColor;background:#0b1020aa;font-size:30px;touch-action:none;z-index:2}
+.throw.b{left:12px;color:var(--blue)}.throw.r{right:12px;color:var(--red)}
+.throw.on{background:currentColor}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>מלחמת שלג</h1>
+  <a class="homelink" href="index.html">🏠 דף הבית</a>
+</div>
+
+<div class="stage" id="stage">
+  <canvas id="cv" aria-label="שדה מלחמת השלג"></canvas>
+  <button class="pause" id="pauseBtn" type="button" hidden>⏸ הפסקה</button>
+  <button class="throw b" id="throwB" type="button" aria-label="כחול זורק" hidden>❄️</button>
+  <button class="throw r" id="throwR" type="button" aria-label="אדום זורק" hidden>❄️</button>
+  <div class="overlay" id="ov">
+    <div class="card">
+      <h2 id="cardT">מלחמת שלג ⛄</h2>
+      <p id="cardP">כל שחקן בצד שלו של השדה. זורקים כדורי שלג על היריב ומתחבאים מאחורי מבצרי השלג! מי שנגמרים לו הלבבות מפסיד.</p>
+      <div class="how" dir="rtl" id="how">
+        <div class="b"><b>🔵 כחול (שמאל)</b><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> לזוז<br><kbd>F</kbd> או <kbd>רווח</kbd> לזרוק</div>
+        <div class="r"><b>🔴 אדום (ימין)</b>החיצים לזוז<br><kbd>Enter</kbd> או <kbd>L</kbd> לזרוק</div>
+      </div>
+      <span class="small" id="tips">❄️ יש 5 כדורי שלג, והם מתמלאים לבד · כשזורקים תוך כדי תנועה למעלה או למטה, הכדור עף באלכסון<br>⭐ כוכב = זריקה משולשת · ☕ שוקו חם = עוד לב · 📱 בטלפון: גוררים באצבע בצד שלכם ולוחצים ❄️</span>
+      <span class="label">נגד מי משחקים?</span>
+      <div class="seg" id="modes" role="group" aria-label="מצב משחק">
+        <button type="button" data-v="2p">👫 שני שחקנים</button>
+        <button type="button" data-v="veryeasy">🐣 מחשב ממש קל</button>
+        <button type="button" data-v="easy">🐥 מחשב קל</button>
+        <button type="button" data-v="mid">🐇 מחשב בינוני</button>
+        <button type="button" data-v="hard">🦊 מחשב קשה</button>
+        <button type="button" data-v="champ">🏆 אלופים</button>
+      </div>
+      <span class="label">כמה לבבות?</span>
+      <div class="seg" id="hearts" role="group" aria-label="לבבות">
+        <button type="button" data-v="3">❤️ 3</button>
+        <button type="button" data-v="5">❤️ 5</button>
+        <button type="button" data-v="8">❤️ 8</button>
+      </div>
+      <button class="big" id="go" type="button">⛄ למלחמה!</button>
+      <button class="ghost" id="resume" type="button" hidden>להמשיך</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const stage=$('stage'),cv=$('cv'),g=cv.getContext('2d');
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const touchDevice=matchMedia('(hover:none)').matches||('ontouchstart' in window);
+const W=960,H=540,PR=22,SR=7,MID=W/2,AMMO=5;
+let mode='2p',maxHearts=5;
+try{mode=localStorage.getItem('snow-mode')||mode;maxHearts=+localStorage.getItem('snow-hearts')||maxHearts}catch(e){}
+const P=[
+  {name:'כחול',col:'#3ec7ff',dark:'#1a6f95',side:-1,keys:['KeyW','KeyS','KeyA','KeyD'],fire:['KeyF','Space']},
+  {name:'אדום',col:'#ff5a3c',dark:'#a3311d',side:1,keys:['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'],fire:['Enter','NumpadEnter','KeyL']}
+];
+let balls=[],walls=[],splats=[],items=[],flakes=[],texts=[],running=false,paused=false,frame=0,itemT=0,winner=-1;
+const isAI=i=>mode!=='2p'&&i===1;
+
+function reset(){
+  P.forEach((p,i)=>Object.assign(p,{x:i?W-110:110,y:H/2,vx:0,vy:0,hearts:maxHearts,ammo:AMMO,reload:0,cool:0,hurt:0,triple:0,throwAnim:0,tx:null,ty:null,touchFire:false,ai:{t:0,goal:H/2}}));
+  balls=[];splats=[];items=[];texts=[];winner=-1;frame=0;itemT=480;
+  walls=[];[[230,150],[300,H/2],[230,H-150]].forEach(([x,y])=>{walls.push({x,y,w:46,h:86,hp:4});walls.push({x:W-x,y,w:46,h:86,hp:4})});
+}
+if(!flakes.length)for(let i=0;i<70;i++)flakes.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*2.5+.8,s:Math.random()*.6+.3});
+
+/* ---------- view ---------- */
+let V={s:1,ox:0,oy:0,d:1};
+function resize(){const w=stage.clientWidth,h=stage.clientHeight,d=Math.min(2,devicePixelRatio||1);cv.width=w*d;cv.height=h*d;
+  V={s:Math.min(w/W,h/H),d};V.ox=(w-W*V.s)/2;V.oy=(h-H*V.s)/2}
+new ResizeObserver(resize).observe(stage);resize();
+
+/* ---------- input ---------- */
+const keys={};
+const GAME=['KeyW','KeyS','KeyA','KeyD','KeyF','Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Enter','NumpadEnter','KeyL'];
+addEventListener('keydown',e=>{if(running&&GAME.includes(e.code))e.preventDefault();
+  if(running&&!paused&&!e.repeat)P.forEach((p,i)=>{if(!isAI(i)&&p.fire.includes(e.code))throwBall(i)});
+  keys[e.code]=true;if((e.code==='Escape'||e.code==='KeyP')&&running)pause()});
+addEventListener('keyup',e=>{keys[e.code]=false});
+addEventListener('blur',()=>{for(const k in keys)keys[k]=false;if(running)pause()});
+const owner={};
+function local(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left-V.ox)/V.s,y:(e.clientY-r.top-V.oy)/V.s}}
+stage.addEventListener('pointerdown',e=>{if(!running||e.target!==cv)return;const p=local(e);let i=p.x<MID?0:1;if(isAI(i))i=0;
+  owner[e.pointerId]=i;cv.setPointerCapture(e.pointerId);P[i].tx=p.x;P[i].ty=p.y});
+stage.addEventListener('pointermove',e=>{const i=owner[e.pointerId];if(i===undefined)return;const p=local(e);P[i].tx=p.x;P[i].ty=p.y});
+const up=e=>{const i=owner[e.pointerId];if(i!==undefined){P[i].tx=P[i].ty=null;delete owner[e.pointerId]}};
+stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
+[['throwB',0],['throwR',1]].forEach(([id,i])=>{const b=$(id);
+  b.addEventListener('pointerdown',e=>{e.preventDefault();let k=i;if(isAI(k))k=0;throwBall(k);b.classList.add('on')});
+  ['pointerup','pointercancel','pointerleave'].forEach(t=>b.addEventListener(t,()=>b.classList.remove('on')))});
+
+/* ---------- game ---------- */
+function throwBall(i){
+  const p=P[i];if(!running||paused||p.cool>0||p.ammo<=0||p.hearts<=0)return;
+  p.ammo--;p.cool=18;p.throwAnim=10;
+  const dir=-p.side; // blue throws right, red throws left
+  const vy=Math.max(-4,Math.min(4,p.vy*1.2));
+  const spread=p.triple>0?[-2.2,0,2.2]:[0];
+  spread.forEach(s=>balls.push({x:p.x+dir*(PR+6),y:p.y-6,vx:dir*9.5,vy:vy+s,owner:i,life:0}));
+  sfx('throw');
+}
+function moveRect(w){return{l:w.x-w.w/2,r:w.x+w.w/2,t:w.y-w.h/2*(.4+.6*w.hp/4),b:w.y+w.h/2}}
+function blocked(x,y,r){return walls.some(w=>{if(w.hp<=0)return false;const q=moveRect(w);const cx=Math.max(q.l,Math.min(x,q.r)),cy=Math.max(q.t,Math.min(y,q.b));return Math.hypot(x-cx,y-cy)<r})}
+function stepPlayer(p,i){
+  let ax=0,ay=0;
+  if(isAI(i))[ax,ay]=ai(p);
+  else{const k=p.keys;ax=(keys[k[3]]?1:0)-(keys[k[2]]?1:0);ay=(keys[k[1]]?1:0)-(keys[k[0]]?1:0);
+    if(p.tx!==null){const dx=p.tx-p.x,dy=p.ty-p.y,d=Math.hypot(dx,dy);if(d>6){ax=dx/d;ay=dy/d}}}
+  const sp=4.2*(isAI(i)?(AI[mode]||AI.mid).speed:1),l=Math.hypot(ax,ay)||1;p.vx=ax/l*sp*(ax||ay?1:0);p.vy=ay/l*sp*(ax||ay?1:0);
+  const minX=i===0?PR+8:MID+PR+8,maxX=i===0?MID-PR-8:W-PR-8;
+  let nx=Math.max(minX,Math.min(maxX,p.x+p.vx)),ny=Math.max(PR+8,Math.min(H-PR-8,p.y+p.vy));
+  if(!blocked(nx,p.y,PR))p.x=nx;if(!blocked(p.x,ny,PR))p.y=ny;
+  if(p.cool>0)p.cool--;if(p.hurt>0)p.hurt--;if(p.triple>0)p.triple--;if(p.throwAnim>0)p.throwAnim--;
+  if(p.ammo<AMMO){p.reload++;if(p.reload>=70){p.reload=0;p.ammo++}}else p.reload=0;
+  // pick up items
+  items=items.filter(it=>{if(Math.hypot(it.x-p.x,it.y-p.y)<PR+16){
+    if(it.k==='star'){p.triple=360;texts.push({x:p.x,y:p.y-40,t:0,s:'⭐ זריקה משולשת!'})}
+    else{p.hearts=Math.min(maxHearts,p.hearts+1);texts.push({x:p.x,y:p.y-40,t:0,s:'☕ +1 ❤️'})}
+    sfx('item');return false}return true});
+}
+// how the computer plays at each level
+const AI={
+  veryeasy:{look:0,  react:90,noise:170,fire:.015,align:95,speed:.55,dodge:0,  lead:false},
+  easy:    {look:120,react:65,noise:110,fire:.04, align:70,speed:.75,dodge:.3, lead:false},
+  mid:     {look:190,react:45,noise:60, fire:.09, align:55,speed:.9, dodge:.6, lead:false},
+  hard:    {look:260,react:30,noise:30, fire:.17, align:42,speed:1,  dodge:.85,lead:false},
+  champ:   {look:340,react:16,noise:8,  fire:.3,  align:32,speed:1.1,dodge:1,  lead:true}
+};
+function ai(p){
+  const me=P[1],foe=P[0],L=AI[mode]||AI.mid,A=me.ai;
+  // a ball coming at me? (each ball is judged once, so lower levels sometimes just don't see it)
+  const threat=balls.find(b=>{if(b.owner!==0||b.vx<=0||b.x>=me.x||me.x-b.x>L.look)return false;
+    if(b.seen===undefined)b.seen=Math.random()<L.dodge;if(!b.seen)return false;
+    return Math.abs(b.y+(b.vy*(me.x-b.x)/b.vx)-me.y)<PR+10});
+  A.t--;
+  if(threat){A.goal=me.y+(threat.y<me.y?1:-1)*80}
+  else if(A.t<=0){A.t=L.react;
+    const item=items.find(it=>it.x>MID),takeItem=item&&Math.random()<(L.dodge*.8+.1);
+    // the best levels aim where you are going, not where you are
+    const fy=L.lead?foe.y+foe.vy*((me.x-foe.x)/9.5):foe.y;
+    A.goal=takeItem?item.y:fy+(Math.random()-.5)*L.noise;A.gx=takeItem?item.x:W-110-Math.random()*120;}
+  const dy=A.goal-me.y,dx=(A.gx||W-110)-me.x;
+  const ay=Math.abs(dy)>8?Math.sign(dy):0,ax=Math.abs(dx)>10?Math.sign(dx)*.6:0;
+  const target=L.lead?foe.y+foe.vy*((me.x-foe.x)/9.5):foe.y;
+  if(Math.abs(target-me.y)<L.align&&me.cool===0&&Math.random()<L.fire)throwBall(1);
+  return[ax*L.speed,ay*L.speed];
+}
+function stepBalls(){
+  balls=balls.filter(b=>{
+    b.x+=b.vx;b.y+=b.vy;b.life++;
+    if(b.y<SR||b.y>H-SR){b.vy=-b.vy;b.y=Math.max(SR,Math.min(H-SR,b.y))}
+    if(b.x<-20||b.x>W+20)return false;
+    for(const w of walls){if(w.hp<=0)continue;const q=moveRect(w);if(b.x>q.l-SR&&b.x<q.r+SR&&b.y>q.t-SR&&b.y<q.b+SR){w.hp--;splat(b.x,b.y,'#ffffff');sfx('wall');return false}}
+    for(let i=0;i<2;i++){if(i===b.owner)continue;const p=P[i];if(p.hearts<=0)continue;
+      if(Math.hypot(b.x-p.x,b.y-p.y)<PR+SR){if(p.hurt>0){return false}
+        p.hearts--;p.hurt=45;splat(b.x,b.y,'#ffffff');texts.push({x:p.x,y:p.y-44,t:0,s:'💥'});sfx('hit');
+        if(p.hearts<=0)setTimeout(()=>finish(1-i),900);return false}}
+    return true});
+}
+function splat(x,y,c){if(still)return;for(let k=0;k<12;k++){const a=Math.random()*Math.PI*2,s=1+Math.random()*3.5;splats.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:1,c})}}
+function stepItems(){
+  if(--itemT<=0){itemT=600+Math.random()*300;const side=Math.random()<.5?0:1,k=Math.random()<.6?'star':'cocoa';
+    if(items.length<2)items.push({x:side?MID+80+Math.random()*(MID-200):120+Math.random()*(MID-200),y:60+Math.random()*(H-120),k,t:0})}
+  items.forEach(it=>it.t++);items=items.filter(it=>it.t<600);
+}
+function step(){frame++;P.forEach(stepPlayer);stepBalls();stepItems()}
+
+/* ---------- drawing ---------- */
+function rr(x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+function drawPlayer(p,i){
+  const alpha=p.hearts<=0?.35:p.hurt>0?.55:1;g.globalAlpha=alpha;
+  g.fillStyle='#00000022';g.beginPath();g.ellipse(p.x,p.y+PR-2,PR,7,0,0,7);g.fill();
+  // body (coat)
+  g.fillStyle=p.col;g.beginPath();g.arc(p.x,p.y+6,PR,0,7);g.fill();
+  // face
+  g.fillStyle='#ffe0bd';g.beginPath();g.arc(p.x,p.y-10,14,0,7);g.fill();
+  const f=-p.side;g.fillStyle='#1F2A44';g.beginPath();g.arc(p.x+f*5,p.y-12,2.2,0,7);g.fill();g.beginPath();g.arc(p.x+f*11,p.y-12,2.2,0,7);g.fill();
+  g.strokeStyle='#1F2A44';g.lineWidth=2;g.beginPath();g.arc(p.x+f*8,p.y-6,4,.2,Math.PI-.2);g.stroke();
+  // hat with pompom
+  g.fillStyle=p.dark;g.beginPath();g.arc(p.x,p.y-15,14,Math.PI,0);g.fill();g.fillStyle='#fff';g.beginPath();g.arc(p.x,p.y-30,5,0,7);g.fill();
+  // scarf
+  g.fillStyle='#FFC94A';rr(p.x-14,p.y+1,28,6,3);g.fill();
+  // throwing arm
+  const ext=p.throwAnim>0?14:6;g.strokeStyle=p.dark;g.lineWidth=7;g.lineCap='round';g.beginPath();g.moveTo(p.x+f*12,p.y+6);g.lineTo(p.x+f*(12+ext),p.y-2-(p.throwAnim>0?6:0));g.stroke();
+  if(p.triple>0){g.font='16px sans-serif';g.textAlign='center';g.fillText('⭐',p.x-f*20,p.y-26)}
+  g.globalAlpha=1;
+}
+function draw(){
+  g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height);
+  g.setTransform(V.s*V.d,0,0,V.s*V.d,V.ox*V.d,V.oy*V.d);
+  // snowy field
+  const bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#eef6ff');bg.addColorStop(1,'#d7e7f7');g.save();rr(0,0,W,H,22);g.clip();g.fillStyle=bg;g.fillRect(0,0,W,H);
+  g.fillStyle='#3ec7ff14';g.fillRect(0,0,MID,H);g.fillStyle='#ff5a3c12';g.fillRect(MID,0,MID,H);
+  // ice stream in the middle
+  g.fillStyle='#b9dcf5';g.fillRect(MID-10,0,20,H);g.strokeStyle='#ffffff99';g.lineWidth=2;for(let y=10;y<H;y+=40){g.beginPath();g.moveTo(MID-6,y);g.lineTo(MID+4,y+16);g.stroke()}
+  // pine trees at the edges
+  [[34,H-40],[W-34,H-40],[28,H/2+130],[W-28,H/2+130],[MID-80,H-26],[MID+80,H-26]].forEach(([x,y])=>{g.fillStyle='#2f7d3a';g.beginPath();g.moveTo(x,y-26);g.lineTo(x+16,y+8);g.lineTo(x-16,y+8);g.closePath();g.fill();g.fillStyle='#fff';g.beginPath();g.moveTo(x,y-26);g.lineTo(x+7,y-12);g.lineTo(x-7,y-12);g.closePath();g.fill()});
+  // walls
+  walls.forEach(w=>{if(w.hp<=0)return;const q=moveRect(w);g.fillStyle='#ffffff';rr(q.l,q.t,q.r-q.l,q.b-q.t,16);g.fill();g.strokeStyle='#b9cfe4';g.lineWidth=3;g.stroke();
+    g.fillStyle='#dce9f5';rr(q.l+6,q.b-14,q.r-q.l-12,8,4);g.fill()});
+  // items
+  items.forEach(it=>{const bob=still?0:Math.sin(it.t*.1)*3;g.font='28px sans-serif';g.textAlign='center';g.textBaseline='middle';g.globalAlpha=it.t>520&&Math.floor(it.t/8)%2?.4:1;g.fillText(it.k==='star'?'⭐':'☕',it.x,it.y+bob);g.globalAlpha=1});
+  // players
+  P.forEach(drawPlayer);
+  // snowballs
+  balls.forEach(b=>{g.fillStyle='#00000018';g.beginPath();g.ellipse(b.x,b.y+12,SR,3,0,0,7);g.fill();g.fillStyle='#fff';g.beginPath();g.arc(b.x,b.y,SR,0,7);g.fill();g.strokeStyle='#b9cfe4';g.lineWidth=1.5;g.stroke()});
+  // splats
+  splats=splats.filter(s=>(s.l-=.04)>0);splats.forEach(s=>{if(!paused){s.x+=s.vx;s.y+=s.vy}g.globalAlpha=s.l;g.fillStyle='#ffffff';g.beginPath();g.arc(s.x,s.y,3,0,7);g.fill();g.strokeStyle='#b9cfe4';g.lineWidth=1;g.stroke()});g.globalAlpha=1;
+  // falling snow
+  if(!still)flakes.forEach(f=>{if(!paused){f.y+=f.s;f.x+=Math.sin((frame+f.y)*.01)*.3;if(f.y>H)f.y=-4}g.fillStyle='#ffffffcc';g.beginPath();g.arc(f.x,f.y,f.r,0,7);g.fill()});
+  g.restore();
+  // HUD: hearts and snowballs for each player
+  P.forEach((p,i)=>{const x0=i===0?16:W-16,al=i===0?'left':'right';g.textAlign=al;g.textBaseline='top';
+    g.font='20px sans-serif';g.fillText('❤️'.repeat(Math.max(0,p.hearts))+'🤍'.repeat(Math.max(0,maxHearts-p.hearts)),x0,12);
+    for(let k=0;k<AMMO;k++){const cx=i===0?x0+10+k*20:x0-10-k*20;g.fillStyle=k<p.ammo?'#7fa9d4':'#ffffff66';g.strokeStyle='#7fa9d4';g.lineWidth=1.5;g.beginPath();g.arc(cx,48,7,0,7);g.fill();g.stroke()}
+    g.font='600 15px Rubik, sans-serif';g.fillStyle=p.dark;const nm=(i===0?'🔵 ':'🔴 ')+(isAI(i)?'מחשב':mode!=='2p'?'אתה':p.name);g.fillText(nm,x0,64)});
+  // floating texts
+  texts=texts.filter(t=>(t.t+=1)<50);texts.forEach(t=>{g.globalAlpha=1-t.t/50;g.font='700 22px Fredoka, Rubik, sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillStyle='#1F2A44';g.fillText(t.s,t.x,t.y-t.t*.7)});g.globalAlpha=1;g.textBaseline='alphabetic';
+}
+
+/* ---------- loop ---------- */
+let acc=0,last=0;
+function loop(t){const dt=Math.min(100,t-(last||t));last=t;acc+=dt;
+  while(acc>=16.67){acc-=16.67;if(running&&!paused&&winner<0)step()}
+  draw();requestAnimationFrame(loop)}
+
+/* ---------- menu ---------- */
+function seg(id,get,set,key){const el=$(id);const sync=()=>el.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===String(get())));
+  el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;set(b.dataset.v);try{localStorage.setItem(key,b.dataset.v)}catch(e){};sync()});sync()}
+seg('modes',()=>mode,v=>mode=v,'snow-mode');seg('hearts',()=>maxHearts,v=>maxHearts=+v,'snow-hearts');
+function start(){reset();running=true;paused=false;audio();$('ov').hidden=true;$('pauseBtn').hidden=false;
+  $('throwB').hidden=!touchDevice;$('throwR').hidden=!touchDevice||mode!=='2p'}
+$('go').onclick=start;
+function finish(w){if(winner>=0||!running)return;winner=w;running=false;$('pauseBtn').hidden=true;$('throwB').hidden=true;$('throwR').hidden=true;
+  const lostToAI=mode!=='2p'&&w===1;
+  $('cardT').textContent=mode!=='2p'?(w===0?'ניצחת! ⛄🏆':'המחשב ניצח ⛄'):`${w===0?'🔵 הכחול':'🔴 האדום'} ניצח! ⛄🏆`;
+  $('cardP').textContent=lostToAI?'לא נורא! נסו להתחבא מאחורי המבצרים ולזרוק באלכסון.':'איזה זורק! רוצים עוד סיבוב?';
+  $('go').textContent='⛄ עוד סיבוב';$('resume').hidden=true;$('ov').hidden=false;$('go').focus({preventScroll:true});
+  if(!lostToAI)[523,659,784,1046].forEach((f,k)=>tone(f,k*.12,.35))}
+function pause(){if(!running||paused)return;paused=true;$('cardT').textContent='הפסקה';$('cardP').textContent='המשחק עצר. אפשר להמשיך או להתחיל מחדש.';
+  $('go').textContent='⛄ משחק חדש';$('resume').hidden=false;$('ov').hidden=false;$('pauseBtn').hidden=true}
+$('pauseBtn').onclick=pause;
+$('resume').onclick=()=>{paused=false;$('ov').hidden=true;$('pauseBtn').hidden=false};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pause()});
+reset();requestAnimationFrame(loop);
+
+/* ---------- sound ---------- */
+let ac=null;
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}return ac}
+function tone(f,t,d,type='triangle',v=.1){const a=ac;if(!a)return;const o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+t;
+  o.type=type;o.frequency.value=f;gn.gain.setValueAtTime(.0001,s);gn.gain.exponentialRampToValueAtTime(v,s+.01);gn.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(gn).connect(a.destination);o.start(s);o.stop(s+d+.05)}
+function noise(d,v){const a=ac;if(!a)return;const n=a.createBufferSource(),buf=a.createBuffer(1,a.sampleRate*d,a.sampleRate),ch=buf.getChannelData(0);
+  for(let i=0;i<ch.length;i++)ch[i]=(Math.random()*2-1)*(1-i/ch.length);n.buffer=buf;const gn=a.createGain();gn.gain.value=v;const f=a.createBiquadFilter();f.type='lowpass';f.frequency.value=1200;n.connect(f).connect(gn).connect(a.destination);n.start()}
+function sfx(k){
+  if(k==='throw')tone(520,0,.07,'sine',.05);
+  if(k==='wall')noise(.12,.25);
+  if(k==='hit'){noise(.18,.35);tone(200,0,.15,'triangle',.08)}
+  if(k==='item'){tone(880,0,.1);tone(1320,.08,.18)}
+}
+})();
+</script>
+</body>
+</html>

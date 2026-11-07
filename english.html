@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>אנגלית בכיף – פינת המשחקים</title>
+<meta name="description" content="בערך 100 מילים באנגלית עם תמונות: חיות, אוכל, צבעים, מספרים ועוד. מתאימים תמונה למילה, עברית לאנגלית, ויש גם מצב הקשבה.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/english.html">
+<meta property="og:title" content="אנגלית בכיף – פינת המשחקים">
+<meta property="og:description" content="בערך 100 מילים באנגלית עם תמונות: חיות, אוכל, צבעים, מספרים ועוד. מתאימים תמונה למילה, עברית לאנגלית, ויש גם מצב הקשבה.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/english.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: one centered card that swaps between setup, quiz and results; the quiz shows a big prompt on top and a 2×2 grid of answers. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28; --blue:#2B7DE9;
+  --teal:#1E9E8A; --red:#ff5a3c; --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);min-height:100vh;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px}
+[hidden]{display:none!important}
+main{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:clamp(26px,5vw,38px);margin:0;color:var(--sun)}
+h1 span{font-size:.6em;color:var(--muted);font-weight:500;direction:ltr;display:inline-block}
+.homelink{background:var(--sun);color:#1F2A44;padding:8px 14px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px}
+.card{background:var(--card);border-radius:22px;padding:clamp(16px,4vw,28px);display:flex;flex-direction:column;gap:16px}
+.card h2{font-family:var(--display);font-size:22px;margin:0}
+.group{display:flex;flex-direction:column;gap:8px}
+.group>span{font-weight:600;color:var(--muted);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:12px;padding:9px 13px;font:600 15px var(--body);cursor:pointer;text-align:right}
+.chip[aria-pressed="true"]{background:var(--sun);border-color:var(--sun);color:#1F2A44}
+.chip small{display:block;font-weight:400;font-size:12px;opacity:.85}
+.big{font-family:var(--display);font-weight:700;font-size:22px;border:0;border-radius:99px;padding:12px 34px;background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 5px 0 #a85c12;align-self:center}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #a85c12}
+.ghost{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:99px;padding:9px 16px;font:600 15px var(--body);cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.best{color:var(--muted);font-size:14px;text-align:center;margin:0}
+/* quiz */
+.status{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.status b{color:var(--paper);font-family:var(--display);font-size:20px}
+.progress{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--teal);transition:width .3s}
+.prompt{min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center}
+.prompt .em{font-size:clamp(84px,22vw,130px);line-height:1.1;filter:drop-shadow(0 8px 14px #0007)}
+.prompt .word{font-family:var(--display);font-weight:600;font-size:clamp(40px,11vw,64px);direction:ltr;color:var(--paper)}
+.prompt .he{font-weight:800;font-size:clamp(36px,10vw,56px)}
+.prompt .q{color:var(--muted);font-size:15px;font-weight:600}
+.prompt.pop .em,.prompt.pop .word,.prompt.pop .he,.prompt.pop .ear{animation:pop .35s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+.speak{border:0;background:var(--blue);color:#fff;border-radius:99px;padding:8px 16px;font:600 16px var(--body);cursor:pointer}
+.ear{border:0;background:var(--blue);color:#fff;border-radius:50%;width:120px;height:120px;font-size:56px;cursor:pointer;box-shadow:0 8px 0 #1d5fb8}
+.ear:active{transform:translateY(4px);box-shadow:0 4px 0 #1d5fb8}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ans{border:3px solid var(--line);background:#26314F;color:var(--paper);border-radius:18px;padding:14px 10px;min-height:84px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;position:relative;transition:transform .1s}
+.ans:hover{border-color:var(--sun)}
+.ans:active{transform:scale(.97)}
+.ans .w{font-family:var(--display);font-weight:600;font-size:clamp(22px,5.5vw,30px);direction:ltr}
+.ans .e{font-size:clamp(40px,10vw,56px);line-height:1}
+.ans kbd{position:absolute;top:6px;left:8px;font:600 12px var(--body);color:var(--muted)}
+@media (hover:none){.ans kbd{display:none}}
+.ans.right{border-color:var(--teal);background:#1d4a44}
+.ans.wrong{border-color:var(--red);background:#4a2420;animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.ans:disabled{cursor:default}
+.fb{min-height:52px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px}
+.fb .good{direction:ltr;unicode-bidi:isolate;font-family:var(--display);font-weight:700;font-size:28px;color:var(--sun)}
+.fb .bad{font-weight:700;font-size:18px;color:var(--red)}
+.fb .tr{color:var(--muted);font-size:15px}
+.fb .tr b{color:var(--paper);direction:ltr;display:inline-block}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.toggle{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:99px;padding:6px 12px;font:600 13px var(--body);cursor:pointer}
+/* end */
+.result{text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center}
+.result .t{font-family:var(--display);font-weight:700;font-size:clamp(30px,7vw,46px);color:var(--sun);line-height:1.1}
+.result .stars{font-size:40px;letter-spacing:6px}
+.result p{margin:0;font-size:17px}
+.review{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.rv{background:#26314F;border-radius:12px;padding:8px 10px;display:flex;align-items:center;gap:8px;border-inline-start:5px solid var(--teal);min-width:0}
+.rv.x{border-inline-start-color:var(--red)}
+.rv .e{font-size:28px}
+.rv .t2{display:flex;flex-direction:column;min-width:0}
+.rv .t2 b{font-family:var(--display);font-weight:600;font-size:18px;direction:ltr;text-align:right}
+.rv .t2 span{color:var(--muted);font-size:13px}
+.rv button{margin-inline-start:auto;border:0;background:transparent;font-size:18px;cursor:pointer;color:var(--paper)}
+.note{color:var(--muted);font-size:13px;text-align:center;margin:0}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:6;width:100%;height:100%}
+@media (prefers-reduced-motion:reduce){.prompt.pop *,.ans.wrong{animation:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <h1>אנגלית בכיף <span>English Fun</span></h1>
+    <a class="homelink" href="index.html">🏠 דף הבית</a>
+  </div>
+
+  <section class="card" id="setup">
+    <h2>בוחרים איך לשחק</h2>
+    <div class="group"><span>סוג המשחק</span>
+      <div class="chips" data-name="mode">
+        <button class="chip" type="button" data-v="pic">🖼️ תמונה ← מילה<small>רואים תמונה ובוחרים את המילה באנגלית</small></button>
+        <button class="chip" type="button" data-v="word">🔤 מילה ← תמונה<small>קוראים מילה באנגלית ובוחרים תמונה</small></button>
+        <button class="chip" type="button" data-v="he">🇮🇱 עברית ← אנגלית<small>רואים מילה בעברית ובוחרים באנגלית</small></button>
+        <button class="chip" type="button" data-v="listen" id="listenChip">🔊 הקשבה<small>שומעים מילה ובוחרים תמונה</small></button>
+      </div>
+    </div>
+    <div class="group"><span>נושא</span>
+      <div class="chips" data-name="cat" id="cats"></div>
+    </div>
+    <div class="group"><span>כמה שאלות?</span>
+      <div class="chips" data-name="count">
+        <button class="chip" type="button" data-v="5">5</button>
+        <button class="chip" type="button" data-v="10">10</button>
+        <button class="chip" type="button" data-v="20">20</button>
+      </div>
+    </div>
+    <button class="big" id="start" type="button">Let's go! 🚀</button>
+    <p class="best" id="best"></p>
+    <p class="note" id="noVoice" hidden>במכשיר הזה אין קול באנגלית, ולכן מצב ההקשבה וכפתורי 🔊 לא זמינים.</p>
+  </section>
+
+  <section class="card" id="play" hidden>
+    <div class="status"><span id="qn"></span><span>⭐ <b id="pts">0</b></span></div>
+    <div class="progress"><i id="prog"></i></div>
+    <div class="prompt" id="prompt" aria-live="polite"></div>
+    <div class="answers" id="answers"></div>
+    <div class="fb" id="fb" aria-live="assertive"></div>
+    <div class="row">
+      <button class="toggle" id="sound" type="button"></button>
+      <button class="ghost" id="next" type="button" hidden>הבא ←</button>
+    </div>
+  </section>
+
+  <section class="card" id="end" hidden>
+    <div class="result">
+      <div class="t" id="endT"></div>
+      <div class="stars" id="endS"></div>
+      <p id="endP"></p>
+    </div>
+    <div class="review" id="review"></div>
+    <div class="row">
+      <button class="big" id="again" type="button">עוד סיבוב! 🔁</button>
+      <button class="ghost" id="settings" type="button">לשנות</button>
+    </div>
+  </section>
+</main>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const CATS={
+  animals:{name:'🐶 חיות',w:[['dog','🐶','כלב'],['cat','🐱','חתול'],['cow','🐮','פרה'],['horse','🐴','סוס'],['fish','🐟','דג'],['bird','🐦','ציפור'],['lion','🦁','אריה'],['monkey','🐵','קוף'],['elephant','🐘','פיל'],['rabbit','🐰','ארנב'],['frog','🐸','צפרדע'],['pig','🐷','חזיר'],['chicken','🐔','תרנגולת'],['bear','🐻','דוב'],['snake','🐍','נחש'],['mouse','🐭','עכבר'],['duck','🦆','ברווז'],['sheep','🐑','כבשה']]},
+  food:{name:'🍎 אוכל',w:[['apple','🍎','תפוח'],['banana','🍌','בננה'],['grapes','🍇','ענבים'],['strawberry','🍓','תות'],['bread','🍞','לחם'],['cheese','🧀','גבינה'],['egg','🥚','ביצה'],['milk','🥛','חלב'],['pizza','🍕','פיצה'],['cake','🎂','עוגה'],['ice cream','🍦','גלידה'],['carrot','🥕','גזר'],['tomato','🍅','עגבנייה'],['water','💧','מים'],['cookie','🍪','עוגייה'],['lemon','🍋','לימון']]},
+  colors:{name:'🎨 צבעים',w:[['red','🟥','אדום'],['blue','🟦','כחול'],['green','🟩','ירוק'],['yellow','🟨','צהוב'],['orange','🟧','כתום'],['purple','🟪','סגול'],['black','⬛','שחור'],['white','⬜','לבן'],['brown','🟫','חום']]},
+  numbers:{name:'🔢 מספרים',w:[['one','1️⃣','אחת'],['two','2️⃣','שתיים'],['three','3️⃣','שלוש'],['four','4️⃣','ארבע'],['five','5️⃣','חמש'],['six','6️⃣','שש'],['seven','7️⃣','שבע'],['eight','8️⃣','שמונה'],['nine','9️⃣','תשע'],['ten','🔟','עשר']]},
+  body:{name:'✋ הגוף',w:[['eye','👁️','עין'],['ear','👂','אוזן'],['nose','👃','אף'],['mouth','👄','פה'],['hand','✋','יד'],['foot','🦶','כף רגל'],['leg','🦵','רגל'],['tooth','🦷','שן'],['heart','❤️','לב']]},
+  things:{name:'🏠 בבית ובחוץ',w:[['house','🏠','בית'],['ball','⚽','כדור'],['book','📘','ספר'],['car','🚗','מכונית'],['bus','🚌','אוטובוס'],['chair','🪑','כיסא'],['bed','🛏️','מיטה'],['door','🚪','דלת'],['phone','📱','טלפון'],['clock','⏰','שעון'],['key','🔑','מפתח'],['pencil','✏️','עיפרון'],['bag','🎒','תיק'],['plane','✈️','מטוס'],['bike','🚲','אופניים'],['umbrella','☂️','מטרייה']]},
+  nature:{name:'🌳 טבע',w:[['sun','☀️','שמש'],['moon','🌙','ירח'],['star','⭐','כוכב'],['tree','🌳','עץ'],['flower','🌸','פרח'],['rain','🌧️','גשם'],['snow','❄️','שלג'],['cloud','☁️','ענן'],['sea','🌊','ים'],['fire','🔥','אש'],['rainbow','🌈','קשת'],['mountain','⛰️','הר']]},
+  clothes:{name:'👕 בגדים',w:[['shirt','👕','חולצה'],['pants','👖','מכנסיים'],['dress','👗','שמלה'],['hat','🧢','כובע'],['shoe','👟','נעל'],['sock','🧦','גרב'],['glasses','👓','משקפיים'],['coat','🧥','מעיל']]}
+};
+const ALL=Object.entries(CATS).flatMap(([k,c])=>c.w.map(w=>({en:w[0],em:w[1],he:w[2],cat:k})));
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+/* ---------- English voice (text-to-speech) ---------- */
+let voice=null;const canSpeak='speechSynthesis' in window;
+function pickVoice(){if(!canSpeak)return;const vs=speechSynthesis.getVoices();voice=vs.find(v=>/en[-_]US/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null;updateVoiceUI()}
+if(canSpeak){setTimeout(pickVoice,0);speechSynthesis.onvoiceschanged=pickVoice} // after setup below has run
+function say(text){if(!canSpeak||!voice||!soundOn)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.voice=voice;u.lang=voice.lang;u.rate=.85;speechSynthesis.speak(u)}catch(e){}}
+function sayAlways(text){const s=soundOn;soundOn=true;say(text);soundOn=s}
+let soundOn=true;try{soundOn=localStorage.getItem('eng-sound')!=='0'}catch(e){}
+function updateVoiceUI(){const ok=canSpeak&&!!voice;$('listenChip').hidden=!ok;$('noVoice').hidden=ok||!voiceChecked;if(!ok&&cfg.mode==='listen'){cfg.mode='pic';syncChips()}$('sound').hidden=!ok;$('sound').textContent=soundOn?'🔊 הקראה: פועלת':'🔇 הקראה: כבויה'}
+let voiceChecked=false;setTimeout(()=>{voiceChecked=true;updateVoiceUI()},1500);
+
+/* ---------- setup ---------- */
+const cfg={mode:'pic',cat:'all',count:'10'};
+try{Object.assign(cfg,JSON.parse(localStorage.getItem('eng-cfg')||'{}'))}catch(e){}
+$('cats').innerHTML=`<button class="chip" type="button" data-v="all">🌍 הכול</button>`+Object.entries(CATS).map(([k,c])=>`<button class="chip" type="button" data-v="${k}">${c.name}</button>`).join('');
+function syncChips(){document.querySelectorAll('.chips').forEach(g=>{const n=g.dataset.name;g.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',cfg[n]===c.dataset.v))});showBest()}
+document.querySelectorAll('.chips').forEach(g=>g.addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;cfg[g.dataset.name]=c.dataset.v;try{localStorage.setItem('eng-cfg',JSON.stringify(cfg))}catch(e){};syncChips()}));
+const bestKey=()=>`eng-best-${cfg.mode}-${cfg.cat}-${cfg.count}`;
+function getBest(){try{return +localStorage.getItem(bestKey())||0}catch(e){return 0}}
+function showBest(){const b=getBest();$('best').textContent=b?`השיא שלך כאן: ${b} מתוך ${cfg.count}`:''}
+syncChips();updateVoiceUI();
+const show=id=>['setup','play','end'].forEach(s=>$(s).hidden=s!==id);
+
+/* ---------- quiz ---------- */
+let qs=[],qi=0,right=0,results=[],locked=false,cur=null;
+function pool(){return cfg.cat==='all'?ALL:ALL.filter(w=>w.cat===cfg.cat)}
+function start(){
+  const p=shuffle(pool().slice());qs=[];while(qs.length<+cfg.count)qs.push(...shuffle(p.slice()));qs=qs.slice(0,+cfg.count);
+  qi=0;right=0;results=[];show('play');next();
+}
+function options(ans){
+  // three other words from the same topic when possible, never the same word or picture twice
+  let p=pool().filter(w=>w.en!==ans.en&&w.em!==ans.em);if(p.length<3)p=ALL.filter(w=>w.en!==ans.en&&w.em!==ans.em);
+  const same=shuffle(p.filter(w=>w.cat===ans.cat)),other=shuffle(p.filter(w=>w.cat!==ans.cat));
+  const picks=[];for(const w of same.concat(other)){if(picks.length===3)break;if(!picks.some(x=>x.en===w.en||x.em===w.em))picks.push(w)}
+  return shuffle(picks.concat(ans));
+}
+function next(){
+  locked=false;cur=qs[qi];const m=cfg.mode;
+  $('qn').textContent=`שאלה ${qi+1} מתוך ${qs.length}`;$('pts').textContent=right;$('prog').style.width=(qi/qs.length*100)+'%';
+  const P=$('prompt');P.classList.remove('pop');void P.offsetWidth;P.classList.add('pop');
+  if(m==='pic')P.innerHTML=`<div class="em">${cur.em}</div><div class="q">איך אומרים את זה באנגלית?</div>`;
+  if(m==='word'){P.innerHTML=`<div class="word"></div><div class="q">איזו תמונה מתאימה למילה?</div>`;P.querySelector('.word').textContent=cur.en;if(voice)addSpeak(P)}
+  if(m==='he'){P.innerHTML=`<div class="he"></div><div class="q">איך אומרים את זה באנגלית?</div>`;P.querySelector('.he').textContent=cur.he}
+  if(m==='listen'){P.innerHTML=`<button class="ear" type="button" aria-label="לשמוע שוב">🔊</button><div class="q">תקשיבו ובחרו את התמונה הנכונה</div>`;P.querySelector('.ear').onclick=()=>sayAlways(cur.en);setTimeout(()=>sayAlways(cur.en),300)}
+  if(m==='word')setTimeout(()=>say(cur.en),250);
+  const A=$('answers');A.innerHTML='';
+  options(cur).forEach((w,i)=>{const b=document.createElement('button');b.type='button';b.className='ans';
+    b.innerHTML=(m==='word'||m==='listen')?`<span class="e">${w.em}</span>`:`<span class="w"></span>`;
+    if(!(m==='word'||m==='listen'))b.querySelector('.w').textContent=w.en;
+    b.insertAdjacentHTML('beforeend',`<kbd>${i+1}</kbd>`);b.setAttribute('aria-label',(m==='word'||m==='listen')?w.he:w.en);
+    b.onclick=()=>choose(w,b);b.dataset.en=w.en;A.appendChild(b)});
+  $('fb').innerHTML='';$('next').hidden=true;
+}
+function addSpeak(P){const s=document.createElement('button');s.type='button';s.className='speak';s.textContent='🔊 להקשיב';s.onclick=()=>sayAlways(cur.en);P.appendChild(s)}
+function choose(w,b){
+  if(locked)return;locked=true;const ok=w.en===cur.en;
+  document.querySelectorAll('.ans').forEach(x=>{x.disabled=true;if(x.dataset.en===cur.en)x.classList.add('right')});
+  if(!ok)b.classList.add('wrong');
+  results.push({...cur,ok});
+  const praise=['Great! 🎉','Excellent! ⭐','Super! 🚀','Well done! 👏','Amazing! 🌟','Perfect! 💯'];
+  if(ok){right++;$('pts').textContent=right;$('fb').innerHTML=`<span class="good">${praise[Math.floor(Math.random()*praise.length)]}</span><span class="tr">${cur.em} <b></b> = ${cur.he}</span>`;yay()}
+  else{$('fb').innerHTML=`<span class="bad">כמעט! התשובה הנכונה:</span><span class="tr">${cur.em} <b></b> = ${cur.he}</span>`;oops()}
+  $('fb').querySelector('b').textContent=cur.en;
+  say(cur.en);
+  if(ok)setTimeout(advance,1500);else{$('next').hidden=false;$('next').focus({preventScroll:true})}
+}
+function advance(){if(qi>=qs.length)return;qi++;if(qi>=qs.length)finish();else next()}
+$('next').onclick=advance;
+function finish(){
+  $('prog').style.width='100%';
+  const n=qs.length,pct=right/n,st=pct>=.9?3:pct>=.7?2:pct>=.4?1:0;
+  $('endT').textContent=pct===1?'Perfect! מושלם! 🏆':pct>=.7?'Great job! כל הכבוד! 🎉':'Good try! יפה מאוד! 💪';
+  $('endS').textContent='★'.repeat(st)+'☆'.repeat(3-st);
+  const prev=getBest(),rec=right>prev;if(rec)try{localStorage.setItem(bestKey(),right)}catch(e){}
+  $('endP').textContent=`ענית נכון על ${right} מתוך ${n}.`+(rec&&prev?' שיא חדש! 🏆':'');
+  const R=$('review');R.innerHTML='';
+  const seen=new Set();results.forEach(r=>{if(seen.has(r.en))return;seen.add(r.en);
+    const d=document.createElement('div');d.className='rv'+(r.ok?'':' x');d.innerHTML=`<span class="e">${r.em}</span><span class="t2"><b></b><span></span></span>`;
+    d.querySelector('b').textContent=r.en;d.querySelector('.t2 span').textContent=r.he;
+    if(voice){const s=document.createElement('button');s.type='button';s.textContent='🔊';s.setAttribute('aria-label','להשמיע '+r.en);s.onclick=()=>sayAlways(r.en);d.appendChild(s)}
+    R.appendChild(d)});
+  show('end');$('again').focus({preventScroll:true});showBest();
+  if(pct>=.7){confetti();[523,659,784,1046].forEach((f,k)=>tone(f,k*.12,.35))}
+}
+$('start').onclick=start;$('again').onclick=start;$('settings').onclick=()=>{show('setup');showBest()};
+$('sound').onclick=()=>{soundOn=!soundOn;try{localStorage.setItem('eng-sound',soundOn?'1':'0')}catch(e){};updateVoiceUI()};
+addEventListener('keydown',e=>{if($('play').hidden)return;const n=parseInt(e.key,10);
+  if(n>=1&&n<=4&&!locked){const b=$('answers').children[n-1];b&&b.click()}
+  if((e.key==='Enter')&&locked&&!$('next').hidden){e.preventDefault();advance()}});
+
+/* ---------- sound effects & confetti ---------- */
+let ac=null;
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}return ac}
+function tone(f,t,d,type='triangle',v=.08){const a=audio();if(!a)return;const o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+t;
+  o.type=type;o.frequency.value=f;gn.gain.setValueAtTime(.0001,s);gn.gain.exponentialRampToValueAtTime(v,s+.01);gn.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(gn).connect(a.destination);o.start(s);o.stop(s+d+.05)}
+const yay=()=>{tone(660,0,.1);tone(990,.08,.16)},oops=()=>tone(220,0,.22,'sawtooth',.05);
+const cc=$('confetti'),cx=cc.getContext('2d'),COLS=['#F28C28','#2B7DE9','#FFC94A','#1E9E8A','#ff5a3c','#3ec7ff'];
+function confetti(){if(still)return;cc.width=innerWidth;cc.height=innerHeight;
+  const ps=Array.from({length:170},()=>({x:innerWidth/2,y:innerHeight/3,vx:(Math.random()-.5)*16,vy:-Math.random()*14-4,r:Math.random()*6+4,c:COLS[Math.floor(Math.random()*6)],a:Math.random()*6,va:(Math.random()-.5)*.3}));
+  let f=0;(function t(){cx.clearRect(0,0,cc.width,cc.height);ps.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillStyle=p.c;cx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);cx.restore()});
+    if(++f<140)requestAnimationFrame(t);else cx.clearRect(0,0,cc.width,cc.height)})()}
+})();
+</script>
+</body>
+</html>

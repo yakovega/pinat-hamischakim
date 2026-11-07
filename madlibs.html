@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>סיפור משוגע – פינת המשחקים</title>
+<meta name="description" content="עונים על כמה מילים בלי לראות את הסיפור: חיה, מאכל, צבע, מקום... ובסוף נחשף סיפור מצחיק ומשוגע עם המילים שלכם. 6 סיפורים!">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/madlibs.html">
+<meta property="og:title" content="סיפור משוגע – פינת המשחקים">
+<meta property="og:description" content="עונים על כמה מילים בלי לראות את הסיפור: חיה, מאכל, צבע, מקום... ובסוף נחשף סיפור מצחיק ומשוגע עם המילים שלכם. 6 סיפורים!">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/madlibs.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: one centered column; story picker cards, then one word-question card at a time, then the finished story on a paper card. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28; --blue:#2B7DE9;
+  --teal:#1E9E8A; --pink:#ec4899; --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);min-height:100vh;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px}
+[hidden]{display:none!important}
+main{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:clamp(26px,5vw,38px);margin:0;color:var(--sun)}
+.homelink{background:var(--sun);color:#1F2A44;padding:8px 14px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px}
+.card{background:var(--card);border-radius:22px;padding:clamp(16px,4vw,28px);display:flex;flex-direction:column;gap:16px}
+.card h2{font-family:var(--display);font-size:24px;margin:0}
+.intro{margin:0;color:var(--muted);line-height:1.6}
+.stories{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.story{border:3px solid transparent;background:#26314F;color:var(--paper);border-radius:18px;padding:14px;cursor:pointer;text-align:right;display:flex;flex-direction:column;gap:4px;font-family:var(--body)}
+.story:hover{border-color:var(--sun)}
+.story .em{font-size:36px;line-height:1}
+.story b{font-size:17px}
+.story small{color:var(--muted);font-size:13px}
+.story.rand{background:var(--orange);color:#1F2A44}.story.rand small{color:#4a2a08}
+.big{font-family:var(--display);font-weight:700;font-size:22px;border:0;border-radius:99px;padding:12px 34px;background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 5px 0 #a85c12}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #a85c12}
+.ghost{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:99px;padding:9px 16px;font:600 15px var(--body);cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.progress{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--pink);transition:width .3s}
+.step{color:var(--muted);font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+.qEm{font-size:64px;line-height:1;text-align:center}
+.qT{font-family:var(--display);font-size:clamp(26px,6vw,36px);margin:0;text-align:center}
+.qT+p{margin:0;text-align:center;color:var(--muted)}
+.inRow{display:flex;gap:8px}
+.inRow input{flex:1;min-width:0;font:700 24px var(--body);border-radius:14px;border:3px solid var(--line);background:var(--paper);color:#1F2A44;padding:10px 14px;text-align:center}
+.dice{border:0;border-radius:14px;background:var(--blue);color:#fff;font-size:26px;width:60px;cursor:pointer}
+.ideas{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ideas button{border:2px dashed var(--line);background:transparent;color:var(--paper);border-radius:99px;padding:6px 14px;font:600 15px var(--body);cursor:pointer}
+.ideas button:hover{border-color:var(--sun)}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.warn{color:var(--orange);text-align:center;margin:0;min-height:20px;font-weight:600}
+.paper{background:var(--paper);color:#1F2A44;border-radius:22px;padding:clamp(20px,5vw,36px);box-shadow:0 14px 40px #0009;position:relative}
+.paper h2{font-family:var(--display);font-size:clamp(28px,6vw,40px);margin:0 0 12px;color:#c9381f;text-align:center}
+.paper .txt{font-size:clamp(18px,4.2vw,22px);line-height:1.9;margin:0}
+.paper mark{background:#FFC94A;color:#1F2A44;border-radius:8px;padding:1px 7px;font-weight:800;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.paper .reveal mark{animation:pop .5s cubic-bezier(.2,1.6,.4,1) backwards}
+@keyframes pop{from{transform:scale(.3);opacity:0}}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--teal);color:var(--paper);padding:10px 18px;border-radius:10px;font-weight:600;z-index:9;max-width:92vw;text-align:center}
+@media (prefers-reduced-motion:reduce){.paper .reveal mark{animation:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <h1>סיפור משוגע</h1>
+    <a class="homelink" href="index.html">🏠 דף הבית</a>
+  </div>
+
+  <section class="card" id="pick">
+    <h2>בוחרים סיפור 📚</h2>
+    <p class="intro">המשחק ישאל אתכם על כמה מילים: חיה, מאכל, צבע, מקום ועוד. <b>אל תציצו בסיפור!</b> כותבים מה שעולה לראש, ובסוף המילים שלכם נכנסות לסיפור והוא יוצא מצחיק ומשוגע. אפשר לשחק לבד, או שאחד שואל והשני עונה.</p>
+    <div class="stories" id="stories"></div>
+  </section>
+
+  <section class="card" id="ask" hidden>
+    <div class="row" style="justify-content:space-between"><span class="step" id="step"></span><button class="ghost" id="back" type="button">→ אחורה</button></div>
+    <div class="progress"><i id="prog"></i></div>
+    <div class="qEm" id="qEm" aria-hidden="true"></div>
+    <h2 class="qT" id="qT"></h2>
+    <p id="qHelp"></p>
+    <form id="form" autocomplete="off" style="display:flex;flex-direction:column;gap:12px">
+      <div class="inRow"><input id="in" maxlength="24" aria-label="המילה שלך"><button class="dice" id="dice" type="button" aria-label="מילה בהפתעה" title="מילה בהפתעה">🎲</button></div>
+      <div class="ideas" id="ideas"></div>
+      <p class="warn" id="warn"></p>
+      <div class="row"><button class="big" id="nextBtn" type="submit">הבא ←</button></div>
+    </form>
+  </section>
+
+  <section id="done" hidden style="display:flex;flex-direction:column;gap:14px">
+    <article class="paper"><h2 id="sTitle"></h2><p class="txt" id="sText"></p></article>
+    <div class="row">
+      <button class="big" id="sameStory" type="button">🔁 אותו סיפור, מילים חדשות</button>
+      <button class="ghost" id="other" type="button">📚 סיפור אחר</button>
+      <button class="ghost" id="copy" type="button">📋 להעתיק את הסיפור</button>
+      <button class="ghost" id="read" type="button" hidden>🔊 להקריא</button>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+// every word we ask for: emoji, question, hint, ideas
+const F={
+  friend:['🧑‍🤝‍🧑','שם של חבר או חברה','מישהו שאתם מכירים',['דני','נועה','סבתא','המורה','איתן','מאיה','השכן']],
+  animal:['🐾','חיה','כל חיה שבא לכם',['פיל','ג׳ירפה','פינגווין','תנין','חתול','דינוזאור','קנגורו','צב']],
+  place:['🗺️','מקום','למשל: המטבח, הים, הג׳ונגל',['הים','המטבח','הג׳ונגל','הקניון','הגן הציבורי','מגדל אייפל','האמבטיה']],
+  food:['🍕','מאכל','משהו שאוכלים',['פיצה','פלאפל','שוקולד','מלפפון חמוץ','גלידה','שקשוקה','ספגטי']],
+  food2:['🍩','עוד מאכל','משהו אחר שאוכלים',['במבה','לחמניה','אבטיח','פופקורן','חביתה','ממתקים']],
+  number:['🔢','מספר','קטן או ענק, איך שבא לכם',['7','100','3','מיליון','42','1000']],
+  color:['🎨','צבע','אפשר גם צבע מצחיק',['סגול','ירוק זוהר','ורוד','זהב','כתום','שקוף']],
+  verb:['🤸','פעולה שמתחילה ב־ל׳','למשל: לרקוד, לשיר, לקפוץ',['לרקוד','לשיר','לקפוץ','לצחוק','לעוף','לנבוח','לגלגל']],
+  sound:['🔊','צליל מצחיק','למשל: בום! או קוואק!',['בום!','קוואק!','טראח!','פפפף!','בלבלבל!','ויייייי!']],
+  object:['🧸','חפץ','משהו שיש בבית',['מטרייה','גרב','כפית','מברשת שיניים','אופניים','שלט של טלוויזיה','סיר']],
+  body:['👃','חלק בגוף','למשל: אף, מרפק, בוהן',['אף','מרפק','בוהן','אוזן','ברך','סנטר']],
+  clothes:['👕','בגד','משהו שלובשים',['פיג׳מה','כובע','שמלה','גרביים','מעיל','חליפת שחייה']]
+};
+const STORIES=[
+  {em:'🏫',t:'יום משוגע בבית הספר',x:'הבוקר התעוררתי בשעה {number} ומצאתי על המיטה שלי {animal}! על ה{animal} ראיתי {clothes} בצבע {color}, ופתאום שמעתי: "{sound}". החלטתי לקחת את ה{animal} איתי לבית הספר. בשיעור חשבון כל הכיתה התחילה {verb} ביחד עם ה{animal}, והמורה הופתעה כל כך שהיא הפילה את ה{object} שלה. בהפסקה חילקנו לכולם {food}, ול{friend} נתנו {number} חתיכות! בסוף היום כולם הסכימו שזה היה היום הכי טוב בשנה.'},
+  {em:'🚀',t:'טיול לירח',x:'יום אחד בניתי חללית מ{object} ומ{food}. ספרתי לאחור מ־{number} ו... {sound}! טסתי ישר לירח. על הירח הכול היה בצבע {color}, ופגשתי חייזר שנראה בדיוק כמו {animal}, ובמקום אף היה לו {object}. החייזר לימד אותי {verb} בלי כוח משיכה, ואני לימדתי אותו להכין {food2}. כשחזרתי הביתה סיפרתי ל{friend}, אבל אף אחד לא האמין לי. רק שבכיס שלי עדיין יש אבן ירח בצבע {color}.'},
+  {em:'🎉',t:'המסיבה הכי משוגעת',x:'החלטתי לעשות מסיבת הפתעה ל{friend} ב{place}. הזמנתי {number} אורחים, ובין האורחים היה גם {animal} עם מתנה ענקית עטופה בנייר {color}. על השולחן היו הרים של {food} ועוגה בצורה של {object}. כשהמוזיקה התחילה, כולם התחילו {verb} והתקרה כמעט נפלה! פתאום שמענו "{sound}". גילינו שמישהו התיישב על העוגה... זה היה ה{animal}! ובכל זאת, זאת הייתה המסיבה הכי טובה בעולם.'},
+  {em:'🧁',t:'המתכון הסודי',x:'הנה המתכון הסודי שלי לעוגת {food}: לוקחים {number} כוסות קמח, מוסיפים {food2} ו{object} (בשביל הטעם!). מערבבים עם ה{body} עד שהבצק נהיה בצבע {color}. שמים בתנור ב{place} ומחכים עד שהתנור עושה "{sound}". בסוף מקשטים ב{animal} מסוכר. כשנתתי ל{friend} לטעום, היה רגע של שקט... ואז כולם התחילו {verb} מרוב שמחה!'},
+  {em:'⚽',t:'הגמר הגדול',x:'היום שיחקתי בגמר הגדול ב{place}. השוער של הקבוצה השנייה היה {animal}, והכדור היה עשוי מ{food}. בדקה ה־{number} קיבלתי מסירה מ{friend}, בעטתי עם ה{body} ו... "{sound}"! הכדור עף ישר לרשת. כל האוהדים קמו {verb}, והמאמן רקד עם {object} על הראש. הגביע שקיבלנו היה בצבע {color}, ומילאנו אותו ב{food2} לכל הקבוצה.'},
+  {em:'🌙',t:'החלום הכי מוזר',x:'בלילה חלמתי חלום משוגע: הייתי בגובה {number} סנטימטר וטיילתי ב{place}. הגשם היה עשוי מ{food}, והשמיים היו בצבע {color}. פגשתי את {friend} על גב של {animal}, ויחד יצאנו {verb} מסביב לעולם. בדרך מצאנו {object} שכל פעם שנוגעים בו שומעים "{sound}". ואז השעון המעורר צלצל... אבל על הכרית שלי היה פירור של {food2}!'}
+];
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const show=id=>['pick','ask','done'].forEach(s=>$(s).hidden=s!==id);
+
+$('stories').innerHTML=`<button class="story rand" type="button" data-i="-1"><span class="em">🎲</span><b>סיפור בהפתעה</b><small>לא יודעים איזה סיפור יצא!</small></button>`+
+  STORIES.map((s,i)=>`<button class="story" type="button" data-i="${i}"><span class="em">${s.em}</span><b>${s.t}</b><small>${keysOf(s).length} מילים</small></button>`).join('');
+function keysOf(s){return[...new Set([...s.x.matchAll(/\{(\w+)\}/g)].map(m=>m[1]))]}
+$('stories').addEventListener('click',e=>{const b=e.target.closest('.story');if(!b)return;let i=+b.dataset.i;if(i<0){i=Math.floor(Math.random()*STORIES.length);secret=true}else secret=false;begin(i)});
+
+/* ---------- asking for words ---------- */
+let si=0,keys=[],words={},qi=0,secret=false;
+function begin(i){si=i;keys=shuffle(keysOf(STORIES[i]));words={};qi=0;show('ask');ask();click()}
+function ask(){
+  const k=keys[qi],[em,t,help,ideas]=F[k];
+  $('step').textContent=`מילה ${qi+1} מתוך ${keys.length}`+(secret?'':` · ${STORIES[si].t}`);
+  $('prog').style.width=(qi/keys.length*100)+'%';
+  $('qEm').textContent=em;$('qT').textContent=t;$('qHelp').textContent=help;
+  $('in').value=words[k]||'';$('in').inputMode=k==='number'?'numeric':'text';$('warn').textContent='';
+  $('back').style.visibility=qi?'visible':'hidden';$('nextBtn').textContent=qi===keys.length-1?'לסיפור! 🎉':'הבא ←';
+  $('ideas').innerHTML='<span style="color:var(--muted);font-size:13px;align-self:center">רעיונות:</span>'+shuffle(ideas.slice()).slice(0,3).map(w=>`<button type="button"></button>`).join('');
+  const btns=$('ideas').querySelectorAll('button'),pool=shuffle(ideas.slice());btns.forEach((b,j)=>{b.textContent=pool[j];b.onclick=()=>{$('in').value=pool[j];$('in').focus();click()}});
+  if(matchMedia('(hover:hover) and (pointer:fine)').matches)setTimeout(()=>$('in').focus({preventScroll:true}),30);
+}
+$('dice').onclick=()=>{$('in').value=pick(F[keys[qi]][3]);click()};
+$('form').addEventListener('submit',e=>{e.preventDefault();const v=$('in').value.trim();
+  if(!v){$('warn').textContent='כתבו מילה, או לחצו על 🎲 בשביל מילה בהפתעה';$('in').focus();return}
+  words[keys[qi]]=v;qi++;click();if(qi>=keys.length)reveal();else ask()});
+$('back').onclick=()=>{if(qi===0)return;const v=$('in').value.trim();if(v)words[keys[qi]]=v;qi--;ask()};
+
+/* ---------- the finished story ---------- */
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let plain='';
+function reveal(){
+  const s=STORIES[si];let n=0;
+  const html=esc(s.x).replace(/\{(\w+)\}/g,(_,k)=>`<mark style="animation-delay:${(n++)*.12}s">${esc(words[k])}</mark>`);
+  plain=s.t+'\n\n'+s.x.replace(/\{(\w+)\}/g,(_,k)=>words[k]);
+  $('sTitle').textContent=s.em+' '+s.t;const T=$('sText');T.innerHTML=html;T.classList.remove('reveal');void T.offsetWidth;T.classList.add('reveal');
+  show('done');scrollTo({top:0,behavior:'smooth'});tada();
+  $('read').hidden=!heVoice;
+}
+$('sameStory').onclick=()=>begin(si);
+$('other').onclick=()=>{show('pick');speechStop()};
+$('copy').onclick=()=>{const done=()=>toast('הסיפור הועתק! אפשר להדביק ולשלוח 📋');
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(plain).then(done,()=>selectStory());else selectStory()};
+function selectStory(){const r=document.createRange();r.selectNodeContents($('sText'));const sel=getSelection();sel.removeAllRanges();sel.addRange(r);toast('סימנתי את הסיפור. אפשר להעתיק אותו עכשיו')}
+function toast(t){const el=$('toast');el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2600)}
+
+/* ---------- reading aloud (only if the device has a Hebrew voice) ---------- */
+let heVoice=null;
+function findVoice(){if(!('speechSynthesis' in window))return;const v=speechSynthesis.getVoices();heVoice=v.find(x=>/^he|^iw/i.test(x.lang))||null}
+if('speechSynthesis' in window){findVoice();speechSynthesis.onvoiceschanged=findVoice}
+function speechStop(){try{speechSynthesis.cancel()}catch(e){}}
+$('read').onclick=()=>{if(!heVoice)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(plain);u.voice=heVoice;u.lang=heVoice.lang;u.rate=.9;speechSynthesis.speak(u)}catch(e){}};
+
+/* ---------- sound ---------- */
+let ac=null;
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}return ac}
+function tone(f,t,d,type='triangle',v=.07){const a=audio();if(!a)return;const o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+t;
+  o.type=type;o.frequency.value=f;gn.gain.setValueAtTime(.0001,s);gn.gain.exponentialRampToValueAtTime(v,s+.01);gn.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(gn).connect(a.destination);o.start(s);o.stop(s+d+.05)}
+const click=()=>tone(600,0,.05,'sine',.05),tada=()=>[392,523,659,784,1046].forEach((f,i)=>tone(f,i*.1,.3));
+})();
+</script>
+</body>
+</html>

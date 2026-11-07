@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>פונג – פינת המשחקים</title>
+<meta name="description" content="הקלאסיקה! מחזירים את הכדור עם המחבט, והוא נהיה מהיר יותר בכל פגיעה. הכחול עם W ו־S, האדום עם החיצים.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/pong.html">
+<meta property="og:title" content="פונג – פינת המשחקים">
+<meta property="og:description" content="הקלאסיקה! מחזירים את הכדור עם המחבט, והוא נהיה מהיר יותר בכל פגיעה. הכחול עם W ו־S, האדום עם החיצים.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/pong.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: slim bar on top, the court fills the rest (always wide, letterboxed), menu card floats over it. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28;
+  --red:#ff5a3c; --blue:#3ec7ff; --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);display:flex;flex-direction:column;gap:8px;overflow:hidden;
+  padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));padding-block:10px}
+[hidden]{display:none!important}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+h1{font-family:var(--display);font-size:clamp(20px,4vw,30px);margin:0;color:var(--sun);white-space:nowrap}
+.homelink{background:var(--sun);color:#1F2A44;padding:7px 12px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;white-space:nowrap}
+.stage{position:relative;flex:1;min-height:0;touch-action:none;user-select:none;-webkit-user-select:none}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.overlay{position:absolute;inset:0;display:grid;place-items:center;padding:12px;background:#0b1020aa}
+.card{background:var(--paper);color:#1F2A44;border-radius:22px;padding:clamp(16px,4vw,26px);display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;width:min(100%,500px);max-height:100%;overflow:auto}
+.card h2{font-family:var(--display);font-size:clamp(28px,6vw,40px);margin:0;color:var(--orange)}
+.card p{margin:0;line-height:1.5}
+.how{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.how div{border-radius:14px;padding:10px;font-size:14px;line-height:1.7}
+.how .b{background:#dff1fb}.how .r{background:#ffe3dc}
+.how b{display:block;font-size:16px}
+kbd{background:#fff;border-radius:6px;padding:1px 6px;font:700 13px var(--body);border:1px solid #d8ccb4}
+.label{font-size:13px;font-weight:600;color:#6b7280}
+.seg{display:flex;gap:4px;background:#e9e1d1;padding:4px;border-radius:12px;flex-wrap:wrap;justify-content:center}
+.seg button{border:0;background:transparent;border-radius:9px;padding:8px 12px;font:600 15px var(--body);cursor:pointer;color:#1F2A44}
+.seg button[aria-pressed="true"]{background:#1F2A44;color:var(--paper)}
+.big{font-family:var(--display);font-weight:700;font-size:24px;border:0;border-radius:99px;padding:12px 40px;background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 5px 0 #a85c12}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #a85c12}
+.ghost{border:2px solid #d8ccb4;background:transparent;color:#1F2A44;border-radius:99px;padding:8px 18px;font:600 15px var(--body);cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.pause{position:absolute;top:8px;left:50%;transform:translateX(-50%);border:0;border-radius:10px;background:#1F2A44dd;color:var(--paper);font:600 14px var(--body);padding:8px 12px;cursor:pointer;z-index:2}
+.small{font-size:13px;color:#4A5568}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>פונג</h1>
+  <a class="homelink" href="index.html">🏠 דף הבית</a>
+</div>
+
+<div class="stage" id="stage">
+  <canvas id="cv" aria-label="מגרש פונג"></canvas>
+  <button class="pause" id="pauseBtn" type="button" hidden>⏸ הפסקה</button>
+  <div class="overlay" id="ov">
+    <div class="card">
+      <h2 id="cardT">פונג</h2>
+      <p id="cardP">מחזירים את הכדור עם המחבט. מי שמפספס, היריב מקבל נקודה! הכדור נהיה מהיר יותר בכל פגיעה, ואם פוגעים בקצה המחבט הוא עף באלכסון.</p>
+      <div class="how" dir="rtl" id="how">
+        <div class="b"><b>🔵 כחול (שמאל)</b><kbd>W</kbd> למעלה · <kbd>S</kbd> למטה</div>
+        <div class="r"><b>🔴 אדום (ימין)</b><kbd>↑</kbd> למעלה · <kbd>↓</kbd> למטה</div>
+      </div>
+      <span class="small">📱 בטלפון: כל שחקן גורר באצבע בצד שלו של המסך</span>
+      <span class="label">נגד מי משחקים?</span>
+      <div class="seg" id="modes" role="group" aria-label="מצב משחק">
+        <button type="button" data-v="2p" aria-pressed="true">👫 שני שחקנים</button>
+        <button type="button" data-v="easy" aria-pressed="false">🤖 מחשב קל</button>
+        <button type="button" data-v="hard" aria-pressed="false">🤖 מחשב קשה</button>
+      </div>
+      <span class="label">עד כמה נקודות?</span>
+      <div class="seg" id="pts" role="group" aria-label="נקודות לניצחון">
+        <button type="button" data-v="5" aria-pressed="false">5</button>
+        <button type="button" data-v="7" aria-pressed="true">7</button>
+        <button type="button" data-v="11" aria-pressed="false">11</button>
+      </div>
+      <button class="big" id="go" type="button">מתחילים!</button>
+      <button class="ghost" id="resume" type="button" hidden>להמשיך</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const stage=$('stage'),cv=$('cv'),g=cv.getContext('2d');
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const W=900,H=520,PW=16,PH=96,BR=11,MARGIN=30;
+let mode='2p',target=7;
+try{mode=localStorage.getItem('pong-mode')||mode;target=+localStorage.getItem('pong-pts')||target}catch(e){}
+// player 0 = blue (left, W/S), player 1 = red (right, arrows); in computer mode the computer is blue so you keep the arrows
+const P=[{y:H/2,ty:null,col:'#3ec7ff',keys:['KeyW','KeyS'],score:0},{y:H/2,ty:null,col:'#ff5a3c',keys:['ArrowUp','ArrowDown'],score:0}];
+const ball={x:W/2,y:H/2,vx:0,vy:0,sp:0};
+let running=false,paused=false,serveT=0,rally=0,best=0,trail=[],flash=0,flashText='',flashCol='',hits=0;
+const isAI=i=>mode!=='2p'&&i===0;
+
+/* ---------- view ---------- */
+let V={s:1,ox:0,oy:0,d:1};
+function resize(){const w=stage.clientWidth,h=stage.clientHeight,d=Math.min(2,devicePixelRatio||1);cv.width=w*d;cv.height=h*d;
+  V={s:Math.min(w/W,h/H),d};V.ox=(w-W*V.s)/2;V.oy=(h-H*V.s)/2}
+new ResizeObserver(resize).observe(stage);resize();
+
+/* ---------- input ---------- */
+const keys={};
+addEventListener('keydown',e=>{keys[e.code]=true;if(running&&['KeyW','KeyS','ArrowUp','ArrowDown'].includes(e.code))e.preventDefault();
+  if((e.code==='Escape'||e.code==='KeyP')&&running)pause()});
+addEventListener('keyup',e=>{keys[e.code]=false});
+addEventListener('blur',()=>{for(const k in keys)keys[k]=false;if(running)pause()});
+const owner={};
+function local(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left-V.ox)/V.s,y:(e.clientY-r.top-V.oy)/V.s}}
+stage.addEventListener('pointerdown',e=>{if(!running||e.target!==cv)return;const p=local(e);let i=p.x<W/2?0:1;if(isAI(i))i=1;
+  owner[e.pointerId]=i;cv.setPointerCapture(e.pointerId);P[i].ty=p.y});
+stage.addEventListener('pointermove',e=>{const i=owner[e.pointerId];if(i===undefined)return;P[i].ty=local(e).y});
+const up=e=>{const i=owner[e.pointerId];if(i!==undefined){P[i].ty=null;delete owner[e.pointerId]}};
+stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
+
+/* ---------- game ---------- */
+function serve(toward){ball.x=W/2;ball.y=H/2;ball.sp=6.5;const a=(Math.random()*.6-.3);ball.vx=Math.cos(a)*ball.sp*(toward?1:-1);ball.vy=Math.sin(a)*ball.sp;serveT=60;rally=0;trail=[]}
+function ai(){
+  const p=P[0],hard=mode==='hard';
+  let aim=H/2;
+  if(ball.vx<0){ // ball coming: predict where it reaches the paddle, with walls
+    let y=ball.y,vy=ball.vy,t=(ball.x-(MARGIN+PW))/-ball.vx;y+=vy*t;
+    while(y<BR||y>H-BR){if(y<BR)y=2*BR-y;if(y>H-BR)y=2*(H-BR)-y}
+    aim=hard?y:y+(Math.sin(performance.now()/400)*40);
+  }
+  const max=hard?7.5:4.6,d=aim-p.y;p.y+=Math.max(-max,Math.min(max,d*(hard?.25:.12)));
+}
+function movePaddle(i){
+  const p=P[i];
+  if(isAI(i)){ai();}
+  else{
+    const dir=(keys[p.keys[1]]?1:0)-(keys[p.keys[0]]?1:0);
+    if(dir)p.y+=dir*9;
+    else if(p.ty!==null){p.y+=(p.ty-p.y)*.35}
+  }
+  p.y=Math.max(PH/2,Math.min(H-PH/2,p.y));
+}
+function step(){
+  P.forEach((p,i)=>movePaddle(i));
+  if(serveT>0){serveT--;return}
+  const sub=3;
+  for(let s=0;s<sub;s++){
+    ball.x+=ball.vx/sub;ball.y+=ball.vy/sub;
+    if(ball.y<BR){ball.y=BR;ball.vy=Math.abs(ball.vy);wall()}
+    if(ball.y>H-BR){ball.y=H-BR;ball.vy=-Math.abs(ball.vy);wall()}
+    // paddles
+    for(let i=0;i<2;i++){
+      const p=P[i],px=i===0?MARGIN:W-MARGIN-PW;
+      const movingToward=i===0?ball.vx<0:ball.vx>0;
+      if(movingToward&&ball.x+BR>px&&ball.x-BR<px+PW&&Math.abs(ball.y-p.y)<PH/2+BR){
+        const rel=(ball.y-p.y)/(PH/2); // -1 top .. 1 bottom
+        ball.sp=Math.min(16,ball.sp+.45);
+        const ang=rel*1.05; // up to ~60 degrees
+        ball.vx=Math.cos(ang)*ball.sp*(i===0?1:-1);ball.vy=Math.sin(ang)*ball.sp;
+        ball.x=i===0?px+PW+BR:px-BR;
+        rally++;best=Math.max(best,rally);hit(rel);
+      }
+    }
+    if(ball.x<-BR*2){point(1);return}
+    if(ball.x>W+BR*2){point(0);return}
+  }
+  if(!still){trail.push({x:ball.x,y:ball.y});if(trail.length>10)trail.shift()}
+}
+function point(i){
+  P[i].score++;flash=60;flashText=rally>=8?`רצף של ${rally}! נקודה!`:'נקודה!';flashCol=P[i].col;scoreSound();
+  if(P[i].score>=target){running=false;$('pauseBtn').hidden=true;
+    setTimeout(()=>{const name=mode!=='2p'?(i===1?'ניצחת! 🏆':'המחשב ניצח'):(i===0?'🔵 הכחול ניצח! 🏆':'🔴 האדום ניצח! 🏆');
+      $('cardT').textContent=name;$('cardP').textContent=`התוצאה: כחול ${P[0].score} – אדום ${P[1].score}. הרצף הכי ארוך: ${best} מכות.`;
+      $('go').textContent='משחק חדש';$('resume').hidden=true;$('ov').hidden=false;$('go').focus({preventScroll:true});
+      if(!(mode!=='2p'&&i===0))[523,659,784,1046].forEach((f,k)=>tone(f,k*.12,.35))},900);
+    return}
+  serve(i===0); // the ball goes toward the player who lost the point
+}
+
+/* ---------- draw ---------- */
+function rr(x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+function draw(){
+  g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height);
+  g.setTransform(V.s*V.d,0,0,V.s*V.d,V.ox*V.d,V.oy*V.d);
+  g.fillStyle='#0e1430';rr(0,0,W,H,22);g.fill();
+  g.fillStyle='#3ec7ff10';g.fillRect(0,0,W/2,H);g.fillStyle='#ff5a3c10';g.fillRect(W/2,0,W/2,H);
+  g.strokeStyle='#ffffff30';g.lineWidth=4;g.setLineDash([16,16]);g.beginPath();g.moveTo(W/2,12);g.lineTo(W/2,H-12);g.stroke();g.setLineDash([]);
+  g.strokeStyle='#33416A';g.lineWidth=4;rr(2,2,W-4,H-4,20);g.stroke();
+  // scores
+  g.font='700 84px Fredoka, Rubik, sans-serif';g.textAlign='center';g.textBaseline='top';
+  g.fillStyle='#3ec7ff55';g.fillText(P[0].score,W/2-90,24);g.fillStyle='#ff5a3c55';g.fillText(P[1].score,W/2+90,24);
+  if(rally>=3&&running){g.font='600 20px Rubik, sans-serif';g.fillStyle='#FFC94A';g.fillText(`רצף: ${rally}`,W/2,H-40)}
+  // paddles
+  P.forEach((p,i)=>{const px=i===0?MARGIN:W-MARGIN-PW;g.fillStyle=p.col;rr(px,p.y-PH/2,PW,PH,8);g.fill();g.fillStyle='#ffffff55';rr(px+3,p.y-PH/2+6,4,PH-12,2);g.fill()});
+  // trail + ball
+  trail.forEach((t,k)=>{g.globalAlpha=k/trail.length*.35;g.fillStyle='#FFC94A';g.beginPath();g.arc(t.x,t.y,BR*(.4+k/trail.length*.6),0,7);g.fill()});g.globalAlpha=1;
+  if(running||serveT>0){g.fillStyle='#FFF8EC';g.beginPath();g.arc(ball.x,ball.y,BR,0,7);g.fill()}
+  if(serveT>0&&running){g.font='600 22px Rubik, sans-serif';g.fillStyle='#C9D2E6';g.textBaseline='middle';g.fillText('מוכנים...',W/2,H/2+46)}
+  if(flash>0){g.globalAlpha=Math.min(1,flash/20);g.font='700 56px Fredoka, Rubik, sans-serif';g.textBaseline='middle';g.lineWidth=8;g.strokeStyle='#0e1430';
+    g.strokeText(flashText,W/2,H/2-60);g.fillStyle=flashCol;g.fillText(flashText,W/2,H/2-60);g.globalAlpha=1;if(running&&!paused)flash--}
+  g.textBaseline='alphabetic';
+  // labels for who is who
+  g.font='600 16px Rubik, sans-serif';g.fillStyle='#3ec7ffaa';g.textAlign='left';g.fillText(isAI(0)?'🤖 מחשב':'🔵 W / S',14,H-14);
+  g.fillStyle='#ff5a3caa';g.textAlign='right';g.fillText(mode!=='2p'?'אתה ↑ / ↓':'🔴 ↑ / ↓',W-14,H-14);
+}
+
+/* ---------- loop ---------- */
+let acc=0,last=0;
+function loop(t){const dt=Math.min(100,t-(last||t));last=t;acc+=dt;
+  while(acc>=16.67){acc-=16.67;if(running&&!paused)step()}
+  draw();requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+
+/* ---------- menu ---------- */
+function seg(id,get,set,key){const el=$(id);const sync=()=>el.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===String(get())));
+  el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;set(b.dataset.v);try{localStorage.setItem(key,b.dataset.v)}catch(e){};sync()});sync()}
+seg('modes',()=>mode,v=>mode=v,'pong-mode');seg('pts',()=>target,v=>target=+v,'pong-pts');
+function start(){P.forEach(p=>{p.score=0;p.y=H/2;p.ty=null});best=0;flash=0;running=true;paused=false;audio();serve(Math.random()<.5);
+  $('ov').hidden=true;$('pauseBtn').hidden=false}
+$('go').onclick=start;
+function pause(){if(!running||paused)return;paused=true;$('cardT').textContent='הפסקה';$('cardP').textContent='המשחק עצר. אפשר להמשיך או להתחיל משחק חדש.';
+  $('go').textContent='משחק חדש';$('resume').hidden=false;$('ov').hidden=false;$('pauseBtn').hidden=true}
+$('pauseBtn').onclick=pause;
+$('resume').onclick=()=>{paused=false;$('ov').hidden=true;$('pauseBtn').hidden=false};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pause()});
+
+/* ---------- sound ---------- */
+let ac=null;
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}return ac}
+function tone(f,t,d,type='square',v=.06){const a=ac;if(!a)return;const o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+t;
+  o.type=type;o.frequency.value=f;gn.gain.setValueAtTime(.0001,s);gn.gain.exponentialRampToValueAtTime(v,s+.005);gn.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(gn).connect(a.destination);o.start(s);o.stop(s+d+.05)}
+const hit=rel=>tone(440+Math.abs(rel)*220+Math.min(rally,20)*8,0,.07);
+const wall=()=>tone(260,0,.05);
+const scoreSound=()=>{tone(330,0,.15,'triangle',.1);tone(220,.12,.25,'triangle',.1)};
+})();
+</script>
+</body>
+</html>

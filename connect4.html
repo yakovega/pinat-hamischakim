@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ארבע בשורה – פינת המשחקים</title>
+<meta name="description" content="מפילים אסימונים לעמודות, ומי שמסדר ראשון ארבעה ברצף מנצח. אפשר לשחק נגד מחשב קל או חכם.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/connect4.html">
+<meta property="og:title" content="ארבע בשורה – פינת המשחקים">
+<meta property="og:description" content="מפילים אסימונים לעמודות, ומי שמסדר ראשון ארבעה ברצף מנצח. אפשר לשחק נגד מחשב קל או חכם.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/connect4.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: scoreboard on top, the blue standing frame in the middle (sized to fit the screen), mode + controls below. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --frame:#2B7DE9; --frameDark:#1d5fb8;
+  --red:#ff5a3c; --yellow:#FFC94A; --muted:#C9D2E6; --line:#33416A; --orange:#F28C28; --pad:clamp(8px,2.4vw,16px); --gap:clamp(4px,1.6vw,10px);
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px;
+  display:flex;flex-direction:column;align-items:center;gap:12px}
+[hidden]{display:none!important}
+.top{width:100%;max-width:640px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:clamp(24px,5vw,36px);margin:0;color:var(--sun)}
+.homelink{background:var(--sun);color:#1F2A44;padding:8px 14px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px}
+.board-top{width:100%;max-width:640px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pl{display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:14px;background:var(--card);border:3px solid transparent;transition:border-color .2s,transform .2s;min-width:0}
+.pl.active{border-color:var(--sun);transform:scale(1.04)}
+.pl .disc{width:30px;height:30px;border-radius:50%;flex:none;box-shadow:inset 0 -4px 0 #0003}
+.pl .name{font-weight:800;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl .sc{font-family:var(--display);font-size:28px;font-variant-numeric:tabular-nums}
+.status{font-weight:800;font-size:17px;text-align:center;min-height:24px}
+.wrap{position:relative;width:min(100%,640px,calc((100vh - 280px) * 7 / 6.6));max-width:100%}
+.frame{position:relative;background:var(--frame);border-radius:22px;padding:var(--pad);box-shadow:0 10px 0 var(--frameDark),0 20px 40px #0007;direction:ltr}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:var(--gap);position:relative}
+.cell{aspect-ratio:1;border-radius:50%;background:var(--ground);box-shadow:inset 0 6px 8px #0008;position:relative;overflow:visible}
+.disc-el{position:absolute;inset:6%;border-radius:50%;box-shadow:inset 0 -6px 0 #0003,inset 0 4px 0 #ffffff55}
+.disc-el.r{background:var(--red)} .disc-el.y{background:var(--yellow)}
+.disc-el.win{animation:glow .7s ease-in-out infinite alternate}
+@keyframes glow{to{box-shadow:0 0 0 5px var(--paper),0 0 22px 6px #fff}}
+.disc-el.dim{opacity:.45}
+.cols{position:absolute;inset:0;display:grid;grid-template-columns:repeat(7,1fr);padding:var(--pad);gap:var(--gap);direction:ltr}
+.col{border:0;background:transparent;cursor:pointer;border-radius:14px;padding:0}
+.col:hover,.col:focus-visible{background:#ffffff1a}
+.col:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.ghost-disc{position:absolute;top:-13%;width:12%;aspect-ratio:1;border-radius:50%;opacity:.85;pointer-events:none;transition:left .12s;box-shadow:inset 0 -6px 0 #0003;transform:translateX(-50%)}
+.controls{width:100%;max-width:640px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.btn{border:0;border-radius:10px;padding:10px 16px;font:600 15px var(--body);cursor:pointer;background:var(--card);color:var(--paper)}
+.btn:hover{background:#2b3a5e}
+.btn[aria-pressed="true"]{background:var(--sun);color:#1F2A44}
+.btn:focus-visible,.homelink:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.seg{display:flex;gap:4px;background:var(--card);padding:4px;border-radius:12px}
+.seg .btn{background:transparent;padding:8px 12px}
+.seg .btn[aria-pressed="true"]{background:var(--sun);color:#1F2A44}
+.over{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.over .card{pointer-events:auto;background:var(--paper);color:#1F2A44;border-radius:20px;padding:20px 28px;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center;box-shadow:0 12px 40px #000a;animation:pop .4s cubic-bezier(.2,1.6,.4,1);max-width:90%}
+.over b{font-family:var(--display);font-size:clamp(28px,6vw,44px);line-height:1.1}
+.over .btn{background:#1F2A44;color:var(--paper)}
+@keyframes pop{from{transform:scale(.5);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.disc-el.win,.over .card{animation:none}}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:6;width:100%;height:100%}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>ארבע בשורה</h1>
+  <a class="homelink" href="index.html">🏠 דף הבית</a>
+</div>
+
+<div class="board-top">
+  <div class="pl" id="p0"><span class="disc" style="background:var(--red)"></span><span class="name" id="n0">שחקן אדום</span><span class="sc" id="s0">0</span></div>
+  <div class="status" id="status" aria-live="polite"></div>
+  <div class="pl" id="p1"><span class="sc" id="s1">0</span><span class="name" id="n1">שחקן צהוב</span><span class="disc" style="background:var(--yellow)"></span></div>
+</div>
+
+<div class="wrap">
+  <div class="frame">
+    <div class="ghost-disc" id="ghost"></div>
+    <div class="grid" id="grid"></div>
+    <div class="cols" id="cols"></div>
+  </div>
+  <div class="over" id="over" hidden>
+    <div class="card" role="dialog">
+      <b id="overT"></b>
+      <span id="overP"></span>
+      <button class="btn" id="again" type="button">עוד סיבוב</button>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <div class="seg" role="group" aria-label="נגד מי משחקים">
+    <button class="btn" type="button" data-mode="2p" aria-pressed="true">👫 שני שחקנים</button>
+    <button class="btn" type="button" data-mode="easy" aria-pressed="false">🤖 מחשב קל</button>
+    <button class="btn" type="button" data-mode="hard" aria-pressed="false">🤖 מחשב חכם</button>
+  </div>
+  <button class="btn" id="undo" type="button">↩ בטל</button>
+  <button class="btn" id="reset" type="button">איפוס ניקוד</button>
+</div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+(function(){
+const R=6,C=7,$=id=>document.getElementById(id);
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let board,turn,starter=0,over=false,busy=false,moves=[],score=[0,0],mode='2p';
+try{const s=JSON.parse(localStorage.getItem('c4')||'null');if(s){score=s.score||score;mode=s.mode||mode}}catch(e){}
+function store(){try{localStorage.setItem('c4',JSON.stringify({score,mode}))}catch(e){}}
+
+// build DOM
+const grid=$('grid'),cols=$('cols'),cells=[];
+for(let r=0;r<R;r++)for(let c=0;c<C;c++){const d=document.createElement('div');d.className='cell';grid.appendChild(d);cells.push(d)}
+for(let c=0;c<C;c++){const b=document.createElement('button');b.className='col';b.type='button';b.setAttribute('aria-label','עמודה '+(c+1));
+  b.onclick=()=>human(c);b.onmouseenter=()=>ghostAt(c);b.onfocus=()=>ghostAt(c);cols.appendChild(b)}
+cols.onmouseleave=()=>{$('ghost').style.opacity=0};
+const cellAt=(r,c)=>cells[r*C+c]; // r=0 top row
+
+function newRound(){
+  board=Array.from({length:R},()=>Array(C).fill(-1));
+  cells.forEach(c=>c.innerHTML='');moves=[];over=false;busy=false;
+  turn=starter;starter=1-starter; // loser-friendly: alternate who starts
+  $('over').hidden=true;ui();
+  if(isAI(turn))setTimeout(aiMove,500);
+}
+const isAI=p=>mode!=='2p'&&p===1;
+function ui(){
+  $('n0').textContent=mode==='2p'?'שחקן אדום':'אתה (אדום)';
+  $('n1').textContent=mode==='2p'?'שחקן צהוב':(mode==='easy'?'מחשב קל':'מחשב חכם');
+  $('s0').textContent=score[0];$('s1').textContent=score[1];
+  $('p0').classList.toggle('active',!over&&turn===0);$('p1').classList.toggle('active',!over&&turn===1);
+  if(!over)$('status').textContent=isAI(turn)?'המחשב חושב...':(turn===0?'תור האדום':'תור הצהוב');
+  document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===mode));
+  $('undo').disabled=!moves.length||busy;
+  $('ghost').style.background=turn===0?'var(--red)':'var(--yellow)';
+}
+function ghostAt(c){if(over||busy||isAI(turn))return;const g=$('ghost');g.style.opacity=.85;g.style.left=(3+(c+.5)*(94/7))+'%'}
+
+const dropRow=(b,c)=>{for(let r=R-1;r>=0;r--)if(b[r][c]<0)return r;return -1};
+function human(c){if(over||busy||isAI(turn))return;play(c)}
+function play(c){
+  const r=dropRow(board,c);if(r<0){shake();return}
+  busy=true;board[r][c]=turn;moves.push([r,c]);
+  const d=document.createElement('div');d.className='disc-el '+(turn===0?'r':'y');
+  const cell=cellAt(r,c);cell.appendChild(d);
+  const dist=(r+1)*cell.offsetHeight*1.1+cell.offsetHeight;
+  const dur=still?1:260+r*55;
+  d.animate([{transform:`translateY(-${dist}px)`},{transform:'translateY(0)',offset:.8},{transform:'translateY(-8%)',offset:.9},{transform:'translateY(0)'}],{duration:dur,easing:'ease-in'});
+  clack(r);$('ghost').style.opacity=0;
+  setTimeout(()=>{
+    busy=false;
+    const line=winLine(board,r,c);
+    if(line){finish(turn,line);return}
+    if(moves.length===R*C){finish(-1);return}
+    turn=1-turn;ui();
+    if(isAI(turn)){busy=true;ui();setTimeout(()=>{busy=false;aiMove()},450)}
+  },dur);
+  ui();
+}
+function shake(){const f=document.querySelector('.frame');f.animate([{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'none'}],{duration:200})}
+
+function winLine(b,r,c){
+  const p=b[r][c];
+  for(const[dr,dc]of[[0,1],[1,0],[1,1],[1,-1]]){
+    const line=[[r,c]];
+    for(const s of[1,-1]){let rr=r+dr*s,cc=c+dc*s;while(rr>=0&&rr<R&&cc>=0&&cc<C&&b[rr][cc]===p){line.push([rr,cc]);rr+=dr*s;cc+=dc*s}}
+    if(line.length>=4)return line;
+  }
+  return null;
+}
+function finish(p,line){
+  over=true;
+  if(p>=0){score[p]++;store();
+    line.forEach(([r,c])=>cellAt(r,c).firstChild.classList.add('win'));
+    cells.forEach(cl=>{const d=cl.firstChild;if(d&&!d.classList.contains('win'))d.classList.add('dim')});
+    const name=mode==='2p'?(p===0?'האדום':'הצהוב'):(p===0?'אתה':'המחשב');
+    $('overT').textContent=mode!=='2p'&&p===0?'ניצחת! 🎉':mode!=='2p'?'המחשב ניצח':`${name} ניצח! 🎉`;
+    $('overP').textContent=mode!=='2p'&&p===1?'לא נורא, נסה שוב!':'ארבע בשורה!';
+    $('status').textContent='';
+    if(!(mode!=='2p'&&p===1)){confetti();fanfare()}
+  }else{$('overT').textContent='תיקו!';$('overP').textContent='הלוח התמלא ואף אחד לא ניצח';$('status').textContent=''}
+  setTimeout(()=>{$('over').hidden=false;$('again').focus({preventScroll:true})},900);
+  ui();
+}
+
+/* ---------- computer ---------- */
+function valid(b){const v=[];for(const c of[3,2,4,1,5,0,6])if(b[0][c]<0)v.push(c);return v}
+function scoreWindow(w,p){const me=w.filter(x=>x===p).length,op=w.filter(x=>x===1-p).length,e=w.filter(x=>x<0).length;
+  if(me===4)return 1e5;if(me===3&&e===1)return 6;if(me===2&&e===2)return 2;if(op===3&&e===1)return -8;return 0}
+function evaluate(b,p){let s=0;
+  for(let r=0;r<R;r++)if(b[r][3]===p)s+=3;
+  for(let r=0;r<R;r++)for(let c=0;c<C;c++)for(const[dr,dc]of[[0,1],[1,0],[1,1],[1,-1]]){
+    const w=[];for(let k=0;k<4;k++){const rr=r+dr*k,cc=c+dc*k;if(rr<0||rr>=R||cc<0||cc>=C)break;w.push(b[rr][cc])}
+    if(w.length===4)s+=scoreWindow(w,p)}
+  return s}
+function wins(b,p){for(let r=0;r<R;r++)for(let c=0;c<C;c++)if(b[r][c]===p&&winLine(b,r,c))return true;return false}
+function minimax(b,depth,a,bt,maxP){
+  const v=valid(b);
+  if(wins(b,1))return[null,1e6+depth];if(wins(b,0))return[null,-1e6-depth];
+  if(!v.length)return[null,0];if(depth===0)return[null,evaluate(b,1)];
+  let best=v[0],val=maxP?-Infinity:Infinity;
+  for(const c of v){const r=dropRow(b,c);b[r][c]=maxP?1:0;const s=minimax(b,depth-1,a,bt,!maxP)[1];b[r][c]=-1;
+    if(maxP?s>val:s<val){val=s;best=c}
+    if(maxP)a=Math.max(a,val);else bt=Math.min(bt,val);if(a>=bt)break}
+  return[best,val]}
+function aiMove(){
+  if(over)return;
+  const b=board.map(r=>r.slice()),v=valid(b);let col;
+  if(mode==='easy'){
+    // win if possible, block sometimes, otherwise random-ish
+    col=v.find(c=>{const r=dropRow(b,c);b[r][c]=1;const w=wins(b,1);b[r][c]=-1;return w});
+    if(col===undefined&&Math.random()<.6)col=v.find(c=>{const r=dropRow(b,c);b[r][c]=0;const w=wins(b,0);b[r][c]=-1;return w});
+    if(col===undefined)col=v[Math.floor(Math.random()*v.length)];
+  }else col=minimax(b,5,-Infinity,Infinity,true)[0];
+  play(col);
+}
+
+/* ---------- controls ---------- */
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{if(mode===b.dataset.mode)return;mode=b.dataset.mode;score=[0,0];starter=0;store();newRound()});
+$('again').onclick=newRound;
+$('reset').onclick=()=>{score=[0,0];store();ui()};
+$('undo').onclick=()=>{
+  if(!moves.length||busy)return;
+  if(over){const last=moves[moves.length-1];const p=board[last[0]][last[1]];if(p>=0&&winLine(board,last[0],last[1])){score[p]=Math.max(0,score[p]-1);store()}}
+  const popOne=()=>{const[r,c]=moves.pop();const p=board[r][c];board[r][c]=-1;cellAt(r,c).innerHTML='';return p};
+  if(mode==='2p')turn=popOne();
+  else{let p;do{p=popOne()}while(p!==0&&moves.length);turn=0} // vs computer: go back to your own last move
+  over=false;$('over').hidden=true;cells.forEach(cl=>{const d=cl.firstChild;if(d)d.classList.remove('win','dim')});
+  ui();
+};
+addEventListener('keydown',e=>{const n=parseInt(e.key,10);if(n>=1&&n<=7)human(n-1)});
+
+/* ---------- sound & confetti ---------- */
+let ac=null;
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}return ac}
+function tone(f,t,d,type='triangle',v=.12){const a=audio();if(!a)return;const o=a.createOscillator(),g=a.createGain(),s=a.currentTime+t;
+  o.type=type;o.frequency.value=f;g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(v,s+.01);g.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(g).connect(a.destination);o.start(s);o.stop(s+d+.05)}
+function clack(r){tone(180+r*20,(260+r*55)/1000*.8,.08,'square',.05)}
+function fanfare(){[523,659,784,1046].forEach((f,k)=>tone(f,k*.12,.35))}
+const cc=$('confetti'),cx=cc.getContext('2d'),COLS=['#F28C28','#2B7DE9','#FFC94A','#1E9E8A','#ff5a3c','#3ec7ff'];
+function confetti(){if(still)return;cc.width=innerWidth;cc.height=innerHeight;
+  const ps=Array.from({length:160},()=>({x:innerWidth/2,y:innerHeight/3,vx:(Math.random()-.5)*16,vy:-Math.random()*14-4,r:Math.random()*6+4,c:COLS[Math.floor(Math.random()*6)],a:Math.random()*6,va:(Math.random()-.5)*.3}));
+  let f=0;(function t(){cx.clearRect(0,0,cc.width,cc.height);ps.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillStyle=p.c;cx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);cx.restore()});
+    if(++f<140)requestAnimationFrame(t);else cx.clearRect(0,0,cc.width,cc.height)})()}
+
+newRound();
+})();
+</script>
+</body>
+</html>
