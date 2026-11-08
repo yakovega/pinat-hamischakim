@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>תכנות לקטנים – פינת המשחקים</title>
+<meta name="description" content="משחק תכנות לילדים: כותבים לרובוט תוכנית של פקודות, לוחצים הפעלה ורואים אם הוא מגיע לדגל. אוספים כוכבים, עוקפים קירות ומתקנים באגים. 5 רמות.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/code.html">
+<meta property="og:title" content="תכנות לקטנים – פינת המשחקים">
+<meta property="og:description" content="משחק תכנות לילדים: כותבים לרובוט תוכנית של פקודות, לוחצים הפעלה ורואים אם הוא מגיע לדגל. אוספים כוכבים, עוקפים קירות ומתקנים באגים. 5 רמות.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/code.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: the board (robot, walls, stars, flag) on top; under it the program strip that fills as you add commands; then the command buttons and the big ▶ button. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28; --blue:#2B7DE9;
+  --teal:#1E9E8A; --red:#ff5a3c; --purple:#8B5CF6; --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);min-height:100vh;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px}
+[hidden]{display:none!important}
+main{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:clamp(26px,5vw,38px);margin:0;color:var(--sun)}
+.homelink{background:var(--sun);color:#1F2A44;padding:8px 14px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px}
+.card{background:var(--card);border-radius:22px;padding:clamp(14px,4vw,24px);display:flex;flex-direction:column;gap:12px}
+.card h2{font-family:var(--display);font-size:22px;margin:0}
+.group{display:flex;flex-direction:column;gap:8px}
+.group>span{font-weight:600;color:var(--muted);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:12px;padding:9px 13px;font:600 15px var(--body);cursor:pointer;text-align:right}
+.chip[aria-pressed="true"]{background:var(--sun);border-color:var(--sun);color:#1F2A44}
+.chip small{display:block;font-weight:400;font-size:12px;opacity:.85}
+.big{font-family:var(--display);font-weight:700;font-size:22px;border:0;border-radius:99px;padding:12px 30px;background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 5px 0 #a85c12}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #a85c12}
+.big:disabled{opacity:.5;cursor:default}
+.big.go{background:#4ade80;box-shadow:0 5px 0 #1f8a4c}
+.ghost{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:99px;padding:9px 16px;font:600 15px var(--body);cursor:pointer}
+.ghost:disabled{opacity:.4;cursor:default}
+button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.best{color:var(--muted);font-size:14px;text-align:center;margin:0}
+.status{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.status b{color:var(--paper);font-family:var(--display);font-size:20px}
+.progress{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--teal);transition:width .3s}
+.mission{margin:0;text-align:center;font-size:clamp(16px,4vw,19px);line-height:1.5}
+.mission b{color:var(--sun)}
+/* board: always left-to-right so that ⬅ really means left */
+.board{direction:ltr;position:relative;width:min(100%,420px);margin:0 auto;display:grid;gap:4px;background:#2a3a2a;padding:6px;border-radius:16px}
+.cell{aspect-ratio:1;border-radius:8px;background:#6fbf73;display:grid;place-items:center;font-size:clamp(20px,6vw,32px);position:relative}
+.cell:nth-child(odd){background:#78c87c}
+.cell.wall{background:#5a4636}
+.cell.trail::after{content:"";position:absolute;width:22%;height:22%;border-radius:50%;background:#ffffff88}
+.cell.bump{outline:4px solid var(--red);outline-offset:-4px}
+.robot{position:absolute;display:grid;place-items:center;transition:left .32s ease-in-out,top .32s ease-in-out;pointer-events:none;z-index:2}
+.robot .bot{font-size:clamp(24px,7vw,38px);line-height:1;filter:drop-shadow(0 3px 3px #0006)}
+.robot .dir{position:absolute;inset:0;transition:transform .25s}
+.robot .dir::before{content:"";position:absolute;left:50%;top:-2px;transform:translateX(-50%);border:9px solid transparent;border-bottom:13px solid var(--sun);border-top:0}
+@media (prefers-reduced-motion:reduce){.robot,.robot .dir{transition:none}}
+/* program */
+.progwrap{display:flex;flex-direction:column;gap:6px}
+.proghead{display:flex;gap:10px;justify-content:space-between;align-items:center;font-weight:600;color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+.prog{direction:rtl;min-height:62px;background:#141C30;border:2px dashed var(--line);border-radius:14px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.prog:empty::after{content:"התוכנית ריקה – הוסיפו פקודות מלמטה";direction:rtl;color:var(--muted);font-size:14px;margin:auto}
+.cmd{width:44px;height:44px;border-radius:10px;border:0;font:700 22px var(--body);cursor:pointer;display:grid;place-items:center;color:#1F2A44;padding:0;position:relative}
+.cmd.up,.cmd.fwd{background:#7cc6ff}.cmd.down{background:#ffb4a2}.cmd.left{background:#ffd27c}.cmd.right{background:#b9a7ff}
+.cmd.tl{background:#ffd27c}.cmd.tr{background:#b9a7ff}
+.cmd.now{outline:4px solid #fff;outline-offset:2px}
+.cmd.done{opacity:.45}
+.cmd.badcmd{outline:4px solid var(--red);outline-offset:2px}
+.cmd small{position:absolute;bottom:-1px;right:3px;font-size:10px;font-weight:600;opacity:.7}
+.palette{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;direction:ltr}
+.pal{min-width:76px;height:64px;border-radius:14px;border:0;font:700 26px var(--body);cursor:pointer;color:#1F2A44;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 4px 0 #0005;padding:4px 10px}
+.pal span{font-size:12px;font-weight:600}
+.pal:active{transform:translateY(2px);box-shadow:0 2px 0 #0005}
+.pal:disabled{opacity:.45;cursor:default}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center}
+.fb{min-height:46px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}
+.fb .good{font-family:var(--display);font-weight:700;font-size:28px;color:var(--sun)}
+.fb .bad{font-weight:700;font-size:18px;color:var(--red)}
+.fb .why{color:var(--muted);font-size:15px}
+.result{text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center}
+.result .t{font-family:var(--display);font-weight:700;font-size:clamp(30px,7vw,46px);color:var(--sun);line-height:1.1}
+.result .stars{font-size:40px;letter-spacing:6px}
+.result p{margin:0;font-size:17px}
+.keys{color:var(--muted);font-size:13px;text-align:center;margin:0}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:6;width:100%;height:100%}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <h1>תכנות לקטנים 🤖</h1>
+    <a class="homelink" href="index.html">🏠 דף הבית</a>
+  </div>
+
+  <section class="card" id="setup">
+    <h2>מתכנתים את הרובוט! 💻</h2>
+    <p style="margin:0;color:var(--muted);line-height:1.6">הרובוט לא יודע ללכת לבד. כותבים לו תוכנית, כלומר רשימה של פקודות לפי הסדר, ולוחצים ▶. הרובוט מבצע אותן אחת אחרי השנייה. אם הוא נתקע, מתקנים את התוכנית ומנסים שוב, בדיוק כמו מתכנתים אמיתיים!</p>
+    <div class="group"><span>רמה</span>
+      <div class="chips" data-name="level">
+        <button class="chip" type="button" data-v="veryeasy">🐣 ממש קל<small>חיצים, לוח קטן</small></button>
+        <button class="chip" type="button" data-v="easy">🐥 קל<small>חיצים וקירות</small></button>
+        <button class="chip" type="button" data-v="mid">🐇 בינוני<small>לאסוף כוכבים בדרך</small></button>
+        <button class="chip" type="button" data-v="hard">🦊 קשה<small>קדימה, ימינה, שמאלה</small></button>
+        <button class="chip" type="button" data-v="champ">🏆 אלופים<small>פניות, כוכבים ומעט פקודות</small></button>
+      </div>
+    </div>
+    <div class="group"><span>כמה שלבים?</span>
+      <div class="chips" data-name="count"><button class="chip" type="button" data-v="5">5</button><button class="chip" type="button" data-v="10">10</button></div>
+    </div>
+    <button class="big" id="start" type="button" style="align-self:center">🤖 להתחיל!</button>
+    <p class="best" id="best"></p>
+  </section>
+
+  <section class="card" id="play" hidden>
+    <div class="status"><span id="qn"></span><span>⭐ <b id="pts">0</b></span></div>
+    <div class="progress"><i id="prog"></i></div>
+    <p class="mission" id="mission"></p>
+    <div class="board" id="board"></div>
+    <div class="progwrap">
+      <div class="proghead"><span>📝 התוכנית שלי <small style="font-weight:400">(לחיצה על פקודה מוחקת אותה)</small></span><span id="cnt"></span></div>
+      <div class="prog" id="program" aria-label="התוכנית"></div>
+    </div>
+    <div class="palette" id="palette"></div>
+    <div class="row">
+      <button class="ghost" id="undo" type="button">↶ למחוק אחרונה</button>
+      <button class="ghost" id="clear" type="button">🗑 לנקות</button>
+      <button class="big go" id="run" type="button">▶ להריץ</button>
+    </div>
+    <div class="fb" id="fb" aria-live="assertive"></div>
+    <div class="row"><button class="ghost" id="skip" type="button" hidden>לדלג על השלב</button><button class="big" id="next" type="button" hidden>לשלב הבא ←</button></div>
+    <p class="keys" id="keys"></p>
+  </section>
+
+  <section class="card" id="end" hidden>
+    <div class="result"><div class="t" id="endT"></div><div class="stars" id="endS"></div><p id="endP"></p></div>
+    <div class="row"><button class="big" id="again" type="button">🤖 עוד שלבים</button><button class="ghost" id="settings" type="button">לשנות</button></div>
+  </section>
+</main>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+// directions: 0 up, 1 right, 2 down, 3 left
+const DR=[-1,0,1,0],DC=[0,1,0,-1];
+const LV={
+  veryeasy:{n:4,walls:0,stars:0,rel:false,opt:[2,4]},
+  easy:{n:5,walls:.2,stars:0,rel:false,opt:[4,8]},
+  mid:{n:6,walls:.17,stars:2,rel:false,opt:[7,12]},
+  hard:{n:5,walls:.15,stars:0,rel:true,opt:[5,9]},
+  champ:{n:6,walls:.17,stars:2,rel:true,opt:[9,15],limit:3}
+};
+const CMDS={
+  up:{t:'⬆',name:'למעלה',cls:'up'},down:{t:'⬇',name:'למטה',cls:'down'},left:{t:'⬅',name:'שמאלה',cls:'left'},right:{t:'➡',name:'ימינה',cls:'right'},
+  fwd:{t:'⬆',name:'קדימה',cls:'fwd'},tl:{t:'↰',name:'פנה שמאלה',cls:'tl'},tr:{t:'↱',name:'פנה ימינה',cls:'tr'}
+};
+
+/* ---------- setup ---------- */
+const cfg={level:'veryeasy',count:'5'};
+try{Object.assign(cfg,JSON.parse(localStorage.getItem('code-cfg')||'{}'))}catch(e){}
+document.querySelectorAll('.chips').forEach(g=>{const n=g.dataset.name;const sync=()=>{g.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',cfg[n]===c.dataset.v));showBest()};
+  g.addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;cfg[n]=c.dataset.v;try{localStorage.setItem('code-cfg',JSON.stringify(cfg))}catch(e){};sync()});sync()});
+const bestKey=()=>`code-best-${cfg.level}-${cfg.count}`;
+function getBest(){try{return +localStorage.getItem(bestKey())||0}catch(e){return 0}}
+function showBest(){const b=getBest();$('best').textContent=b?`השיא שלך כאן: ${b} כוכבים`:''}
+const show=id=>['setup','play','end'].forEach(s=>$(s).hidden=s!==id);
+
+/* ---------- puzzle generator ---------- */
+// shortest program length, by BFS over (row, col, facing, stars collected)
+function solve(P,rel){
+  const {n,wall,stars,start,goal,face}=P,K=stars.length,full=(1<<K)-1;
+  const key=(r,c,d,m)=>((r*n+c)*4+d)*(1<<K)+m;const seen=new Map();
+  const m0=0,q=[[start[0],start[1],rel?face:0,m0,0]];seen.set(key(start[0],start[1],rel?face:0,m0),1);
+  while(q.length){const [r,c,d,m,g]=q.shift();
+    if(r===goal[0]&&c===goal[1]&&m===full)return g;
+    const moves=[];
+    if(rel){moves.push([r+DR[d],c+DC[d],d]);moves.push([r,c,(d+1)%4]);moves.push([r,c,(d+3)%4])}
+    else for(let k=0;k<4;k++)moves.push([r+DR[k],c+DC[k],0]);
+    for(const [nr,nc,nd] of moves){if(nr<0||nc<0||nr>=n||nc>=n||wall[nr][nc])continue;
+      let nm=m;stars.forEach((s,i)=>{if(s[0]===nr&&s[1]===nc)nm|=1<<i});
+      const k=key(nr,nc,nd,nm);if(seen.has(k))continue;seen.set(k,1);q.push([nr,nc,nd,nm,g+1])}}
+  return -1}
+function makePuzzle(L){
+  for(let tries=0;tries<3000;tries++){
+    const n=L.n,wall=Array.from({length:n},()=>Array(n).fill(false));
+    const cells=[];for(let r=0;r<n;r++)for(let c=0;c<n;c++)cells.push([r,c]);shuffle(cells);
+    const start=cells[0],goal=cells[1],stars=cells.slice(2,2+L.stars);
+    const nw=Math.round(n*n*L.walls);cells.slice(2+L.stars,2+L.stars+nw).forEach(([r,c])=>wall[r][c]=true);
+    const P={n,wall,stars,start,goal,face:R(0,3)};
+    const o=solve(P,L.rel);if(o<L.opt[0]||o>L.opt[1])continue;
+    // the goal shouldn't be reachable without the stars being a real detour; the opt range already keeps it interesting
+    P.opt=o;return P}
+  return null}
+
+/* ---------- game state ---------- */
+let qi=0,total=0,cur=null,program=[],running=false,solvedNow=false,fails=0,bot={r:0,c:0,d:0},got=[];
+function start(){qi=0;total=0;show('play');next()}
+function next(){
+  const L=LV[cfg.level];cur=makePuzzle(L);program=[];fails=0;solvedNow=false;
+  $('qn').textContent=`שלב ${qi+1} מתוך ${cfg.count}`;$('pts').textContent=total;$('prog').style.width=(qi/+cfg.count*100)+'%';
+  const goalTxt=cur.stars.length?`אספו את <b>כל הכוכבים ⭐</b> ואז הגיעו ל<b>דגל 🏁</b>`:`הביאו את הרובוט ל<b>דגל 🏁</b>`;
+  $('mission').innerHTML=`${goalTxt}. ${L.limit?`מותר עד <b>${cur.opt+L.limit}</b> פקודות!`:`אפשר לעשות את זה ב־<b>${cur.opt}</b> פקודות.`}`;
+  $('fb').innerHTML='';$('next').hidden=true;$('skip').hidden=true;
+  buildPalette(L);drawBoard();resetBot();renderProgram();
+  $('keys').textContent=L.rel?'מקלדת: ↑ קדימה, ← → פנייה, Enter להריץ, Backspace למחוק':'מקלדת: החיצים מוסיפים פקודות, Enter להריץ, Backspace למחוק';
+}
+function buildPalette(L){const P=$('palette');P.innerHTML='';
+  (L.rel?['tl','fwd','tr']:['left','up','down','right']).forEach(k=>{const C=CMDS[k],b=document.createElement('button');b.type='button';b.className='pal cmd '+C.cls;b.dataset.k=k;
+    b.innerHTML=`${C.t}<span>${C.name}</span>`;b.setAttribute('aria-label',C.name);b.onclick=()=>add(k);P.appendChild(b)})}
+function limit(){const L=LV[cfg.level];return L.limit?cur.opt+L.limit:40}
+function add(k){if(running||solvedNow)return;if(program.length>=limit()){$('fb').innerHTML=`<span class="bad">אין יותר מקום! מותר עד ${limit()} פקודות.</span>`;return}
+  program.push(k);renderProgram();tone(700+program.length*25,0,.06,'triangle',.05);clearMarks()}
+function renderProgram(){const P=$('program');P.innerHTML='';
+  program.forEach((k,i)=>{const C=CMDS[k],b=document.createElement('button');b.type='button';b.className='cmd '+C.cls;b.innerHTML=`${C.t}<small>${i+1}</small>`;b.setAttribute('aria-label',`${i+1}: ${C.name}`);
+    b.onclick=()=>{if(running||solvedNow)return;program.splice(i,1);renderProgram();clearMarks()};P.appendChild(b)});
+  const L=LV[cfg.level];$('cnt').textContent=L.limit?`${program.length} / ${limit()}`:`${program.length} פקודות`;
+  $('run').disabled=!program.length||running||solvedNow;$('undo').disabled=!program.length||running||solvedNow;$('clear').disabled=$('undo').disabled;
+  document.querySelectorAll('#palette .pal').forEach(b=>b.disabled=running||solvedNow)}
+$('undo').onclick=()=>{if(running||solvedNow)return;program.pop();renderProgram();clearMarks()};
+$('clear').onclick=()=>{if(running||solvedNow)return;program=[];renderProgram();clearMarks()};
+
+/* ---------- board ---------- */
+let cellEls=[];
+function drawBoard(){const B=$('board'),n=cur.n;B.innerHTML='';B.style.gridTemplateColumns=`repeat(${n},1fr)`;cellEls=[];
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++){const d=document.createElement('div');d.className='cell';
+    if(cur.wall[r][c]){d.classList.add('wall');d.textContent=pick(['🧱','🌳','🪨'])}
+    else if(r===cur.goal[0]&&c===cur.goal[1])d.textContent='🏁';
+    B.appendChild(d);cellEls.push(d)}
+  // checkerboard needs row-aware parity
+  cellEls.forEach((d,i)=>{const r=Math.floor(i/n),c=i%n;if(!d.classList.contains('wall'))d.style.background=(r+c)%2?'#6fbf73':'#7fcf83'});
+  const rb=document.createElement('div');rb.className='robot';rb.id='robot';rb.innerHTML='<div class="dir" id="dirArrow"></div><span class="bot">🤖</span>';B.appendChild(rb);
+  requestAnimationFrame(()=>placeBot(true))}
+const cellAt=(r,c)=>cellEls[r*cur.n+c];
+function drawStars(){cur.stars.forEach((s,i)=>{const e=cellAt(s[0],s[1]);e.textContent=got[i]?'':'⭐'})}
+function placeBot(instant){const rb=$('robot'),cell=cellAt(bot.r,bot.c);if(!rb||!cell)return;
+  if(instant){rb.style.transition='none'}rb.style.left=cell.offsetLeft+'px';rb.style.top=cell.offsetTop+'px';rb.style.width=cell.offsetWidth+'px';rb.style.height=cell.offsetHeight+'px';
+  $('dirArrow').hidden=!LV[cfg.level].rel;$('dirArrow').style.transform=`rotate(${bot.rot}deg)`;
+  if(instant){rb.offsetHeight;rb.style.transition=''}}
+function resetBot(){bot={r:cur.start[0],c:cur.start[1],d:cur.face,rot:cur.face*90};got=cur.stars.map(()=>false);
+  cellEls.forEach(e=>e.classList.remove('trail','bump'));drawStars();placeBot(true)}
+function clearMarks(){if(running)return;document.querySelectorAll('#program .cmd').forEach(b=>b.classList.remove('now','done','badcmd'));
+  if(!solvedNow){resetBot();if(!$('next').hidden)return;$('fb').innerHTML=''}}
+addEventListener('resize',()=>placeBot(true));
+
+/* ---------- running the program ---------- */
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+async function run(){
+  if(running||solvedNow||!program.length)return;running=true;renderProgram();resetBot();$('fb').innerHTML='';
+  const items=[...$('program').children],rel=LV[cfg.level].rel,step=still?260:420;
+  let crash=-1,out=false;
+  for(let i=0;i<program.length;i++){
+    items.forEach((b,j)=>{b.classList.toggle('now',j===i);b.classList.toggle('done',j<i)});
+    const k=program[i];let dr=0,dc=0,move=true;
+    if(rel){if(k==='tl'){bot.d=(bot.d+3)%4;bot.rot-=90;move=false}else if(k==='tr'){bot.d=(bot.d+1)%4;bot.rot+=90;move=false}else{dr=DR[bot.d];dc=DC[bot.d]}}
+    else{const d={up:0,right:1,down:2,left:3}[k];dr=DR[d];dc=DC[d]}
+    if(move){const nr=bot.r+dr,nc=bot.c+dc;
+      if(nr<0||nc<0||nr>=cur.n||nc>=cur.n||cur.wall[nr][nc]){crash=i;out=!(nr>=0&&nc>=0&&nr<cur.n&&nc<cur.n);
+        if(nr>=0&&nc>=0&&nr<cur.n&&nc<cur.n)cellAt(nr,nc).classList.add('bump');break}
+      cellAt(bot.r,bot.c).classList.add('trail');bot.r=nr;bot.c=nc;
+      cur.stars.forEach((s,si)=>{if(!got[si]&&s[0]===nr&&s[1]===nc){got[si]=true;setTimeout(()=>{drawStars();tone(1320,0,.12,'sine',.07);tone(1760,.08,.15,'sine',.06)},still?0:250)}})}
+    placeBot(false);tone(move?520:420,0,.07,'triangle',.04);
+    await wait(step);
+  }
+  items.forEach(b=>b.classList.remove('now'));
+  running=false;
+  const atGoal=bot.r===cur.goal[0]&&bot.c===cur.goal[1],all=got.every(Boolean);
+  if(crash>=0){items[crash].classList.add('badcmd');fail(`בום! פקודה מספר ${crash+1} מובילה ${out?'אל מחוץ ללוח':'לתוך קיר'}.`,'לחצו על הפקודה האדומה כדי למחוק אותה, או הוסיפו פקודות לפניה.')}
+  else if(atGoal&&all)win();
+  else if(atGoal)fail('הגעתם לדגל, אבל שכחתם כוכבים! ⭐','צריך לעבור בכל הכוכבים לפני הדגל.');
+  else fail('הפקודות נגמרו, והרובוט עוד לא בדגל.','הוסיפו עוד פקודות כדי להמשיך את הדרך.');
+  renderProgram();
+}
+$('run').onclick=()=>run();
+function fail(msg,why){fails++;tone(220,0,.22,'sawtooth',.05);$('fb').innerHTML=`<span class="bad">${msg}</span><span class="why">${why}</span>`;if(fails>=3)$('skip').hidden=false}
+function win(){
+  solvedNow=true;const L=LV[cfg.level],n=program.length,st=n<=cur.opt?3:n<=cur.opt+2?2:1;total+=st;$('pts').textContent=total;
+  $('fb').innerHTML=`<span class="good">${['','יפה! ⭐','כל הכבוד! ⭐⭐','מושלם! ⭐⭐⭐'][st]}</span><span class="why">${n<=cur.opt?`הצלחתם ב־${n} פקודות, הכי קצר שאפשר!`:`הצלחתם ב־${n} פקודות. הדרך הכי קצרה היא ${cur.opt}.`}</span>`;
+  [660,880,1100,1320].forEach((f,k)=>tone(f,k*.09,.22));if(st===3)confetti(80);
+  $('next').hidden=false;$('skip').hidden=true;$('next').focus({preventScroll:true});renderProgram()}
+$('skip').onclick=()=>advance();
+$('next').onclick=()=>advance();
+function advance(){qi++;if(qi>=+cfg.count)finish();else next()}
+function finish(){
+  $('prog').style.width='100%';const n=+cfg.count,max=n*3,pct=total/max,st=pct>=.85?3:pct>=.6?2:pct>=.3?1:0;
+  $('endT').textContent=pct>=.85?'מתכנת אלוף! 👩‍💻':pct>=.6?'כל הכבוד! 🎉':'יפה מאוד! 💪';$('endS').textContent='★'.repeat(st)+'☆'.repeat(3-st);
+  const prev=getBest(),rec=total>prev;if(rec)try{localStorage.setItem(bestKey(),total)}catch(e){}
+  $('endP').textContent=`אספתם ${total} כוכבים מתוך ${max}.`+(rec&&prev?' שיא חדש! 🏆':'');
+  show('end');$('again').focus({preventScroll:true});showBest();if(pct>=.6){confetti(170);[523,659,784,1046].forEach((f,k)=>tone(f,k*.12,.35))}
+}
+$('start').onclick=start;$('again').onclick=start;$('settings').onclick=()=>{show('setup');showBest()};
+
+/* keyboard (e.code, so it works with a Hebrew layout too) */
+addEventListener('keydown',e=>{if($('play').hidden)return;const rel=LV[cfg.level].rel;
+  const map=rel?{ArrowUp:'fwd',ArrowLeft:'tl',ArrowRight:'tr'}:{ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'};
+  if(map[e.code]){e.preventDefault();add(map[e.code])}
+  else if(e.code==='Backspace'){e.preventDefault();$('undo').click()}
+  else if(e.code==='Enter'||e.code==='NumpadEnter'){if(document.activeElement&&document.activeElement.tagName==='BUTTON'&&document.activeElement.id!=='run')return;e.preventDefault();if(!$('next').hidden)$('next').click();else run()}});
+
+/* ---------- sound & confetti ---------- */
+let ac=null;
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}return ac}
+function tone(f,t,d,type='triangle',v=.08){const a=audio();if(!a)return;const o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+t;
+  o.type=type;o.frequency.value=f;gn.gain.setValueAtTime(.0001,s);gn.gain.exponentialRampToValueAtTime(v,s+.005);gn.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(gn).connect(a.destination);o.start(s);o.stop(s+d+.05)}
+const cc=$('confetti'),cx=cc.getContext('2d'),COLS=['#F28C28','#2B7DE9','#FFC94A','#1E9E8A','#ff5a3c','#8B5CF6'];
+function confetti(N){if(still)return;cc.width=innerWidth;cc.height=innerHeight;
+  const ps=Array.from({length:N},()=>({x:innerWidth/2,y:innerHeight/3,vx:(Math.random()-.5)*16,vy:-Math.random()*14-4,r:Math.random()*6+4,c:COLS[Math.floor(Math.random()*6)],a:Math.random()*6,va:(Math.random()-.5)*.3}));
+  let f=0;(function t(){cx.clearRect(0,0,cc.width,cc.height);ps.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillStyle=p.c;cx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);cx.restore()});
+    if(++f<140)requestAnimationFrame(t);else cx.clearRect(0,0,cc.width,cc.height)})()}
+})();
+</script>
+</body>
+</html>
