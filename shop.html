@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>חנות הצעצועים – פינת המשחקים</title>
+<meta name="description" content="קונים צעצועים בשקלים ובאגורות: משלמים בדיוק, מחשבים כמה עודף, ואפילו משחקים בקופאי. 5 רמות, מעשרה שקלים ועד שני צעצועים עם אגורות.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/shop.html">
+<meta property="og:title" content="חנות הצעצועים – פינת המשחקים">
+<meta property="og:description" content="קונים צעצועים בשקלים ובאגורות: משלמים בדיוק, מחשבים כמה עודף, ואפילו משחקים בקופאי. 5 רמות, מעשרה שקלים ועד שני צעצועים עם אגורות.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/shop.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: one centered card; the toy with its price tag on top, the counter (money you put down) in the middle, the wallet of coins and bills at the bottom. Same bright toy-box look as the site hub. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28; --blue:#2B7DE9;
+  --teal:#1E9E8A; --red:#ff5a3c; --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);min-height:100vh;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px}
+[hidden]{display:none!important}
+main{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:clamp(26px,5vw,38px);margin:0;color:var(--sun)}
+.homelink{background:var(--sun);color:#1F2A44;padding:8px 14px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px}
+.card{background:var(--card);border-radius:22px;padding:clamp(16px,4vw,26px);display:flex;flex-direction:column;gap:14px}
+.card h2{font-family:var(--display);font-size:22px;margin:0}
+.group{display:flex;flex-direction:column;gap:8px}
+.group>span{font-weight:600;color:var(--muted);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:12px;padding:9px 13px;font:600 15px var(--body);cursor:pointer;text-align:right}
+.chip[aria-pressed="true"]{background:var(--sun);border-color:var(--sun);color:#1F2A44}
+.chip small{display:block;font-weight:400;font-size:12px;opacity:.85}
+.big{font-family:var(--display);font-weight:700;font-size:22px;border:0;border-radius:99px;padding:12px 32px;background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 5px 0 #a85c12}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #a85c12}
+.big:disabled{opacity:.5;cursor:default}
+.ghost{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:99px;padding:9px 16px;font:600 15px var(--body);cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.best{color:var(--muted);font-size:14px;text-align:center;margin:0}
+.status{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.status b{color:var(--paper);font-family:var(--display);font-size:20px}
+.progress{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--teal);transition:width .3s}
+/* shelf */
+.shelf{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;background:#26314F;border-radius:18px;padding:14px;border-bottom:8px solid #8a5a3b}
+.toy{display:flex;flex-direction:column;align-items:center;gap:6px}
+.toy .em{font-size:clamp(56px,14vw,84px);line-height:1;filter:drop-shadow(0 6px 10px #0007)}
+.tag{background:var(--paper);color:#1F2A44;font:700 20px var(--display);padding:4px 14px;border-radius:8px;position:relative;font-variant-numeric:tabular-nums;direction:rtl}
+.tag::before{content:"";position:absolute;right:-8px;top:50%;width:10px;height:10px;border-radius:50%;background:#26314F;transform:translateY(-50%)}
+.plus{font:700 30px var(--display);color:var(--muted)}
+.task{text-align:center;font-size:clamp(17px,4vw,20px);line-height:1.6;margin:0}
+.task b{color:var(--sun)}
+/* counter & wallet */
+.counter{min-height:110px;background:#c9a46a;border-radius:16px;padding:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;box-shadow:inset 0 6px 0 #0002;position:relative}
+.counter:empty::after{content:attr(data-empty);color:#5a3a22;font-weight:600;font-size:15px}
+.sum{display:flex;justify-content:center;align-items:baseline;gap:8px;font-weight:600;color:var(--muted)}
+.sum b{font:700 28px var(--display);color:var(--paper);font-variant-numeric:tabular-nums}
+.wallet{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center}
+.money{border:0;cursor:pointer;display:grid;place-items:center;font-family:var(--display);font-weight:700;color:#1F2A44;transition:transform .1s;padding:0;line-height:1;text-align:center}
+.money:active{transform:scale(.92)}
+.coin{border-radius:50%;box-shadow:inset 0 -4px 0 #0003,inset 0 0 0 4px #ffffff40,0 3px 0 #0004}
+.coin span{font-size:.36em}.coin small{display:block;font-size:.22em;font-weight:600;margin-top:2px}
+.c10a,.c50a{background:radial-gradient(circle at 35% 30%,#ffd9a0,#c98a3c 60%,#9a6020)}
+.c1,.c2,.c5{background:radial-gradient(circle at 35% 30%,#ffffff,#c9ced8 55%,#9aa1ad)}
+.c10{background:radial-gradient(circle at 35% 30%,#fff3b0,#e9c46a 45%,#c9ced8 46%,#9aa1ad)}
+.bill{width:92px;height:50px;border-radius:8px;box-shadow:inset 0 0 0 4px #ffffff55,0 3px 0 #0004;font-size:22px;position:relative}
+.bill::before{content:"";position:absolute;inset:8px auto 8px 8px;width:22px;border-radius:50%;background:#ffffff55}
+.b20{background:#7fc8a9}.b50{background:#9ad18b}.b100{background:#e9a07a}.b200{background:#a9a6e8}
+.counter .money{cursor:pointer}
+.answers{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media (max-width:520px){.answers{grid-template-columns:1fr 1fr}}
+.ans{border:3px solid var(--line);background:#26314F;color:var(--paper);border-radius:16px;min-height:66px;cursor:pointer;font:700 24px var(--display);font-variant-numeric:tabular-nums}
+.ans:hover{border-color:var(--sun)}
+.ans.right{border-color:var(--teal);background:#1d4a44}.ans.wrong{border-color:var(--red);background:#4a2420}
+.ans:disabled{cursor:default}
+.fb{min-height:50px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}
+.fb .good{font-family:var(--display);font-weight:700;font-size:28px;color:var(--sun)}
+.fb .bad{font-weight:700;font-size:18px;color:var(--red)}
+.fb .why{color:var(--muted);font-size:15px}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.result{text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center}
+.result .t{font-family:var(--display);font-weight:700;font-size:clamp(30px,7vw,46px);color:var(--sun);line-height:1.1}
+.result .stars{font-size:40px;letter-spacing:6px}
+.result p{margin:0;font-size:17px}
+.bag{font-size:34px;letter-spacing:4px;text-align:center}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:6;width:100%;height:100%}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <h1>חנות הצעצועים 🧸</h1>
+    <a class="homelink" href="index.html">🏠 דף הבית</a>
+  </div>
+
+  <section class="card" id="setup">
+    <h2>ברוכים הבאים לחנות! 🛒</h2>
+    <p style="margin:0;color:var(--muted);line-height:1.6">קונים צעצועים בשקלים ובאגורות, ולומדים לשלם בדיוק ולחשב עודף.</p>
+    <div class="group"><span>מה עושים?</span>
+      <div class="chips" data-name="mode">
+        <button class="chip" type="button" data-v="pay">🪙 משלמים בדיוק<small>שמים על הדלפק בדיוק את המחיר</small></button>
+        <button class="chip" type="button" data-v="change">🧮 כמה עודף?<small>מחשבים כמה עודף מקבלים</small></button>
+        <button class="chip" type="button" data-v="cashier">🧑‍💼 אני הקופאי<small>נותנים ללקוח את העודף במטבעות</small></button>
+      </div>
+    </div>
+    <div class="group"><span>רמה</span>
+      <div class="chips" data-name="level">
+        <button class="chip" type="button" data-v="veryeasy">🐣 ממש קל<small>עד 10 ₪</small></button>
+        <button class="chip" type="button" data-v="easy">🐥 קל<small>עד 20 ₪</small></button>
+        <button class="chip" type="button" data-v="mid">🐇 בינוני<small>עד 100 ₪</small></button>
+        <button class="chip" type="button" data-v="hard">🦊 קשה<small>עם אגורות</small></button>
+        <button class="chip" type="button" data-v="champ">🏆 אלופים<small>שני צעצועים ואגורות</small></button>
+      </div>
+    </div>
+    <div class="group"><span>כמה קניות?</span>
+      <div class="chips" data-name="count"><button class="chip" type="button" data-v="5">5</button><button class="chip" type="button" data-v="10">10</button></div>
+    </div>
+    <button class="big" id="start" type="button" style="align-self:center">🛒 לחנות!</button>
+    <p class="best" id="best"></p>
+  </section>
+
+  <section class="card" id="play" hidden>
+    <div class="status"><span id="qn"></span><span>⭐ <b id="pts">0</b></span></div>
+    <div class="progress"><i id="prog"></i></div>
+    <div class="shelf" id="shelf"></div>
+    <p class="task" id="task"></p>
+    <div id="payArea">
+      <div class="counter" id="counter" data-empty="לחצו על מטבעות ושטרות כדי לשים אותם כאן" aria-label="הדלפק"></div>
+      <div class="sum" id="sumRow">על הדלפק: <b id="sum">0 ₪</b></div>
+      <div class="wallet" id="wallet" aria-label="הארנק"></div>
+      <div class="row" style="margin-top:10px"><button class="ghost" id="clear" type="button">↺ להחזיר הכול</button><button class="big" id="payBtn" type="button">✓ לשלם</button></div>
+    </div>
+    <div class="answers" id="answers" hidden></div>
+    <div class="fb" id="fb" aria-live="assertive"></div>
+    <div class="row"><button class="ghost" id="next" type="button" hidden>לקנייה הבאה ←</button></div>
+  </section>
+
+  <section class="card" id="end" hidden>
+    <div class="result"><div class="t" id="endT"></div><div class="stars" id="endS"></div><p id="endP"></p></div>
+    <div class="bag" id="bag" aria-label="מה קניתם"></div>
+    <div class="row"><button class="big" id="again" type="button">🛒 עוד קניות</button><button class="ghost" id="settings" type="button">לשנות</button></div>
+  </section>
+</main>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const TOYS=['🧸','🚗','🪀','🪁','⚽','🏀','🎈','🧩','🎲','🪅','🚂','✈️','🤖','🦖','🎨','🖍️','📚','🛴','🎸','🥁','🪆','🧃','🍭','🎯','🛹','🔫'.replace('🔫','🚁'),'🦄','🐙'];
+// money in agorot (100 agorot = 1 shekel)
+const MONEY=[{v:10,k:'c10a',sz:44},{v:50,k:'c50a',sz:52},{v:100,k:'c1',sz:48},{v:200,k:'c2',sz:56},{v:500,k:'c5',sz:62},{v:1000,k:'c10',sz:66},{v:2000,k:'b20'},{v:5000,k:'b50'},{v:10000,k:'b100'},{v:20000,k:'b200'}];
+const LV={
+  veryeasy:{max:10,agorot:false,wallet:[100,200,500,1000],two:false},
+  easy:{max:20,agorot:false,wallet:[100,200,500,1000,2000],two:false},
+  mid:{max:100,agorot:false,wallet:[100,200,500,1000,2000,5000,10000],two:false},
+  hard:{max:50,agorot:true,wallet:[10,50,100,200,500,1000,2000,5000],two:false},
+  champ:{max:80,agorot:true,wallet:[10,50,100,200,500,1000,2000,5000,10000],two:true}
+};
+function fmt(a){const s=Math.floor(a/100),g=a%100;if(!g)return`${s} ₪`;if(!s)return`${g} אג׳`;return`${s}.${String(g).padStart(2,'0')} ₪`}
+function moneyEl(v,tag='button'){const m=MONEY.find(x=>x.v===v),e=document.createElement(tag);if(tag==='button')e.type='button';e.className='money '+(m.k[0]==='b'?'bill ':'coin ')+m.k;
+  if(m.k[0]==='b'){e.textContent=v/100}else{e.style.width=e.style.height=m.sz+'px';e.style.fontSize=m.sz+'px';e.innerHTML=v<100?`<span>${v}<small>אג׳</small></span>`:`<span>${v/100}<small>₪</small></span>`}
+  e.setAttribute('aria-label',fmt(v));return e}
+
+/* ---------- setup ---------- */
+const cfg={mode:'pay',level:'veryeasy',count:'10'};
+try{Object.assign(cfg,JSON.parse(localStorage.getItem('shop-cfg')||'{}'))}catch(e){}
+document.querySelectorAll('.chips').forEach(g=>{const n=g.dataset.name;const sync=()=>{g.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',cfg[n]===c.dataset.v));showBest()};
+  g.addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;cfg[n]=c.dataset.v;try{localStorage.setItem('shop-cfg',JSON.stringify(cfg))}catch(e){};sync()});sync()});
+const bestKey=()=>`shop-best-${cfg.mode}-${cfg.level}-${cfg.count}`;
+function getBest(){try{return +localStorage.getItem(bestKey())||0}catch(e){return 0}}
+function showBest(){const b=getBest();$('best').textContent=b?`השיא שלך כאן: ${b} נקודות`:''}
+const show=id=>['setup','play','end'].forEach(s=>$(s).hidden=s!==id);
+
+/* ---------- rounds ---------- */
+let qi=0,points=0,right=0,cur=null,locked=false,onCounter=[],bag=[];
+function price(L){let p=R(1,L.max)*100;if(L.agorot&&Math.random()<.75)p=R(1,L.max-1)*100+pick([10,20,30,40,50,60,70,80,90]);return p}
+function newRound(){
+  const L=LV[cfg.level],items=[{em:pick(TOYS),p:price(L)}];
+  if(L.two){let e2;do{e2=pick(TOYS)}while(e2===items[0].em);items.push({em:e2,p:price({...L,max:Math.floor(L.max/2)})})}
+  const total=items.reduce((s,i)=>s+i.p,0);
+  // the bill (or coins) the customer pays with: the smallest note in the wallet that covers the total, sometimes one bigger
+  const notes=[500,1000,2000,5000,10000,20000].filter(n=>n>=total);let paid=notes[0]||Math.ceil(total/1000)*1000;
+  if(cfg.mode!=='pay'&&paid===total)paid=notes[1]||paid+1000;if(Math.random()<.3&&notes[1]&&notes[1]-total<=L.max*100)paid=notes[1];
+  if(paid===total)paid+= 1000;
+  return{items,total,paid,change:paid-total};
+}
+function start(){qi=0;points=0;right=0;bag=[];show('play');next()}
+function next(){
+  locked=false;cur=newRound();onCounter=[];
+  $('qn').textContent=`קנייה ${qi+1} מתוך ${cfg.count}`;$('pts').textContent=points;$('prog').style.width=(qi/+cfg.count*100)+'%';
+  $('shelf').innerHTML=cur.items.map((it,i)=>(i?'<span class="plus">+</span>':'')+`<div class="toy"><span class="em">${it.em}</span><span class="tag">${fmt(it.p)}</span></div>`).join('');
+  const two=cur.items.length>1,totalTxt=two?`ביחד הם עולים <b>?</b>`:`הוא עולה <b>${fmt(cur.total)}</b>`;
+  $('fb').innerHTML='';$('next').hidden=true;
+  if(cfg.mode==='pay'){
+    $('task').innerHTML=two?`רוצים לקנות את שני הצעצועים! שימו על הדלפק <b>בדיוק</b> את הסכום של שניהם.`:`רוצים לקנות את הצעצוע. ${totalTxt}. שימו על הדלפק <b>בדיוק</b> את הסכום.`;
+    $('payArea').hidden=false;$('answers').hidden=true;$('counter').dataset.empty='לחצו על מטבעות ושטרות כדי לשים אותם כאן';buildWallet(LV[cfg.level].wallet);renderCounter();
+  }else if(cfg.mode==='change'){
+    $('task').innerHTML=`${two?`קניתם את שני הצעצועים`:`קניתם את הצעצוע ב־<b>${fmt(cur.total)}</b>`} ושילמתם ב־<b>${fmt(cur.paid)}</b>. <br>כמה עודף תקבלו?`;
+    $('payArea').hidden=true;$('answers').hidden=false;buildAnswers();
+  }else{
+    $('task').innerHTML=`הלקוח קונה ${two?'את שני הצעצועים':`ב־<b>${fmt(cur.total)}</b>`} ומשלם ב־<b>${fmt(cur.paid)}</b>. <br>תנו לו את <b>העודף</b> מהקופה.`;
+    $('payArea').hidden=false;$('answers').hidden=true;$('counter').dataset.empty='לחצו על מטבעות כדי לתת עודף ללקוח';
+    buildWallet(LV[cfg.level].wallet.filter(v=>v<cur.paid));renderCounter();
+  }
+  $('payBtn').textContent=cfg.mode==='cashier'?'✓ לתת עודף':'✓ לשלם';
+}
+function buildWallet(vals){const W=$('wallet');W.innerHTML='';vals.forEach(v=>{const e=moneyEl(v);e.onclick=()=>{if(locked)return;onCounter.push(v);renderCounter();clink(v)};W.appendChild(e)})}
+function renderCounter(){const C=$('counter');C.innerHTML='';onCounter.slice().sort((a,b)=>b-a).forEach(v=>{const e=moneyEl(v);e.title='להחזיר';e.onclick=()=>{if(locked)return;const i=onCounter.indexOf(v);onCounter.splice(i,1);renderCounter()};C.appendChild(e)});
+  const s=onCounter.reduce((a,b)=>a+b,0);$('sum').textContent=fmt(s);
+  // at the top levels you count by yourselves
+  $('sumRow').hidden=cfg.level==='champ'}
+$('clear').onclick=()=>{if(locked)return;onCounter=[];renderCounter()};
+$('payBtn').onclick=()=>{
+  if(locked)return;const s=onCounter.reduce((a,b)=>a+b,0),want=cfg.mode==='cashier'?cur.change:cur.total;
+  if(!onCounter.length){$('fb').innerHTML='<span class="bad">הדלפק ריק! לחצו על מטבעות ושטרות.</span>';return}
+  if(s===want)win(cfg.mode==='cashier'?`נתתם בדיוק ${fmt(want)} עודף.`:`שילמתם בדיוק ${fmt(want)}.`);
+  else{oops();const diff=s-want;$('fb').innerHTML=`<span class="bad">${diff>0?`יותר מדי! שמתם ${fmt(s)}, צריך ${fmt(want)}`:`חסר עוד ${fmt(-diff)}`}</span><span class="why">אפשר לתקן: לחצו על מטבע בדלפק כדי להחזיר אותו</span>`;tries++;if(tries>=3)lose(`צריך היה ${fmt(want)}. למשל: ${breakdown(want).map(fmt).join(' + ')}`)}
+};
+let tries=0;const _next=next;next=function(){tries=0;_next()};
+function breakdown(a){const out=[];for(const v of[20000,10000,5000,2000,1000,500,200,100,50,10]){while(a>=v){out.push(v);a-=v}}return out}
+function buildAnswers(){
+  const c=cur.change,step=LV[cfg.level].agorot?pick([10,50,100]):100,set=new Set([c]);
+  [c+step,c-step,c+500,c-500,cur.total,c+1000].forEach(x=>{if(set.size<4&&x>0&&x!==c)set.add(x)});let k=2;while(set.size<4)set.add(c+step*k++);
+  const A=$('answers');A.innerHTML='';shuffle([...set]).forEach(v=>{const b=document.createElement('button');b.type='button';b.className='ans';b.textContent=fmt(v);b.dataset.v=v;
+    b.onclick=()=>{if(locked)return;document.querySelectorAll('.ans').forEach(x=>{x.disabled=true;if(+x.dataset.v===c)x.classList.add('right')});
+      if(v===c)win(`${fmt(cur.paid)} פחות ${fmt(cur.total)} = ${fmt(c)}`);else{b.classList.add('wrong');lose(`${fmt(cur.paid)} פחות ${fmt(cur.total)} = ${fmt(c)}`)}};A.appendChild(b)})
+}
+function win(why){locked=true;right++;const gain=tries?6:10;points+=gain;$('pts').textContent=points;bag.push(cur.items.map(i=>i.em).join(''));
+  $('fb').innerHTML=`<span class="good">${pick(['כל הכבוד! 🎉','קנייה מוצלחת! 🛍️','מעולה! ⭐','איזה קונה חכם! 🧠'])} +${gain}</span><span class="why">${why}</span>`;register();setTimeout(advance,1800)}
+function lose(why){locked=true;$('fb').innerHTML=`<span class="bad">לא נורא!</span><span class="why">${why}</span>`;$('next').hidden=false;$('next').focus({preventScroll:true})}
+function advance(){if(qi>=+cfg.count)return;qi++;if(qi>=+cfg.count)finish();else next()}
+$('next').onclick=advance;
+function finish(){
+  $('prog').style.width='100%';const n=+cfg.count,pct=points/(n*10),st=pct>=.9?3:pct>=.65?2:pct>=.35?1:0;
+  $('endT').textContent=pct>=.9?'מלך הקניות! 👑':pct>=.65?'כל הכבוד! 🎉':'יפה מאוד! 💪';$('endS').textContent='★'.repeat(st)+'☆'.repeat(3-st);
+  const prev=getBest(),rec=points>prev;if(rec)try{localStorage.setItem(bestKey(),points)}catch(e){}
+  $('endP').textContent=`הצלחתם ${right} מתוך ${n} קניות, ${points} נקודות.`+(rec&&prev?' שיא חדש! 🏆':'');
+  $('bag').textContent=bag.length?'🛍️ '+bag.join(' '):'';
+  show('end');$('again').focus({preventScroll:true});showBest();if(pct>=.65){confetti();[523,659,784,1046].forEach((f,k)=>tone(f,k*.12,.35))}
+}
+$('start').onclick=start;$('again').onclick=start;$('settings').onclick=()=>{show('setup');showBest()};
+
+/* ---------- sound & confetti ---------- */
+let ac=null;
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}return ac}
+function tone(f,t,d,type='triangle',v=.08){const a=audio();if(!a)return;const o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+t;
+  o.type=type;o.frequency.value=f;gn.gain.setValueAtTime(.0001,s);gn.gain.exponentialRampToValueAtTime(v,s+.005);gn.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(gn).connect(a.destination);o.start(s);o.stop(s+d+.05)}
+const clink=v=>v>=2000?tone(300,0,.08,'sine',.05):(tone(1800+Math.random()*400,0,.06,'square',.03),tone(2600,.03,.05,'sine',.03));
+const register=()=>{tone(1200,0,.08,'square',.05);tone(1600,.08,.25,'sine',.08)};
+const oops=()=>tone(220,0,.22,'sawtooth',.05);
+const cc=$('confetti'),cx=cc.getContext('2d'),COLS=['#F28C28','#2B7DE9','#FFC94A','#1E9E8A','#ff5a3c','#3ec7ff'];
+function confetti(){if(still)return;cc.width=innerWidth;cc.height=innerHeight;
+  const ps=Array.from({length:170},()=>({x:innerWidth/2,y:innerHeight/3,vx:(Math.random()-.5)*16,vy:-Math.random()*14-4,r:Math.random()*6+4,c:COLS[Math.floor(Math.random()*6)],a:Math.random()*6,va:(Math.random()-.5)*.3}));
+  let f=0;(function t(){cx.clearRect(0,0,cc.width,cc.height);ps.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillStyle=p.c;cx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);cx.restore()});
+    if(++f<140)requestAnimationFrame(t);else cx.clearRect(0,0,cc.width,cc.height)})()}
+})();
+</script>
+</body>
+</html>

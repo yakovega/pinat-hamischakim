@@ -84,6 +84,13 @@ canvas{display:block}
 .brk .art{background:linear-gradient(#1d2a52,#0e1430)}
 .chars .art{background:#ec4899}
 .mad .art{background:#F28C28}
+.shop .art{background:#1E9E8A}
+.shopmini{display:flex;align-items:center;gap:10px;font-family:var(--display,inherit)}
+.shopmini .toyem{font-size:48px;line-height:1}
+.shopmini .ptag{background:#FFF8EC;color:#1F2A44;font-weight:700;padding:3px 10px;border-radius:7px;font-size:18px}
+.shopmini .coins{display:flex;gap:4px}
+.shopmini .coins i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:#1F2A44;background:radial-gradient(circle at 35% 30%,#fff3b0,#e9c46a 45%,#c9ced8 46%,#9aa1ad)}
+.shopmini .coins i+i{background:radial-gradient(circle at 35% 30%,#fff,#c9ced8 55%,#9aa1ad);width:30px;height:30px}
 .mlmini{background:#FFF8EC;color:#1F2A44;border-radius:14px;padding:14px 16px;width:230px;font-size:17px;line-height:1.8;transform:rotate(-2deg);box-shadow:0 6px 0 #a85c12;direction:rtl}
 .mlmini mark{background:#FFC94A;border-radius:6px;padding:0 5px;font-weight:800}
 .cbmini{display:flex;gap:8px;font-size:52px}
@@ -536,6 +543,17 @@ canvas{display:block}
         <h2>סיפור משוגע</h2>
         <p>עונים על כמה מילים בלי לראות את הסיפור: חיה, מאכל, צבע, מקום... ובסוף נחשף סיפור מצחיק ומשוגע עם המילים שלכם. 6 סיפורים!</p>
         <span class="go">לכתוב סיפור ←</span>
+      </div>
+    </a>
+    <a class="door shop" href="shop.html">
+      <div class="art" aria-hidden="true">
+        <div class="shopmini"><span class="toyem">🧸</span><span class="ptag">12 ₪</span><span class="coins"><i>10</i><i>2</i></span></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · כסף וחשבון</span>
+        <h2>חנות הצעצועים</h2>
+        <p>קונים צעצועים בשקלים ובאגורות: משלמים בדיוק, מחשבים כמה עודף, ואפילו משחקים בקופאי. 5 רמות, מעשרה שקלים ועד שני צעצועים עם אגורות.</p>
+        <span class="go">לקנות ←</span>
       </div>
     </a>
   </div>
