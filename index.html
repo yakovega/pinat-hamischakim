@@ -85,6 +85,10 @@ canvas{display:block}
 .chars .art{background:#ec4899}
 .mad .art{background:#F28C28}
 .shop .art{background:#1E9E8A}
+.rid .art{background:#8B5CF6}
+.ridmini{display:flex;align-items:center;gap:12px}
+.ridmini .qm{width:56px;height:56px;border-radius:50%;background:#FFC94A;color:#1F2A44;display:grid;place-items:center;font:700 36px var(--display,inherit)}
+.ridmini .bub{background:#FFF8EC;color:#1F2A44;border-radius:14px;padding:8px 12px;font-weight:600;font-size:15px;line-height:1.35}
 .shopmini{display:flex;align-items:center;gap:10px;font-family:var(--display,inherit)}
 .shopmini .toyem{font-size:48px;line-height:1}
 .shopmini .ptag{background:#FFF8EC;color:#1F2A44;font-weight:700;padding:3px 10px;border-radius:7px;font-size:18px}
@@ -554,6 +558,17 @@ canvas{display:block}
         <h2>חנות הצעצועים</h2>
         <p>קונים צעצועים בשקלים ובאגורות: משלמים בדיוק, מחשבים כמה עודף, ואפילו משחקים בקופאי. 5 רמות, מעשרה שקלים ועד שני צעצועים עם אגורות.</p>
         <span class="go">לקנות ←</span>
+      </div>
+    </a>
+    <a class="door rid" href="riddles.html">
+      <div class="art" aria-hidden="true">
+        <div class="ridmini"><span class="qm">?</span><span class="bub">יש לי ידיים<br>ואין לי אצבעות...</span></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · מילים וחשיבה</span>
+        <h2>חידות מילים</h2>
+        <p>"מי אני?" – מקבלים רמז אחרי רמז ומנחשים. ככל שמנחשים מוקדם יותר, מקבלים יותר נקודות. ברמות הקשות מסדרים את אותיות התשובה. 46 חידות!</p>
+        <span class="go">לפתור חידה ←</span>
       </div>
     </a>
   </div>

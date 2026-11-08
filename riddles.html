@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>חידות מילים – פינת המשחקים</title>
+<meta name="description" content="משחק חידות &quot;מי אני?&quot; לילדים: מקבלים רמז אחרי רמז ומנחשים. ככל שמנחשים מוקדם יותר, מקבלים יותר נקודות. 5 רמות ו־46 חידות.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/riddles.html">
+<meta property="og:title" content="חידות מילים – פינת המשחקים">
+<meta property="og:description" content="משחק חידות &quot;מי אני?&quot; לילדים: מקבלים רמז אחרי רמז ומנחשים. ככל שמנחשים מוקדם יותר, מקבלים יותר נקודות. 5 רמות ו־46 חידות.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/riddles.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: one centered card. Clue cards appear one by one ("who am I?"), then the answer area: picture choices at the easy levels, letter tiles to spell the word at the hard ones. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28; --blue:#2B7DE9;
+  --teal:#1E9E8A; --red:#ff5a3c; --purple:#8B5CF6; --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);min-height:100vh;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px}
+[hidden]{display:none!important}
+main{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:clamp(26px,5vw,38px);margin:0;color:var(--sun)}
+.homelink{background:var(--sun);color:#1F2A44;padding:8px 14px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px}
+.card{background:var(--card);border-radius:22px;padding:clamp(16px,4vw,26px);display:flex;flex-direction:column;gap:14px}
+.card h2{font-family:var(--display);font-size:22px;margin:0}
+.group{display:flex;flex-direction:column;gap:8px}
+.group>span{font-weight:600;color:var(--muted);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:12px;padding:9px 13px;font:600 15px var(--body);cursor:pointer;text-align:right}
+.chip[aria-pressed="true"]{background:var(--sun);border-color:var(--sun);color:#1F2A44}
+.chip small{display:block;font-weight:400;font-size:12px;opacity:.85}
+.big{font-family:var(--display);font-weight:700;font-size:22px;border:0;border-radius:99px;padding:12px 32px;background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 5px 0 #a85c12}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #a85c12}
+.ghost{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:99px;padding:9px 16px;font:600 15px var(--body);cursor:pointer}
+.ghost:disabled{opacity:.4;cursor:default}
+button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.best{color:var(--muted);font-size:14px;text-align:center;margin:0}
+.status{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.status b{color:var(--paper);font-family:var(--display);font-size:20px}
+.progress{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--teal);transition:width .3s}
+.who{display:flex;align-items:center;gap:12px}
+.who .q{width:64px;height:64px;flex:none;border-radius:50%;background:var(--purple);display:grid;place-items:center;font:700 40px var(--display);color:#fff}
+.who .q.solved{background:var(--teal);font-size:40px}
+.who h2{font-size:clamp(22px,5vw,28px)}
+.clues{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.clues li{background:#26314F;border-radius:14px;padding:12px 14px;font-size:clamp(17px,4vw,20px);line-height:1.5;display:flex;gap:10px;align-items:baseline;}
+.clues li.new{animation:pop .35s ease-out}
+.clues li b{color:var(--sun);font-family:var(--display);flex:none}
+.clues li.locked{background:transparent;border:2px dashed var(--line);color:var(--muted);font-size:15px;animation:none}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.clues li{animation:none}}
+.tools{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.choices{display:grid;grid-template-columns:repeat(var(--n,4),1fr);gap:10px}
+@media (max-width:560px){.choices{grid-template-columns:1fr 1fr}}
+.ch{border:3px solid var(--line);background:#26314F;color:var(--paper);border-radius:16px;min-height:84px;cursor:pointer;font:700 20px var(--display);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px}
+.ch .em{font-size:38px;line-height:1}
+.ch:hover:not(:disabled){border-color:var(--sun)}
+.ch.right{border-color:var(--teal);background:#1d4a44}.ch.wrong{border-color:var(--red);background:#4a2420;opacity:.7}
+.ch:disabled{cursor:default}
+.slots,.tiles{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;direction:rtl}
+.slot{width:52px;height:60px;border-radius:12px;border:3px dashed var(--line);display:grid;place-items:center;font:700 30px var(--body);background:transparent;color:var(--paper);cursor:pointer;padding:0}
+.slot.full{border-style:solid;border-color:var(--sun);background:#2d3a5e}
+.slot.given{border-color:var(--teal);background:#1d4a44;cursor:default}
+.slots.bad .slot.full:not(.given){border-color:var(--red)}
+.slots.good .slot{border-color:var(--teal);background:#1d4a44}
+.tile{width:52px;height:56px;border-radius:12px;border:0;background:var(--paper);color:#1F2A44;font:700 28px var(--body);cursor:pointer;box-shadow:0 4px 0 #b9ad98;padding:0}
+.tile:active{transform:translateY(2px);box-shadow:0 2px 0 #b9ad98}
+.tile.used{visibility:hidden}
+@media (max-width:420px){.slot,.tile{width:44px;height:52px;font-size:24px}}
+.fb{min-height:52px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}
+.fb .good{font-family:var(--display);font-weight:700;font-size:28px;color:var(--sun)}
+.fb .bad{font-weight:700;font-size:18px;color:var(--red)}
+.fb .why{color:var(--muted);font-size:16px}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.result{text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center}
+.result .t{font-family:var(--display);font-weight:700;font-size:clamp(30px,7vw,46px);color:var(--sun);line-height:1.1}
+.result .stars{font-size:40px;letter-spacing:6px}
+.result p{margin:0;font-size:17px}
+.solvedlist{font-size:34px;letter-spacing:4px;text-align:center}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:6;width:100%;height:100%}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <h1>חידות מילים 🕵️</h1>
+    <a class="homelink" href="index.html">🏠 דף הבית</a>
+  </div>
+
+  <section class="card" id="setup">
+    <h2>מי אני? 🤔</h2>
+    <p style="margin:0;color:var(--muted);line-height:1.6">כל חידה מתחילה ברמז אחד. אפשר לנחש מיד, או לבקש עוד רמז. ככל שמנחשים עם פחות רמזים, מקבלים יותר נקודות!</p>
+    <div class="group"><span>רמה</span>
+      <div class="chips" data-name="level">
+        <button class="chip" type="button" data-v="veryeasy">🐣 ממש קל<small>3 תמונות לבחירה</small></button>
+        <button class="chip" type="button" data-v="easy">🐥 קל<small>4 תמונות לבחירה</small></button>
+        <button class="chip" type="button" data-v="mid">🐇 בינוני<small>4 מילים, בלי תמונות</small></button>
+        <button class="chip" type="button" data-v="hard">🦊 קשה<small>מסדרים את האותיות</small></button>
+        <button class="chip" type="button" data-v="champ">🏆 אלופים<small>אותיות עם אותיות מבלבלות</small></button>
+      </div>
+    </div>
+    <div class="group"><span>כמה חידות?</span>
+      <div class="chips" data-name="count"><button class="chip" type="button" data-v="5">5</button><button class="chip" type="button" data-v="10">10</button></div>
+    </div>
+    <button class="big" id="start" type="button" style="align-self:center">🕵️ להתחיל!</button>
+    <p class="best" id="best"></p>
+  </section>
+
+  <section class="card" id="play" hidden>
+    <div class="status"><span id="qn"></span><span>⭐ <b id="pts">0</b></span></div>
+    <div class="progress"><i id="prog"></i></div>
+    <div class="who"><div class="q" id="qbadge">?</div><h2 id="whoT">מי אני?</h2></div>
+    <ol class="clues" id="clues"></ol>
+    <div class="tools">
+      <button class="ghost" id="moreClue" type="button">💡 עוד רמז</button>
+      <button class="ghost" id="letterHint" type="button" hidden>🔤 גלו לי אות</button>
+      <button class="ghost" id="clearSlots" type="button" hidden>↺ לנקות</button>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div id="spell" hidden>
+      <div class="slots" id="slots" aria-label="התשובה"></div>
+      <div style="height:14px"></div>
+      <div class="tiles" id="tiles" aria-label="אותיות"></div>
+    </div>
+    <div class="fb" id="fb" aria-live="assertive"></div>
+    <div class="row"><button class="ghost" id="next" type="button" hidden>לחידה הבאה ←</button></div>
+  </section>
+
+  <section class="card" id="end" hidden>
+    <div class="result"><div class="t" id="endT"></div><div class="stars" id="endS"></div><p id="endP"></p></div>
+    <div class="solvedlist" id="solved" aria-label="מה פתרתם"></div>
+    <div class="row"><button class="big" id="again" type="button">🕵️ עוד חידות</button><button class="ghost" id="settings" type="button">לשנות</button></div>
+  </section>
+</main>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+// each riddle: answer, emoji, three clues from hardest to easiest
+const RID=[
+ ['חתול','🐱','אני אוהב לישון הרבה ולהתמתח.','יש לי שפם, ואני מגרגר כשמלטפים אותי.','אני אומר: מיאו!'],
+ ['כלב','🐶','אני החבר הכי טוב של האדם.','אני מכשכש בזנב כשאני שמח.','אני נובח: הב הב!'],
+ ['שמש','☀️','אני רחוקה מאוד, אבל מחממת אתכם.','בלילה אני נעלמת.','אני זורחת בבוקר בשמיים.'],
+ ['ירח','🌙','אני מופיע רק בלילה.','לפעמים אני עגול, ולפעמים אני דק כמו בננה.','אסטרונאוטים כבר דרכו עליי.'],
+ ['גשם','🌧️','אני תמיד יורד, ואף פעם לא עולה.','בגללי פותחים מטרייה.','אני טיפות מים שנופלות מהעננים.'],
+ ['ספר','📖','יש לי דפים, אבל אני לא עץ.','יש לי כריכה ועמודים.','קוראים בי סיפורים.'],
+ ['שעון','⏰','יש לי ידיים, אבל אין לי אצבעות.','אני עושה טיק־טק.','אני מראה לכם מה השעה.'],
+ ['ביצה','🥚','צריך לשבור אותי לפני שמשתמשים בי.','יש לי חלמון צהוב בפנים.','התרנגולת מטילה אותי.'],
+ ['פיל','🐘','אני הכי כבד מכל החיות ביבשה.','יש לי אוזניים גדולות כמו מניפות.','יש לי חדק ארוך.'],
+ ['דג','🐟','אני חי במים כל החיים.','יש לי סנפירים וקשקשים.','אני שוחה, ואין לי רגליים.'],
+ ['עץ','🌳','יש לי שורשים, אבל אני לא שן.','יש לי ענפים ועלים.','ציפורים בונות עליי קן.'],
+ ['כדור','⚽','בועטים בי, ואני לא נעלב.','אני עגול וקופץ.','משחקים בי כדורגל.'],
+ ['מפתח','🔑','אני קטן, אבל פותח דלתות גדולות.','שומרים אותי בכיס או בצרור.','מכניסים אותי למנעול.'],
+ ['נר','🕯️','ככל שאני דולק יותר זמן, אני נעשה קצר יותר.','יש לי פתיל.','מדליקים אותי בחנוכה ובשבת.'],
+ ['מים','💧','אין לי צבע ואין לי טעם.','כל היצורים צריכים אותי כדי לחיות.','שותים אותי כשצמאים.'],
+ ['קשת','🌈','אני מופיעה לפעמים אחרי הגשם.','יש בי שבעה צבעים.','אני כמו גשר צבעוני בשמיים.'],
+ ['ענן','☁️','אני מרחף, ואין לי כנפיים.','אני עשוי מטיפות מים קטנטנות.','ממני יורד גשם.'],
+ ['שן','🦷','יש לכם הרבה כמוני בפה.','כשאני נופלת, אולי פיית השיניים תבוא.','מצחצחים אותי בבוקר ובערב.'],
+ ['מיטה','🛏️','יש לי רגליים, אבל אני לא הולכת.','יש עליי כרית ושמיכה.','ישנים עליי בלילה.'],
+ ['כיסא','🪑','יש לי ארבע רגליים וגב, אבל אני לא חיה.','שמים אותי ליד שולחן.','יושבים עליי.'],
+ ['גרב','🧦','אני בא בזוג, אבל אחד מאיתנו תמיד הולך לאיבוד.','שמים אותי לפני הנעל.','אני מחמם את כף הרגל.'],
+ ['דבש','🍯','אני מתוק ודביק.','טובלים בי תפוח בראש השנה.','הדבורים מכינות אותי.'],
+ ['חלב','🥛','אני לבן, ושותים אותי.','מוסיפים אותי לקורנפלקס.','הפרה נותנת אותי.'],
+ ['ארנב','🐰','אני קופץ מהר מאוד.','יש לי אוזניים ארוכות וזנב קטן ופרוותי.','אני אוהב לאכול גזר.'],
+ ['נחש','🐍','אין לי רגליים, אבל אני זז מהר.','אני מחליף את העור שלי.','אני זוחל ועושה ססס...'],
+ ['ציפור','🐦','אני בונה קן על העץ.','יש לי נוצות ומקור.','אני עפה ומצייצת.'],
+ ['כוכב','⭐','אני נוצץ בלילה.','יש מיליונים כמוני בשמיים.','מציירים אותי עם חמישה קודקודים.'],
+ ['בננה','🍌','הקוף אוהב אותי מאוד.','קולפים אותי לפני שאוכלים.','אני פרי צהוב ומעוקל.'],
+ ['אבטיח','🍉','אוכלים אותי בקיץ עם גבינה בולגרית.','יש בי הרבה גרעינים שחורים.','אני ירוק מבחוץ ואדום מבפנים.'],
+ ['טלפון','📱','אני מצלצל, אבל אני לא פעמון.','יש לי מסך ומצלמה.','מדברים בי עם סבתא.'],
+ ['אש','🔥','אם נותנים לי עצים אני גדלה, ואם נותנים לי מים אני נעלמת.','אני חמה ומאירה.','מכבי האש מכבים אותי.'],
+ ['שלג','❄️','אני לבן ורך, אבל קר מאוד.','אני נמס כשחם.','בונים ממני בובה עם גזר במקום אף.'],
+ ['כתר','👑','אני עשוי מזהב, ויש בי אבנים יקרות.','שמים אותי על הראש.','המלך והמלכה חובשים אותי.'],
+ ['רכבת','🚂','יש לי הרבה קרונות.','אני נוסעת רק על פסים.','אני עושה צ׳ו־צ׳ו!'],
+ ['מטוס','✈️','יש לי כנפיים, אבל אני לא ציפור.','אני נוחת בשדה תעופה.','אני טס בשמיים עם נוסעים.'],
+ ['דבורה','🐝','אני קטנה, צהובה ושחורה.','אני עוקצת אם מפריעים לי.','אני מזמזמת ומכינה דבש.'],
+ ['קיפוד','🦔','אני יוצא בלילה ואוכל חרקים.','כשאני מפחד, אני מתכדרר לכדור.','יש לי קוצים על כל הגב.'],
+ ['גלידה','🍦','אני קרה ומתוקה.','אני נמסה מהר בשמש.','אוכלים אותי בגביע עם כדורים.'],
+ ['מראה','🪞','כשאתם מחייכים אליי, אני מחייכת בחזרה.','אני תלויה בחדר האמבטיה.','רואים בי את עצמכם.'],
+ ['ים','🌊','אני גדול, כחול ומלוח.','יש בי גלים ודגים.','בונים לידי ארמונות מחול.'],
+ ['עיפרון','✏️','אני כותב, אבל אין לי ידיים.','מחדדים אותי במחדד.','יש לי מחק בקצה.'],
+ ['פרפר','🦋','פעם הייתי זחל.','יש לי כנפיים צבעוניות.','אני עף מפרח לפרח.'],
+ ['תפוח','🍎','אני יכול להיות אדום, ירוק או צהוב.','יש לי חרצנים בפנים.','טובלים אותי בדבש בראש השנה.'],
+ ['צב','🐢','אני הולך לאט לאט.','אני חי הרבה מאוד שנים.','יש לי שריון על הגב.'],
+ ['אריה','🦁','אני מלך החיות.','יש לי רעמה גדולה.','אני שואג: ררררר!'],
+ ['מטריה','☂️','אני נפתחת רק כשמזג האוויר רע.','יש לי ידית ומוטות.','אני שומרת שלא תירטבו בגשם.'],
+];
+const EXTRA='אבגדהוזחטיכלמנסעפצקרשת'.split('');
+const LV={veryeasy:{type:'choice',n:3,emoji:true},easy:{type:'choice',n:4,emoji:true},mid:{type:'choice',n:4,emoji:false},hard:{type:'spell',extra:0},champ:{type:'spell',extra:3}};
+
+/* ---------- setup ---------- */
+const cfg={level:'veryeasy',count:'10'};
+try{Object.assign(cfg,JSON.parse(localStorage.getItem('riddles-cfg')||'{}'))}catch(e){}
+document.querySelectorAll('.chips').forEach(g=>{const n=g.dataset.name;const sync=()=>{g.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',cfg[n]===c.dataset.v));showBest()};
+  g.addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;cfg[n]=c.dataset.v;try{localStorage.setItem('riddles-cfg',JSON.stringify(cfg))}catch(e){};sync()});sync()});
+const bestKey=()=>`riddles-best-${cfg.level}-${cfg.count}`;
+function getBest(){try{return +localStorage.getItem(bestKey())||0}catch(e){return 0}}
+function showBest(){const b=getBest();$('best').textContent=b?`השיא שלך כאן: ${b} נקודות`:''}
+const show=id=>['setup','play','end'].forEach(s=>$(s).hidden=s!==id);
+
+/* ---------- game ---------- */
+let deck=[],qi=0,points=0,right=0,cur=null,shown=1,mistakes=0,hints=0,locked=false,solved=[];
+let filled=[],given=[];
+function start(){
+  // avoid repeating riddles the child just saw in the previous game
+  let recent=[];try{recent=JSON.parse(localStorage.getItem('riddles-recent')||'[]')}catch(e){}
+  const fresh=shuffle(RID.filter(r=>!recent.includes(r[0]))),old=shuffle(RID.filter(r=>recent.includes(r[0])));
+  deck=fresh.concat(old).slice(0,+cfg.count);
+  try{localStorage.setItem('riddles-recent',JSON.stringify(deck.map(r=>r[0])))}catch(e){}
+  qi=0;points=0;right=0;solved=[];show('play');next()}
+function next(){
+  cur=deck[qi];shown=1;drawn=0;mistakes=0;hints=0;locked=false;
+  $('qn').textContent=`חידה ${qi+1} מתוך ${cfg.count}`;$('pts').textContent=points;$('prog').style.width=(qi/+cfg.count*100)+'%';
+  $('qbadge').textContent='?';$('qbadge').classList.remove('solved');$('whoT').textContent='מי אני?';
+  $('fb').innerHTML='';$('next').hidden=true;
+  const L=LV[cfg.level];
+  if(L.type==='choice'){$('choices').hidden=false;$('spell').hidden=true;$('letterHint').hidden=true;$('clearSlots').hidden=true;buildChoices(L)}
+  else{$('choices').hidden=true;$('spell').hidden=false;$('letterHint').hidden=false;$('clearSlots').hidden=false;buildSpell(L)}
+  renderClues();
+}
+let drawn=0;
+function renderClues(){
+  const C=$('clues');C.innerHTML='';
+  for(let i=0;i<3;i++){const li=document.createElement('li');
+    if(i<shown){if(i>=drawn&&drawn>0)li.className='new';li.innerHTML=`<b>רמז ${i+1}</b><span>${cur[2+i]}</span>`}else{li.className='locked';li.textContent=`רמז ${i+1} עוד מוסתר`}
+    C.appendChild(li)}
+  drawn=shown;
+  $('moreClue').disabled=shown>=3||locked;$('moreClue').textContent=shown>=3?'💡 אין עוד רמזים':`💡 עוד רמז (${3-shown} נשארו)`;
+}
+$('moreClue').onclick=()=>{if(locked||shown>=3)return;shown++;renderClues();tone(660,0,.12,'sine',.06)};
+
+function buildChoices(L){
+  // distractors: other answers, never the same emoji or a near-copy word
+  const others=shuffle(RID.filter(r=>r[0]!==cur[0]&&!(cur[0]==='דבש'&&r[0]==='דבורה')&&!(cur[0]==='דבורה'&&r[0]==='דבש'))).slice(0,L.n-1);
+  const opts=shuffle([cur,...others]),box=$('choices');box.innerHTML='';box.style.setProperty('--n',L.n);
+  opts.forEach(r=>{const b=document.createElement('button');b.type='button';b.className='ch';b.dataset.v=r[0];
+    b.innerHTML=(L.emoji?`<span class="em">${r[1]}</span>`:'')+`<span>${r[0]}</span>`;
+    b.onclick=()=>{if(locked)return;if(r[0]===cur[0]){b.classList.add('right');win()}else{b.classList.add('wrong');b.disabled=true;miss()}};
+    box.appendChild(b)});
+}
+function buildSpell(L){
+  const letters=[...cur[0]];filled=letters.map(()=>null);given=letters.map(()=>false);
+  let pool=letters.slice();for(let k=0;k<L.extra;k++)pool.push(pick(EXTRA));
+  let tries=0;do{shuffle(pool)}while(pool.slice(0,letters.length).join('')===cur[0]&&++tries<20);
+  const S=$('slots');S.innerHTML='';S.className='slots';
+  letters.forEach((_,i)=>{const s=document.createElement('button');s.type='button';s.className='slot';s.setAttribute('aria-label',`אות ${i+1}`);s.onclick=()=>unfill(i);S.appendChild(s)});
+  const T=$('tiles');T.innerHTML='';
+  pool.forEach((ch,ti)=>{const t=document.createElement('button');t.type='button';t.className='tile';t.textContent=ch;t.dataset.ti=ti;t.onclick=()=>place(t);T.appendChild(t)});
+}
+function place(t){if(locked||t.classList.contains('used'))return;const i=filled.indexOf(null);if(i<0)return;
+  filled[i]={ch:t.textContent,ti:t.dataset.ti};t.classList.add('used');tone(880+i*60,0,.06,'triangle',.04);paintSlots();
+  if(!filled.includes(null))check()}
+function unfill(i){if(locked||!filled[i]||given[i])return;const t=$('tiles').querySelector(`[data-ti="${filled[i].ti}"]`);t&&t.classList.remove('used');filled[i]=null;$('slots').classList.remove('bad');paintSlots()}
+function paintSlots(){[...$('slots').children].forEach((s,i)=>{s.textContent=filled[i]?filled[i].ch:'';s.classList.toggle('full',!!filled[i]);s.classList.toggle('given',given[i])})}
+$('clearSlots').onclick=()=>{if(locked)return;filled.forEach((f,i)=>{if(f&&!given[i])unfill(i)})};
+$('letterHint').onclick=()=>{
+  if(locked)return;const letters=[...cur[0]];const i=letters.findIndex((ch,k)=>!given[k]&&(!filled[k]||filled[k].ch!==ch));if(i<0)return;
+  // free the slot, then move the correct letter (from a tile, or from a wrong slot) into it
+  if(filled[i])unfill(i);
+  let t=[...$('tiles').children].find(x=>!x.classList.contains('used')&&x.textContent===letters[i]);
+  if(!t){const k=filled.findIndex((f,j)=>f&&!given[j]&&f.ch===letters[i]);if(k>=0){unfill(k);t=[...$('tiles').children].find(x=>!x.classList.contains('used')&&x.textContent===letters[i])}}
+  if(!t)return;filled[i]={ch:t.textContent,ti:t.dataset.ti};given[i]=true;t.classList.add('used');hints++;paintSlots();tone(520,0,.1,'sine',.05);
+  if(!filled.includes(null))check()};
+function check(){const w=filled.map(f=>f.ch).join('');if(w===cur[0]){$('slots').classList.add('good');win()}else{$('slots').classList.add('bad');miss()}}
+
+function score(){const base=[10,7,5][shown-1];return Math.max(1,base-2*mistakes-2*hints)}
+function win(){locked=true;right++;const g=score();points+=g;$('pts').textContent=points;solved.push(cur[1]);
+  document.querySelectorAll('.ch').forEach(b=>b.disabled=true);
+  $('qbadge').textContent=cur[1];$('qbadge').classList.add('solved');$('whoT').textContent=`אני ${cur[0]}!`;
+  $('fb').innerHTML=`<span class="good">${pick(['נכון! 🎉','בול! 🎯','איזה בלש! 🕵️','מעולה! ⭐','גאון! 🧠'])} +${g}</span><span class="why">${shown===1?'ניחשתם כבר מהרמז הראשון!':`ניחשתם אחרי ${shown} רמזים.`}${hints?` (גיליתם ${hints===1?'אות אחת':hints+' אותיות'})`:''}</span>`;
+  [660,880,1100].forEach((f,k)=>tone(f,k*.09,.2));renderClues();$('next').hidden=false;$('next').focus({preventScroll:true})}
+function miss(){mistakes++;tone(220,0,.22,'sawtooth',.05);
+  if(mistakes>=3){reveal();return}
+  if(shown<3){shown++;renderClues();$('fb').innerHTML=`<span class="bad">לא, זה לא אני... הנה עוד רמז!</span>`}
+  else $('fb').innerHTML=`<span class="bad">לא, זה לא אני... נסו שוב!</span>${LV[cfg.level].type==='spell'?'<span class="why">לחצו על אות כדי להחזיר אותה</span>':''}`}
+function reveal(){locked=true;document.querySelectorAll('.ch').forEach(b=>{b.disabled=true;if(b.dataset.v===cur[0])b.classList.add('right')});
+  if(LV[cfg.level].type==='spell'){filled=[...cur[0]].map(ch=>({ch}));given=filled.map(()=>true);paintSlots();$('slots').className='slots good'}
+  $('qbadge').textContent=cur[1];$('qbadge').classList.add('solved');$('whoT').textContent=`אני ${cur[0]}!`;shown=3;renderClues();
+  $('fb').innerHTML=`<span class="bad">לא נורא!</span><span class="why">התשובה היא: ${cur[1]} ${cur[0]}</span>`;$('next').hidden=false;$('next').focus({preventScroll:true})}
+$('next').onclick=()=>{qi++;if(qi>=+cfg.count)finish();else next()};
+function finish(){
+  $('prog').style.width='100%';const n=+cfg.count,pct=points/(n*10),st=pct>=.8?3:pct>=.55?2:pct>=.3?1:0;
+  $('endT').textContent=pct>=.8?'בלש אלוף! 🕵️':pct>=.55?'כל הכבוד! 🎉':'יפה מאוד! 💪';$('endS').textContent='★'.repeat(st)+'☆'.repeat(3-st);
+  const prev=getBest(),rec=points>prev;if(rec)try{localStorage.setItem(bestKey(),points)}catch(e){}
+  $('endP').textContent=`פתרתם ${right} מתוך ${n} חידות, ${points} נקודות.`+(rec&&prev?' שיא חדש! 🏆':'');
+  $('solved').textContent=solved.join(' ');
+  show('end');$('again').focus({preventScroll:true});showBest();if(pct>=.55){confetti();[523,659,784,1046].forEach((f,k)=>tone(f,k*.12,.35))}
+}
+$('start').onclick=start;$('again').onclick=start;$('settings').onclick=()=>{show('setup');showBest()};
+
+/* ---------- sound & confetti ---------- */
+let ac=null;
+function audio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){ac=null}return ac}
+function tone(f,t,d,type='triangle',v=.08){const a=audio();if(!a)return;const o=a.createOscillator(),gn=a.createGain(),s=a.currentTime+t;
+  o.type=type;o.frequency.value=f;gn.gain.setValueAtTime(.0001,s);gn.gain.exponentialRampToValueAtTime(v,s+.005);gn.gain.exponentialRampToValueAtTime(.001,s+d);
+  o.connect(gn).connect(a.destination);o.start(s);o.stop(s+d+.05)}
+const cc=$('confetti'),cx=cc.getContext('2d'),COLS=['#F28C28','#2B7DE9','#FFC94A','#1E9E8A','#ff5a3c','#8B5CF6'];
+function confetti(){if(still)return;cc.width=innerWidth;cc.height=innerHeight;
+  const ps=Array.from({length:170},()=>({x:innerWidth/2,y:innerHeight/3,vx:(Math.random()-.5)*16,vy:-Math.random()*14-4,r:Math.random()*6+4,c:COLS[Math.floor(Math.random()*6)],a:Math.random()*6,va:(Math.random()-.5)*.3}));
+  let f=0;(function t(){cx.clearRect(0,0,cc.width,cc.height);ps.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillStyle=p.c;cx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);cx.restore()});
+    if(++f<140)requestAnimationFrame(t);else cx.clearRect(0,0,cc.width,cc.height)})()}
+})();
+</script>
+</body>
+</html>
