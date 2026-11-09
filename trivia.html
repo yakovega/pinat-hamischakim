@@ -1,0 +1,315 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>אצטדיון הטריוויה – פינת המשחקים</title>
+<meta name="description" content="טריוויה כדורגל לילדים: 12 שאלות, וכל תשובה נכונה היא גול! 5 רמות, מקל ועד אולטרה קשה עם שעון, ואפשר לשמוע את השאלות בקול.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/trivia.html">
+<meta property="og:title" content="אצטדיון הטריוויה – פינת המשחקים">
+<meta property="og:description" content="טריוויה כדורגל לילדים: 12 שאלות, וכל תשובה נכונה היא גול! 5 רמות, מקל ועד אולטרה קשה עם שעון, ואפשר לשמוע את השאלות בקול.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/trivia.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Secular+One&family=Rubik:wght@500;700&family=Share+Tech+Mono&display=swap">
+<style>
+/* Layout: kids' football pitch. A goal-counting scoreboard on top, one big question on the turf, three chunky picture buttons below */
+:root{
+  --sky:#5cc8ff;
+  --pitch:#2f9e44;
+  --pitch2:#37b24d;
+  --chalk:#ffffff;
+  --ink:#16324f;
+  --sun:#ffd43b;
+  --good:#1fbf5f;
+  --soft:#ff8a5b;
+  --panel:#16324f;
+  --f-display:"Secular One","Rubik",system-ui,sans-serif;
+  --f-body:"Rubik",system-ui,sans-serif;
+  --f-led:"Share Tech Mono",ui-monospace,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;direction:rtl;font-family:var(--f-body);color:var(--ink);
+  background:linear-gradient(180deg,var(--sky) 0 22%,var(--pitch) 22% 100%);
+  background-color:var(--pitch);
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:18px 32px;
+}
+.homelink{align-self:flex-start;background:#ffd43b;color:#16324f;padding:8px 14px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+
+.board{background:var(--panel);border-radius:14px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.board .lbl{font-size:13px;color:#a9c4e0;letter-spacing:.06em}
+.board b{font-family:var(--f-led);font-size:30px;color:var(--sun);direction:ltr;display:inline-block;font-variant-numeric:tabular-nums}
+.goals{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-start;min-height:26px;font-size:22px;line-height:1}
+
+.field{
+  position:relative;border:4px solid var(--chalk);border-radius:18px;padding:22px 16px;
+  background:repeating-linear-gradient(90deg,var(--pitch) 0 56px,var(--pitch2) 56px 112px);
+  color:var(--chalk);overflow:hidden;
+}
+.stack{display:flex;flex-direction:column;gap:18px;align-items:stretch;position:relative}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(36px,10vw,56px);margin:0;line-height:1.05;text-align:center;text-wrap:balance;text-shadow:0 3px 0 rgba(0,0,0,.25)}
+h2{font-family:var(--f-display);font-weight:400;font-size:clamp(26px,7vw,36px);margin:0;line-height:1.25;text-align:center;text-wrap:balance;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+p{margin:0;line-height:1.6;text-align:center;font-size:18px}
+.big-emoji{font-size:clamp(64px,18vw,96px);text-align:center;line-height:1}
+
+.answers{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.answers.four{grid-template-columns:1fr 1fr}
+.levels{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:480px){.levels{grid-template-columns:1fr}}
+.lvl.normal{background:#d3f9d8}
+.lvl.medium{background:#ffe8cc}
+.lvl.ultra{grid-column:1/-1;background:var(--panel);color:var(--sun)}
+.lvl.ultra small{color:#a9c4e0}
+.timer{height:12px;background:rgba(0,0,0,.3);border-radius:6px;overflow:hidden}
+.timer i{display:block;height:100%;width:100%;background:var(--sun);transform-origin:right}
+.timer i.low{background:#ff5a5a}
+.lvl{font:700 24px var(--f-body);color:var(--ink);background:var(--chalk);border:0;border-radius:18px;padding:16px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:0 6px 0 rgba(0,0,0,.28)}
+.lvl small{font-weight:500;font-size:15px;color:#4a6378}
+.lvl.hard{background:var(--sun)}
+.lvl:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.28)}
+.lvl:focus-visible{outline:4px solid var(--sun);outline-offset:3px}
+.lvl .pic{font-size:40px;line-height:1}
+@media (max-width:480px){.answers,.answers.four{grid-template-columns:1fr}}
+.ans{
+  font:700 22px/1.2 var(--f-body);color:var(--ink);background:var(--chalk);border:0;border-radius:18px;
+  padding:16px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  cursor:pointer;min-height:120px;box-shadow:0 6px 0 rgba(0,0,0,.28);transition:transform .1s, background .2s;
+}
+@media (max-width:480px){.ans{flex-direction:row;min-height:76px;gap:14px}}
+.ans .pic{font-size:46px;line-height:1}
+.ans:hover:not(:disabled){transform:translateY(-3px)}
+.ans:active:not(:disabled){transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.28)}
+.ans:focus-visible{outline:4px solid var(--sun);outline-offset:3px}
+.ans:disabled{cursor:default}
+.ans.right{background:var(--good);color:#fff}
+.ans.miss{background:#ffe3d6}
+.ans.dim{opacity:.45}
+
+.row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{font:700 22px var(--f-body);background:var(--sun);color:var(--ink);border:0;border-radius:999px;padding:14px 34px;cursor:pointer;box-shadow:0 5px 0 #c9a100}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #c9a100}
+.btn:focus-visible{outline:4px solid var(--chalk);outline-offset:3px}
+.btn.ghost{background:rgba(255,255,255,.18);color:var(--chalk);box-shadow:none;font-size:18px;padding:10px 20px}
+
+.feedback{display:flex;flex-direction:column;align-items:center;gap:10px;min-height:10px}
+.verdict{font-family:var(--f-display);font-size:clamp(34px,9vw,48px);text-shadow:0 3px 0 rgba(0,0,0,.25)}
+.verdict.soft{color:#ffe3d6}
+
+/* goal celebration */
+.goalfx{position:relative;height:90px;width:100%;max-width:260px;margin:0 auto}
+.net{position:absolute;left:50%;bottom:0;width:150px;height:70px;transform:translateX(-50%);border:5px solid var(--chalk);border-bottom:0;border-radius:6px 6px 0 0;
+  background:repeating-linear-gradient(45deg,transparent 0 9px,rgba(255,255,255,.45) 9px 11px),repeating-linear-gradient(-45deg,transparent 0 9px,rgba(255,255,255,.45) 9px 11px)}
+.ball{position:absolute;font-size:34px;right:-10px;bottom:-6px;animation:shoot .7s cubic-bezier(.3,.7,.4,1) forwards}
+@keyframes shoot{to{right:calc(50% - 17px);bottom:22px;transform:rotate(-540deg)}}
+.pop{animation:pop .35s ease}
+@keyframes pop{0%{transform:scale(.94)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.ball{right:calc(50% - 17px);bottom:22px}}
+.hint{font-size:14px;color:#e6f7ea;text-align:center}
+</style>
+
+<div class="wrap">
+  <a class="homelink" href="index.html">🏠 דף הבית</a>
+  <div class="board" aria-live="polite">
+    <div><div class="lbl">שאלה</div><b id="sQ">0/12</b></div>
+    <div style="flex:1;min-width:0"><div class="lbl">גולים</div><div class="goals" id="goals"></div></div>
+    <div><div class="lbl">גולים</div><b id="sG">0</b></div>
+  </div>
+  <section class="field" id="screen"></section>
+  <p class="hint">מבוגר יכול לקרוא את השאלה בקול, או ללחוץ על 🔊 כדי שהמחשב יקריא</p>
+</div>
+
+<script>
+const BANK=[
+ {q:"באיזה חלק בגוף בועטים בכדור?",e:"⚽",a:[["רגל","🦶"],["יד","✋"],["אף","👃"]],c:0},
+ {q:"מי מותר לו לתפוס את הכדור בידיים?",e:"🧤",a:[["השוער","🧤"],["החלוץ","🏃"],["הקהל","👏"]],c:0},
+ {q:"איזו צורה יש לכדור כדורגל?",e:"🤔",a:[["עגול","⚪"],["ריבוע","🟥"],["משולש","🔺"]],c:0},
+ {q:"מה צועקים כשהכדור נכנס לשער?",e:"🥅",a:[["גול!","🎉"],["סל!","🏀"],["בינגו!","🎲"]],c:0},
+ {q:"באיזה צבע הדשא במגרש?",e:"🌱",a:[["ירוק","🟩"],["כחול","🟦"],["סגול","🟪"]],c:0},
+ {q:"מי שורק במשרוקית במשחק?",e:"📣",a:[["השופט","🧑‍⚖️"],["השוער","🧤"],["הכלב","🐶"]],c:0},
+ {q:"כמה שערים יש במגרש כדורגל?",e:"🥅",a:[["2","✌️"],["1","☝️"],["5","🖐️"]],c:0},
+ {q:"איזה כרטיס מוציא שחקן מהמשחק?",e:"🟨",a:[["אדום","🟥"],["כחול","🟦"],["ירוק","🟩"]],c:0},
+ {q:"מה התפקיד של השוער?",e:"🧤",a:[["לשמור על השער","🥅"],["למכור גלידה","🍦"],["לשיר שירים","🎤"]],c:0},
+ {q:"כמה קבוצות משחקות במשחק אחד?",e:"👕",a:[["2","✌️"],["3","🤟"],["1","☝️"]],c:0},
+ {q:"מה יש בתוך השער שתופס את הכדור?",e:"🥅",a:[["רשת","🕸️"],["חלון","🪟"],["דלת","🚪"]],c:0},
+ {q:"איפה משחקים כדורגל?",e:"🏟️",a:[["במגרש","🏟️"],["בבריכה","🏊"],["באמבטיה","🛁"]],c:0}
+];
+const HARD=[
+ {q:"כמה שחקנים יש לכל קבוצה על המגרש?",e:"👕",a:[["11","🔟"],["5","🖐️"],["8","🎱"],["15","👨‍👩‍👧‍👦"]],c:0},
+ {q:"כמה דקות נמשך משחק כדורגל רגיל?",e:"⏱️",a:[["90 דקות","⏱️"],["30 דקות","⏲️"],["60 דקות","🕐"],["10 דקות","⌛"]],c:0},
+ {q:"כמה חצאים יש במשחק כדורגל?",e:"🌓",a:[["2","✌️"],["3","🤟"],["4","🍀"],["1","☝️"]],c:0},
+ {q:"מאיזו מדינה השחקן ליונל מסי?",e:"🌎",a:[["ארגנטינה","🇦🇷"],["ספרד","🇪🇸"],["ברזיל","🇧🇷"],["צרפת","🇫🇷"]],c:0},
+ {q:"כל כמה שנים יש מונדיאל?",e:"🏆",a:[["כל 4 שנים","4️⃣"],["כל שנה","1️⃣"],["כל 2 שנים","2️⃣"],["כל 10 שנים","🔟"]],c:0},
+ {q:"איזו נבחרת זכתה במונדיאל 2022?",e:"🏆",a:[["ארגנטינה","🇦🇷"],["צרפת","🇫🇷"],["ברזיל","🇧🇷"],["גרמניה","🇩🇪"]],c:0},
+ {q:"איזה כרטיס מקבל שחקן כאזהרה?",e:"🧑‍⚖️",a:[["צהוב","🟨"],["אדום","🟥"],["כחול","🟦"],["לבן","⬜"]],c:0},
+ {q:"איך קוראים לבעיטה מפינת המגרש?",e:"🚩",a:[["קרן","🚩"],["פנדל","🎯"],["חוץ","🤾"],["נבדל","🙅"]],c:0},
+ {q:"מה עושים כשהכדור יוצא מהצד של המגרש?",e:"↔️",a:[["זורקים אותו עם הידיים","🙌"],["בועטים פנדל","🎯"],["מתחילים משחק חדש","🔄"],["הולכים הביתה","🏠"]],c:0},
+ {q:"איזה מספר לובש בדרך כלל השוער?",e:"🧤",a:[["1","1️⃣"],["10","🔟"],["9","9️⃣"],["7","7️⃣"]],c:0},
+ {q:"באיזו מדינה התחיל הכדורגל של היום?",e:"🗺️",a:[["אנגליה","🇬🇧"],["ישראל","🇮🇱"],["יפן","🇯🇵"],["אוסטרליה","🇦🇺"]],c:0},
+ {q:"מאיפה בועטים פנדל?",e:"🎯",a:[["מנקודה מול השער","🥅"],["מאמצע המגרש","⭕"],["מהפינה","🚩"],["מהיציע","🏟️"]],c:0}
+];
+const NORMAL=[
+ {q:"מה לובש השוער על הידיים?",e:"🧤",a:[["כפפות","🧤"],["גרביים","🧦"],["כובע","🧢"]],c:0},
+ {q:"מה התפקיד של החלוץ?",e:"🏃",a:[["להבקיע גולים","⚽"],["לשרוק במשרוקית","📣"],["למכור כרטיסים","🎟️"]],c:0},
+ {q:"כמה כדורים יש על המגרש בזמן המשחק?",e:"⚽",a:[["1","☝️"],["2","✌️"],["5","🖐️"]],c:0},
+ {q:"מה נועלים כדי לשחק כדורגל?",e:"👟",a:[["נעלי כדורגל","👟"],["נעלי בית","🥿"],["מגפיים","🥾"]],c:0},
+ {q:"איך קוראים לאנשים שצופים במשחק מהיציע?",e:"🏟️",a:[["הקהל","👏"],["השופטים","🧑‍⚖️"],["השוערים","🧤"]],c:0},
+ {q:"מה מקבלת הקבוצה שזוכה בטורניר?",e:"🎉",a:[["גביע","🏆"],["כרית","🛏️"],["מטריה","☂️"]],c:0},
+ {q:"מה עושים אחרי שמבקיעים גול?",e:"🥅",a:[["חוגגים","🥳"],["הולכים לישון","😴"],["בוכים","😢"]],c:0},
+ {q:"מי מחליט אם הייתה עבירה?",e:"🤔",a:[["השופט","🧑‍⚖️"],["השוער","🧤"],["הקהל","👏"]],c:0},
+ {q:"מי נותן לשחקנים הוראות מצד המגרש?",e:"📋",a:[["המאמן","🧑‍🏫"],["השוער","🧤"],["מוכר הפופקורן","🍿"]],c:0},
+ {q:"איך יודעים שהמשחק נגמר?",e:"🏁",a:[["השופט שורק","📣"],["הדשא נעלם","🌱"],["יורד שלג","❄️"]],c:0},
+ {q:"איך קוראים למגרש גדול עם הרבה כיסאות לקהל?",e:"🏟️",a:[["אצטדיון","🏟️"],["סופרמרקט","🛒"],["גן חיות","🦁"]],c:0},
+ {q:"מה הצבע של הקווים על המגרש?",e:"📏",a:[["לבן","⬜"],["שחור","⬛"],["ורוד","🩷"]],c:0}
+];
+const MEDIUM=[
+ {q:"איך קוראים כשנוגעים בכדור עם הראש?",e:"🧠",a:[["נגיחה","🗣️"],["קרן","🚩"],["פנדל","🎯"],["סל","🏀"]],c:0},
+ {q:"איזה שחקן עוזר לשוער ועוצר את התוקפים?",e:"🛡️",a:[["המגן","🛡️"],["החלוץ","⚡"],["השופט","🧑‍⚖️"],["המאמן","📋"]],c:0},
+ {q:"כמה דקות נמשך כל חצי של המשחק?",e:"⏱️",a:[["45","⏱️"],["20","⏲️"],["60","🕐"],["90","⌛"]],c:0},
+ {q:"מה קורה לשחקן שקיבל שני כרטיסים צהובים?",e:"🟨🟨",a:[["מקבל כרטיס אדום","🟥"],["מקבל פרס","🎁"],["הופך לשוער","🧤"],["לא קורה כלום","🤷"]],c:0},
+ {q:"באיזה חלק בגוף אסור לשחקן רגיל לגעת בכדור?",e:"🚫",a:[["יד","✋"],["ראש","🙂"],["חזה","👕"],["רגל","🦶"]],c:0},
+ {q:"באיזה צבע החולצה המפורסמת של נבחרת ברזיל?",e:"🇧🇷",a:[["צהוב","💛"],["אדום","❤️"],["שחור","🖤"],["סגול","💜"]],c:0},
+ {q:"אילו צבעים לובשת נבחרת ישראל?",e:"🇮🇱",a:[["כחול ולבן","💙"],["אדום וירוק","🍉"],["שחור וצהוב","🐝"],["כתום וסגול","🍊"]],c:0},
+ {q:"איך קוראים כששחקן אחד מבקיע 3 גולים במשחק?",e:"3️⃣",a:[["שלושער (האטריק)","🎩"],["קרן","🚩"],["נבדל","🙅"],["חוץ","🤾"]],c:0},
+ {q:"מאיזו מדינה השחקן כריסטיאנו רונאלדו?",e:"🌍",a:[["פורטוגל","🇵🇹"],["ספרד","🇪🇸"],["איטליה","🇮🇹"],["ארגנטינה","🇦🇷"]],c:0},
+ {q:"באיזו עיר משחקת הקבוצה ברצלונה?",e:"🏙️",a:[["ברצלונה","🇪🇸"],["פריז","🇫🇷"],["לונדון","🇬🇧"],["רומא","🇮🇹"]],c:0},
+ {q:"כמה פעמים זכתה ברזיל במונדיאל?",e:"🏆",a:[["5","🖐️"],["2","✌️"],["10","🔟"],["אף פעם","0️⃣"]],c:0},
+ {q:"מי נכנס למשחק כששחקן מתעייף או נפצע?",e:"🔄",a:[["שחקן מהספסל","🪑"],["השופט","🧑‍⚖️"],["מישהו מהקהל","👏"],["אף אחד","🚫"]],c:0}
+];
+const ULTRA=[
+ {q:"איזו נבחרת זכתה במונדיאל הראשון ב־1930?",e:"📜",a:[["אורוגוואי","🇺🇾"],["ברזיל","🇧🇷"],["איטליה","🇮🇹"],["אנגליה","🇬🇧"]],c:0},
+ {q:"מה המרחק מנקודת הפנדל עד קו השער?",e:"📏",a:[["11 מטר","🎯"],["9 מטר","9️⃣"],["16 מטר","📐"],["5 מטר","5️⃣"]],c:0},
+ {q:"באיזו שנה שיחקה נבחרת ישראל במונדיאל?",e:"🇮🇱",a:[["1970","📻"],["1990","📼"],["2006","📱"],["1958","📺"]],c:0},
+ {q:"איזו נבחרת אירחה וגם זכתה במונדיאל 1966?",e:"🏆",a:[["אנגליה","🇬🇧"],["גרמניה","🇩🇪"],["צרפת","🇫🇷"],["מקסיקו","🇲🇽"]],c:0},
+ {q:"כמה נבחרות שיחקו במונדיאל 2026?",e:"🌎",a:[["48","🔢"],["32","🎲"],["24","🕐"],["64","♟️"]],c:0},
+ {q:"מי זכה בכדור הזהב הכי הרבה פעמים?",e:"🌟",a:[["ליונל מסי","🇦🇷"],["כריסטיאנו רונאלדו","🇵🇹"],["פלה","🇧🇷"],["זינדין זידאן","🇫🇷"]],c:0},
+ {q:"איזו קבוצה זכתה הכי הרבה פעמים בליגת האלופות?",e:"⭐",a:[["ריאל מדריד","⚪"],["ברצלונה","🔵"],["מנצ׳סטר יונייטד","🔴"],["יובנטוס","⚫"]],c:0},
+ {q:"מה הרוחב של שער כדורגל רשמי?",e:"🥅",a:[["7.32 מטר","📏"],["5 מטר","📐"],["10 מטר","🔟"],["3 מטר","3️⃣"]],c:0},
+ {q:"מי זכתה במונדיאל 2018?",e:"🏆",a:[["צרפת","🇫🇷"],["קרואטיה","🇭🇷"],["גרמניה","🇩🇪"],["ספרד","🇪🇸"]],c:0},
+ {q:"באיזו עיר נמצא אצטדיון סנטיאגו ברנבאו?",e:"🏟️",a:[["מדריד","🇪🇸"],["ברצלונה","🇪🇸"],["ליסבון","🇵🇹"],["בואנוס איירס","🇦🇷"]],c:0},
+ {q:"כמה חילופים מותר לקבוצה לעשות במשחק רגיל בלי הארכה?",e:"🔄",a:[["5","🖐️"],["3","🤟"],["7","7️⃣"],["כמה שרוצים","♾️"]],c:0},
+ {q:"מי הבקיע הכי הרבה גולים במונדיאלים עד 2022?",e:"🥇",a:[["מירוסלב קלוזה","🇩🇪"],["פלה","🇧🇷"],["ליונל מסי","🇦🇷"],["רונאלדו הברזילאי","🇧🇷"]],c:0}
+];
+const LEVELS={easy:{name:"קל",bank:BANK},normal:{name:"רגיל",bank:NORMAL},medium:{name:"בינוני",bank:MEDIUM},hard:{name:"קשה",bank:HARD},ultra:{name:"אולטרה קשה",bank:ULTRA}};
+const ORDER=["easy","normal","medium","hard","ultra"];
+const ULTRA_TIME=15;
+let tick=null;
+const $=id=>document.getElementById(id);
+const screen=$("screen");
+let order=[],i=0,goals=0,locked=false,voice=true,level="easy";
+
+function say(t){
+  if(!voice)return;
+  try{
+    const s=window.speechSynthesis; if(!s)return;
+    s.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang="he-IL"; u.rate=.9;
+    const v=s.getVoices().find(v=>/^he|^iw/i.test(v.lang)); if(v)u.voice=v;
+    s.speak(u);
+  }catch(e){}
+}
+function shuffle(a){a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a}
+function board(){
+  const L=order.length||12;
+  $("sQ").textContent=Math.min(i+1,L)+"/"+L;
+  $("sG").textContent=goals;
+  $("goals").textContent="⚽".repeat(goals);
+}
+
+function home(){
+  clearInterval(tick);order=[];i=0;goals=0;board();$("sQ").textContent="0/12";
+  screen.innerHTML=`<div class="stack">
+    <div class="big-emoji">⚽🥅</div>
+    <h1>אצטדיון הטריוויה</h1>
+    <p>12 שאלות כדורגל. כל תשובה נכונה היא גול!<br>בחרו רמה:</p>
+    <div class="levels">
+      <button class="lvl" data-l="easy"><span class="pic">🙂</span>קל<small>3 תשובות, לגילאי 5–7</small></button>
+      <button class="lvl normal" data-l="normal"><span class="pic">😃</span>רגיל<small>3 תשובות, קצת יותר מאתגר</small></button>
+      <button class="lvl medium" data-l="medium"><span class="pic">🤔</span>בינוני<small>4 תשובות, חוקי המשחק</small></button>
+      <button class="lvl hard" data-l="hard"><span class="pic">💪</span>קשה<small>4 תשובות, לשחקנים מנוסים</small></button>
+      <button class="lvl ultra" data-l="ultra"><span class="pic">🔥</span>אולטרה קשה<small>שאלות של מומחים, ורק 15 שניות לכל שאלה!</small></button>
+    </div>
+  </div>`;
+  screen.querySelectorAll(".lvl").forEach(b=>b.onclick=()=>{level=b.dataset.l;start()});
+  screen.querySelector(".lvl").focus();
+}
+
+function start(){
+  order=shuffle(LEVELS[level].bank).map(q=>{const idx=shuffle(q.a.map((_,n)=>n));return{q:q.q,e:q.e,a:idx.map(n=>q.a[n]),c:idx.indexOf(q.c)}});
+  i=0;goals=0;ask();
+}
+
+function ask(){
+  const q=order[i]; locked=false; board(); clearInterval(tick);
+  screen.innerHTML=`<div class="stack pop">
+    ${level==="ultra"?`<div class="timer"><i id="bar"></i></div>`:""}
+    <div class="big-emoji">${q.e}</div>
+    <h2>${q.q}</h2>
+    <div class="row"><button class="btn ghost" id="spk">🔊 הקראה</button></div>
+    <div class="answers${q.a.length===4?" four":""}">${q.a.map((t,n)=>`<button class="ans" data-n="${n}"><span class="pic">${t[1]}</span><span>${t[0]}</span></button>`).join("")}</div>
+    <div class="feedback" id="fb"></div>
+  </div>`;
+  screen.querySelectorAll(".ans").forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  const read=()=>say(q.q+" "+q.a.map(t=>t[0]).join(", או "));
+  $("spk").onclick=read; read();
+  if(level==="ultra"){
+    const t0=performance.now(), bar=$("bar");
+    tick=setInterval(()=>{
+      const left=ULTRA_TIME-(performance.now()-t0)/1000;
+      bar.style.transform=`scaleX(${Math.max(0,left/ULTRA_TIME)})`;
+      bar.classList.toggle("low",left<5);
+      if(left<=0)pick(-1);
+    },100);
+  }
+}
+
+function pick(n){
+  if(locked)return; locked=true; clearInterval(tick);
+  const q=order[i], ok=n===q.c;
+  if(ok)goals++;
+  screen.querySelectorAll(".ans").forEach(b=>{
+    const k=+b.dataset.n; b.disabled=true;
+    if(k===q.c)b.classList.add("right"); else if(k===n)b.classList.add("miss"); else b.classList.add("dim");
+  });
+  const last=i>=order.length-1;
+  $("fb").innerHTML=ok
+    ? `<div class="goalfx"><div class="net"></div><div class="ball">⚽</div></div><div class="verdict">גוֹל!</div>`
+    : `<div class="verdict soft">${n<0?"נגמר הזמן!":"כמעט!"}</div><p>התשובה הנכונה: ${q.a[q.c][0]} ${q.a[q.c][1]}</p>`;
+  $("fb").insertAdjacentHTML("beforeend",`<button class="btn" id="next">${last?"לסוף המשחק":"עוד שאלה ➜"}</button>`);
+  say(ok?"גול! כל הכבוד":"כמעט! התשובה הנכונה היא "+q.a[q.c][0]);
+  $("next").onclick=next; $("next").focus(); board();
+}
+
+function next(){ i++; if(i<order.length) ask(); else end(); }
+
+function end(){
+  clearInterval(tick); i=order.length-1; board();
+  const nextLvl=ORDER[ORDER.indexOf(level)+1];
+  const n=goals, all=order.length;
+  const medal=n===all?"🏆":n>=9?"🥇":n>=6?"🥈":"🥉";
+  const msg=n===all?"אלוף! כל התשובות נכונות":n>=9?"שחקן מעולה!":n>=6?"משחק טוב מאוד!":"כל הכבוד על המשחק!";
+  screen.innerHTML=`<div class="stack pop">
+    <div class="big-emoji">${medal}</div>
+    <h1>${msg}</h1>
+    <p>הבקעת <b>${n}</b> גולים מתוך ${all}</p>
+    <p style="font-size:28px;word-break:break-all">${"⚽".repeat(n)}</p>
+    <div class="row"><button class="btn" id="again">משחקים שוב!</button>${nextLvl?`<button class="btn" id="harder">לרמת ${LEVELS[nextLvl].name} 💪</button>`:""}<button class="btn ghost" id="menu">בחירת רמה</button></div>
+  </div>`;
+  if($("harder"))$("harder").onclick=()=>{level=nextLvl;start()};
+  $("menu").onclick=home;
+  say(msg+" הבקעת "+n+" גולים");
+  $("again").onclick=start; $("again").focus();
+}
+
+document.addEventListener("keydown",e=>{
+  const n=+e.key-1;
+  if(!locked && /^[1-4]$/.test(e.key) && order[i] && n<order[i].a.length && screen.querySelector(".ans")) pick(n);
+});
+home();
+</script>
+
+</body></html>
