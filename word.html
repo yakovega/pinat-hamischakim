@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>בעיות מילוליות – פינת המשחקים</title>
+<meta name="description" content="תרגול בעיות מילוליות בחשבון לילדים, עד רמת כיתה ד׳: קוראים סיפור, בוחרים את התרגיל המתאים ופותרים. 5 רמות, כולל בעיות של כמה שלבים, והסבר לכל בעיה.">
+<link rel="canonical" href="https://yakovega.github.io/pinat-hamischakim/word.html">
+<meta property="og:title" content="בעיות מילוליות – פינת המשחקים">
+<meta property="og:description" content="תרגול בעיות מילוליות בחשבון לילדים, עד רמת כיתה ד׳: קוראים סיפור, בוחרים את התרגיל המתאים ופותרים. 5 רמות, כולל בעיות של כמה שלבים, והסבר לכל בעיה.">
+<meta property="og:url" content="https://yakovega.github.io/pinat-hamischakim/word.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Rubik:wght@400;600;800&display=swap">
+<style>
+/* Layout: one centered card. The story sits on a "notebook" panel; under it two steps: first pick the matching exercise, then type the answer on a big keypad. */
+:root{
+  color-scheme:dark;
+  --ground:#141C30; --card:#1F2A44; --paper:#FFF8EC; --sun:#FFC94A; --orange:#F28C28; --blue:#2B7DE9;
+  --teal:#1E9E8A; --red:#ff5a3c; --purple:#8B5CF6; --muted:#C9D2E6; --line:#33416A;
+  --display:'Fredoka','Arial Rounded MT Bold',Arial,sans-serif;
+  --body:'Rubik',Arial,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--ground);color:var(--paper);font-family:var(--body);min-height:100vh;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px}
+[hidden]{display:none!important}
+main{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:clamp(26px,5vw,38px);margin:0;color:var(--sun)}
+.homelink{background:var(--sun);color:#1F2A44;padding:8px 14px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px}
+.card{background:var(--card);border-radius:22px;padding:clamp(14px,4vw,24px);display:flex;flex-direction:column;gap:14px}
+.card h2{font-family:var(--display);font-size:22px;margin:0}
+.group{display:flex;flex-direction:column;gap:8px}
+.group>span{font-weight:600;color:var(--muted);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:12px;padding:9px 13px;font:600 15px var(--body);cursor:pointer;text-align:right}
+.chip[aria-pressed="true"]{background:var(--sun);border-color:var(--sun);color:#1F2A44}
+.chip small{display:block;font-weight:400;font-size:12px;opacity:.85}
+.big{font-family:var(--display);font-weight:700;font-size:22px;border:0;border-radius:99px;padding:12px 30px;background:var(--orange);color:#1F2A44;cursor:pointer;box-shadow:0 5px 0 #a85c12}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #a85c12}
+.ghost{border:2px solid var(--line);background:transparent;color:var(--paper);border-radius:99px;padding:9px 16px;font:600 15px var(--body);cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.best{color:var(--muted);font-size:14px;text-align:center;margin:0}
+.status{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.status b{color:var(--paper);font-family:var(--display);font-size:20px}
+.progress{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--teal);transition:width .3s}
+/* the story */
+.story{background:var(--paper);color:#1F2A44;border-radius:16px;padding:16px 18px;display:flex;gap:14px;align-items:flex-start;
+  background-image:repeating-linear-gradient(transparent 0 33px,#d9e3f5 33px 34px);line-height:34px}
+.story .em{font-size:44px;line-height:1;flex:none}
+.story p{margin:0;font-size:clamp(17px,4.2vw,21px);font-weight:500}
+.story p b{color:#c25b0a}
+.steph{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:19px}
+.steph .n{width:30px;height:30px;border-radius:50%;background:var(--blue);display:grid;place-items:center;font-size:16px}
+.steph.done .n{background:var(--teal)}
+.exprs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:480px){.exprs{grid-template-columns:1fr}}
+.ex{border:3px solid var(--line);background:#26314F;color:var(--paper);border-radius:14px;min-height:60px;cursor:pointer;font:700 24px var(--display);direction:ltr;font-variant-numeric:tabular-nums}
+.ex:hover:not(:disabled){border-color:var(--sun)}
+.ex.right{border-color:var(--teal);background:#1d4a44}.ex.wrong{border-color:var(--red);background:#4a2420;opacity:.75}
+.ex:disabled{cursor:default}
+.tip{background:#26314F;border-radius:12px;padding:10px 14px;color:var(--muted);font-size:15px;line-height:1.6}
+.tip b{color:var(--sun)}
+.ansrow{direction:ltr;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.eq{direction:ltr;font:700 clamp(22px,6vw,30px) var(--display);font-variant-numeric:tabular-nums}
+.box{min-width:120px;height:58px;border-radius:12px;background:var(--paper);color:#1F2A44;display:grid;place-items:center;font:700 30px var(--display);padding:0 12px;direction:ltr;border:3px solid var(--sun)}
+.box.bad{border-color:var(--red)}.box.good{border-color:var(--teal);background:#d9f3ec}
+.unit{color:var(--muted);font-weight:600}
+.pad{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;direction:ltr;max-width:420px;margin:0 auto;width:100%}
+.pad button{height:54px;border-radius:12px;border:0;background:#33416A;color:var(--paper);font:700 24px var(--display);cursor:pointer}
+.pad button:active{transform:translateY(2px)}
+.pad .ok{grid-column:span 2;background:#4ade80;color:#1F2A44}
+.pad .del{background:#4a5578}
+.fb{min-height:30px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+.fb .good{font-family:var(--display);font-weight:700;font-size:28px;color:var(--sun)}
+.fb .bad{font-weight:700;font-size:18px;color:var(--red)}
+.fb .why{color:var(--muted);font-size:16px;line-height:1.6;max-width:560px}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.result{text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center}
+.result .t{font-family:var(--display);font-weight:700;font-size:clamp(30px,7vw,46px);color:var(--sun);line-height:1.1}
+.result .stars{font-size:40px;letter-spacing:6px}
+.result p{margin:0;font-size:17px}
+.keys{color:var(--muted);font-size:13px;text-align:center;margin:0}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:6;width:100%;height:100%}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <h1>בעיות מילוליות 🧮</h1>
+    <a class="homelink" href="index.html">🏠 דף הבית</a>
+  </div>
+
+  <section class="card" id="setup">
+    <h2>קוראים, מבינים, פותרים! 🕵️</h2>
+    <p style="margin:0;color:var(--muted);line-height:1.6">בכל בעיה יש סיפור קצר. <b style="color:var(--paper)">שלב 1:</b> בוחרים איזה תרגיל מתאים לסיפור. <b style="color:var(--paper)">שלב 2:</b> פותרים וכותבים את התשובה.</p>
+    <div class="group"><span>רמה</span>
+      <div class="chips" data-name="level">
+        <button class="chip" type="button" data-v="0">🐣 ממש קל<small>תרגיל אחד, עד 20</small></button>
+        <button class="chip" type="button" data-v="1">🐥 קל<small>תרגיל אחד, עד 100</small></button>
+        <button class="chip" type="button" data-v="2">🐇 בינוני<small>מספרים גדולים, חילוק עם שארית</small></button>
+        <button class="chip" type="button" data-v="3">🦊 קשה<small>בעיות של שני שלבים</small></button>
+        <button class="chip" type="button" data-v="4">🏆 אלופים<small>שברים, יחסים ושלושה שלבים</small></button>
+      </div>
+    </div>
+    <div class="group"><span>כמה בעיות?</span>
+      <div class="chips" data-name="count"><button class="chip" type="button" data-v="5">5</button><button class="chip" type="button" data-v="10">10</button></div>
+    </div>
+    <button class="big" id="start" type="button" style="align-self:center">🧮 להתחיל!</button>
+    <p class="best" id="best"></p>
+  </section>
+
+  <section class="card" id="play" hidden>
+    <div class="status"><span id="qn"></span><span>⭐ <b id="pts">0</b></span></div>
+    <div class="progress"><i id="prog"></i></div>
+    <div class="story"><span class="em" id="em"></span><p id="text"></p></div>
+
+    <div class="steph" id="h1"><span class="n">1</span>איזה תרגיל מתאים לסיפור?</div>
+    <div class="exprs" id="exprs"></div>
+    <div class="tip" id="tip" hidden></div>
+
+    <div id="step2" hidden>
+      <div class="steph" id="h2" style="margin-bottom:10px"><span class="n">2</span>עכשיו פותרים!</div>
+      <div class="ansrow"><span class="eq" id="eq"></span><span class="eq">=</span><span class="box" id="box"></span><span class="unit" id="unit"></span></div>
+      <div style="height:12px"></div>
+      <div class="pad" id="pad"></div>
+    </div>
+    <div class="fb" id="fb" aria-live="assertive"></div>
+    <div class="row"><button class="big" id="next" type="button" hidden>לבעיה הבאה ←</button></div>
+    <p class="keys">אפשר גם במקלדת: 1–4 לבחירת תרגיל, מספרים, Backspace ו־Enter</p>
+  </section>
+
+  <section class="card" id="end" hidden>
+    <div class="result"><div class="t" id="endT"></div><div class="stars" id="endS"></div><p id="endP"></p></div>
+    <div class="row"><button class="big" id="again" type="button">🧮 עוד בעיות</button><button class="ghost" id="settings" type="button">לשנות</button></div>
+  </section>
+</main>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const NAMES=[['נועה','f'],['דני','m'],['יונתן','m'],['מאיה','f'],['איתן','m'],['תמר','f'],['עומר','m'],['שירה','f'],['אורי','m'],['הילה','f']];
+const person=()=>{const[n,g]=pick(NAMES);return{n,g,v:(m,f)=>g==='m'?m:f}};
+// op helpers: expression strings shown left-to-right, with the Israeli ":" for division
+const E=(a,op,b)=>`${a} ${op} ${b}`;
+const P=s=>`(${s})`;
+function fourOps(a,b){return [E(a,'+',b),E(a,'−',b),E(a,'×',b),E(a,':',b)]}
+const KEY={'+':'חיבור','−':'חיסור','×':'כפל',':':'חילוק'};
+
+/* ---------- problem templates ----------
+ each returns {em,text,right,wrong:[...],ans,unit,show,expl,tip}
+   show = the exercise the child solves in step 2 (usually = right)
+   tip  = what to notice when the wrong exercise was chosen */
+const T={
+ add(L){const a=L===0?R(5,12):L===1?R(20,60):R(150,600),b=L===0?R(2,8):L===1?R(10,39):R(60,350);
+  return{em:'📚',text:`בספרייה של בית הספר היו <b>${a}</b> ספרים. השבוע הגיעו עוד <b>${b}</b> ספרים חדשים. כמה ספרים יש עכשיו בספרייה?`,
+   right:E(a,'+',b),wrong:fourOps(a,b).slice(1),ans:a+b,unit:'ספרים',expl:`היו ${a} ונוספו ${b}, אז מחברים: ${a} + ${b} = ${a+b}.`,tip:'הגיעו עוד ספרים, כלומר המספר <b>גדל</b>. כשמוסיפים, משתמשים בחיבור.'}},
+ sub(L){const a=L===0?R(10,20):L===1?R(40,99):R(300,900),b=L===0?R(2,9):L===1?R(11,39):R(120,280);const p=person();
+  return{em:'⭐',text:`ל${p.n} היו <b>${a}</b> מדבקות. ${p.v('הוא נתן','היא נתנה')} לחברים <b>${b}</b> מדבקות. כמה מדבקות נשארו ל${p.n}?`,
+   right:E(a,'−',b),wrong:[E(a,'+',b),E(a,'×',b),E(a,':',b)],ans:a-b,unit:'מדבקות',expl:`היו ${a} ו${p.v('הוא','היא')} נתן${p.v('','ה')} ${b}, אז מחסרים: ${a} − ${b} = ${a-b}.`,tip:'כשנותנים משהו למישהו אחר, נשאר <b>פחות</b>. זה חיסור.'}},
+ compare(L){const b=L<=1?R(12,40):R(120,400),d=L<=1?R(5,30):R(40,250),a=b+d;const p=person(),q=person();if(q.n===p.n)return T.compare(L);
+  return{em:'🔮',text:`ל${p.n} יש <b>${a}</b> גולות, ול${q.n} יש <b>${b}</b> גולות. בכמה גולות יש ל${p.n} <b>יותר</b> מאשר ל${q.n}?`,
+   right:E(a,'−',b),wrong:[E(a,'+',b),E(a,'×',b),E(a,':',b)],ans:d,unit:'גולות',expl:`כדי לדעת בכמה אחד גדול מהשני, מחסרים: ${a} − ${b} = ${d}.`,tip:'שימו לב! המילה "יותר" לא תמיד אומרת חיבור. כששואלים <b>בכמה יותר</b>, מחפשים את ההפרש, וזה חיסור.'}},
+ mul(L){const a=L===0?R(2,5):L===1?R(3,9):R(12,35),b=L===0?R(2,5):L===1?R(3,9):R(3,9);
+  return{em:'🪑',text:`באולם של בית הספר יש <b>${b}</b> שורות. בכל שורה יש <b>${a}</b> כיסאות. כמה כיסאות יש באולם?`,
+   right:E(b,'×',a),wrong:[E(b,'+',a),E(a,'−',b),E(a,':',b)].filter(x=>x!==E(b,'×',a)),ans:a*b,unit:'כיסאות',expl:`${b} שורות, ובכל אחת ${a}: ${b} × ${a} = ${a*b}.`,tip:'המילה <b>"בכל"</b> היא רמז: יש כמה קבוצות שוות, וזה כפל.'}},
+ div(L){const b=L===0?R(2,4):L===1?R(3,9):R(4,9),k=L===0?R(2,5):L===1?R(3,9):R(12,30),a=b*k;
+  return{em:'🍪',text:`<b>${a}</b> עוגיות חילקו שווה בשווה בין <b>${b}</b> ילדים. כמה עוגיות קיבל כל ילד?`,
+   right:E(a,':',b),wrong:[E(a,'−',b),E(a,'+',b),E(a,'×',b)],ans:k,unit:'עוגיות',expl:`מחלקים ${a} ל־${b} קבוצות שוות: ${a} : ${b} = ${k}, כי ${b} × ${k} = ${a}.`,tip:'<b>"שווה בשווה"</b> אומר שמחלקים לקבוצות שוות. זה חילוק.'}},
+ boats(L){const b=R(4,8),a=b*R(3,9)+R(1,b-1),q=Math.floor(a/b),ans=q+1;
+  return{em:'🚣',text:`<b>${a}</b> ילדים יוצאים לשייט בסירות. בכל סירה יכולים לשבת <b>${b}</b> ילדים. כמה סירות צריך כדי שכל הילדים ישוטו?`,
+   right:E(a,':',b),wrong:[E(a,'−',b),E(a,'+',b),E(a,'×',b)],ans,unit:'סירות',expl:`${a} : ${b} = ${q} ונשארים עוד ${a-q*b} ילדים. גם הם צריכים סירה, אז צריך ${q} + 1 = ${ans} סירות.`,tip:'מחלקים את הילדים לקבוצות של ' + b + ', וזה חילוק.',rem:true}},
+ times(L){const a=L<=1?R(5,20):R(15,60),k=R(2,L<=1?4:6);const p=person();
+  return{em:'🐷',text:`בקופה של ${p.n} יש <b>${a}</b> ₪. בקופה של ${p.v('אחיו','אחיה')} יש <b>פי ${k}</b> יותר. כמה שקלים יש בקופה של האח?`,
+   right:E(a,'×',k),wrong:[E(a,'+',k),E(a,'−',k),E(a,':',k)],ans:a*k,unit:'₪',expl:`"פי ${k}" פירושו ${k} פעמים ${a}: ${a} × ${k} = ${a*k}.`,tip:'<b>"פי"</b> אומר כמה פעמים, וזה כפל.'}},
+ missing(L){const a=L<=1?R(10,40):R(60,180),b=L<=1?R(10,40):R(40,160),c=a+b;const p=person();
+  return{em:'📖',text:`ביום ראשון ${p.n} ${p.v('קרא','קראה')} <b>${a}</b> עמודים. ביום ראשון וביום שני ביחד ${p.v('הוא קרא','היא קראה')} <b>${c}</b> עמודים. כמה עמודים ${p.v('הוא קרא','היא קראה')} ביום שני?`,
+   right:E(c,'−',a),wrong:[E(c,'+',a),E(c,'×',a),E(c,':',a)],ans:b,unit:'עמודים',expl:`הכול יחד ${c}, ומזה ${a} ביום ראשון. מה שנשאר הוא יום שני: ${c} − ${a} = ${b}.`,tip:'אנחנו יודעים את <b>הכול ביחד</b> ואת החלק הראשון. כדי למצוא את החלק השני, מורידים: חיסור.'}},
+ // ---- two steps ----
+ change(L){const n=R(2,6),pr=L>=4?R(6,15):R(3,9),tot=n*pr,pay=[20,50,100,200].find(v=>v>tot);const p=person();
+  return{em:'🛒',text:`${p.n} ${p.v('קנה','קנתה')} <b>${n}</b> מחברות. כל מחברת עולה <b>${pr}</b> ₪. ${p.v('הוא שילם','היא שילמה')} בשטר של <b>${pay}</b> ₪. כמה עודף ${p.v('קיבל','קיבלה')}?`,
+   right:`${pay} − ${P(E(n,'×',pr))}`,wrong:[`${pay} − ${P(E(n,'+',pr))}`,`${pay} + ${P(E(n,'×',pr))}`,`${pay} − ${n} − ${pr}`],ans:pay-tot,unit:'₪',
+   expl:`קודם המחיר של כל המחברות: ${n} × ${pr} = ${tot}. אחר כך העודף: ${pay} − ${tot} = ${pay-tot}.`,tip:'יש כאן שני שלבים. קודם מחשבים כמה עלו <b>כל</b> המחברות (כפל), ואז מורידים מהשטר (חיסור).'}},
+ boxes(L){const a=R(6,12),b=R(3,9),c=R(2,a-1);
+  return{em:'✏️',text:`בכל קופסה יש <b>${a}</b> עפרונות. במחסן יש <b>${b}</b> קופסאות מלאות, ועוד <b>${c}</b> עפרונות בודדים. כמה עפרונות יש במחסן בסך הכול?`,
+   right:`${P(E(b,'×',a))} + ${c}`,wrong:[`${P(E(b,'+',a))} + ${c}`,`${b} × ${P(E(a,'+',c))}`,`${P(E(b,'×',a))} − ${c}`],ans:a*b+c,unit:'עפרונות',
+   expl:`בקופסאות: ${b} × ${a} = ${a*b}. ועוד הבודדים: ${a*b} + ${c} = ${a*b+c}.`,tip:'קודם סופרים את מה שבקופסאות (כפל), ואז מוסיפים את הבודדים (חיבור). הבודדים לא בתוך הקופסאות!'}},
+ share(L){const b=R(3,6),k=R(4,9),c=R(2,9),a=b*k+c;const p=person();
+  return{em:'🍎',text:`ל${p.n} היו <b>${a}</b> תפוחים. ${p.v('הוא','היא')} ${p.v('אכל','אכלה')} <b>${c}</b> תפוחים, ואת כל השאר ${p.v('חילק','חילקה')} שווה בשווה בין <b>${b}</b> חברים. כמה תפוחים קיבל כל חבר?`,
+   right:`${P(E(a,'−',c))} : ${b}`,wrong:[`${a} − ${P(E(c,':',b))}`,`${P(E(a,'+',c))} : ${b}`,`${P(E(a,'−',c))} × ${b}`],ans:k,unit:'תפוחים',
+   expl:`קודם מורידים את מה ש${p.v('הוא אכל','היא אכלה')}: ${a} − ${c} = ${a-c}. אחר כך מחלקים: ${a-c} : ${b} = ${k}.`,tip:'הסדר חשוב! קודם מורידים את מה שנאכל, ורק <b>את השאר</b> מחלקים.'}},
+ classes(L){const a=R(12,18),b=R(11,17),c=R(18,a+b-2);
+  return{em:'🏫',text:`בכיתה ד׳1 יש <b>${a}</b> בנים ו־<b>${b}</b> בנות. בכיתה ד׳2 יש <b>${c}</b> תלמידים. בכמה תלמידים יש בכיתה ד׳1 יותר מאשר בכיתה ד׳2?`,
+   right:`${P(E(a,'+',b))} − ${c}`,wrong:[`${a} + ${b} + ${c}`,`${P(E(a,'−',b))} + ${c}`,`${a} − ${b} − ${c}`],ans:a+b-c,unit:'תלמידים',
+   expl:`קודם כמה יש בד׳1: ${a} + ${b} = ${a+b}. אחר כך ההפרש: ${a+b} − ${c} = ${a+b-c}.`,tip:'קודם מחברים בנים ובנות כדי לדעת כמה יש בד׳1, ורק אחר כך משווים לד׳2 בחיסור.'}},
+ // ---- champions ----
+ fraction(L){const k=pick([2,3,4,5]),name={2:'חצי',3:'שליש',4:'רבע',5:'חמישית'}[k],a=k*R(5,9),part=a/k;
+  return{em:'⚽',text:`בשכבה יש <b>${a}</b> תלמידים. <b>${name}</b> מהם נרשמו לחוג כדורגל. כמה תלמידים <b>לא</b> נרשמו לחוג?`,
+   right:`${a} − ${P(E(a,':',k))}`,wrong:[`${a} : ${k}`,`${a} − ${k}`,`${a} × ${k}`],ans:a-part,unit:'תלמידים',
+   expl:`${name} מ־${a} זה ${a} : ${k} = ${part}. אלה שנרשמו. מי שלא נרשם: ${a} − ${part} = ${a-part}.`,tip:`קודם מוצאים כמה זה ${name} (חילוק ב־${k}), ואז שואלים כמה <b>לא</b> נרשמו, אז מורידים מהכול.`}},
+ unit(L){const n=R(2,5),u=R(3,12),m=R(n+1,9),tot=n*u;
+  return{em:'🍦',text:`<b>${n}</b> גלידות עולות <b>${tot}</b> ₪. כמה יעלו <b>${m}</b> גלידות כאלה?`,
+   right:`${P(E(tot,':',n))} × ${m}`,wrong:[`${tot} × ${m}`,`${tot} + ${m-n}`,`${P(E(tot,'×',n))} : ${m}`],ans:u*m,unit:'₪',
+   expl:`קודם מחיר של גלידה אחת: ${tot} : ${n} = ${u}. ואז ${m} גלידות: ${u} × ${m} = ${u*m}.`,tip:'הכי קל למצוא קודם כמה עולה <b>גלידה אחת</b> (חילוק), ואז לכפול במספר הגלידות.'}},
+ train(L){const b=R(3,6),a=R(20,40),c=R(10,30),d=R(5,25);
+  return{em:'🚆',text:`ברכבת יש <b>${b}</b> קרונות, ובכל קרון יושבים <b>${a}</b> נוסעים. בתחנה ירדו <b>${c}</b> נוסעים ועלו <b>${d}</b> נוסעים חדשים. כמה נוסעים יש עכשיו ברכבת?`,
+   right:`${b} × ${a} − ${c} + ${d}`,wrong:[`${b} + ${a} − ${c} + ${d}`,`${b} × ${a} + ${c} − ${d}`,`${b} × ${a} − ${c} − ${d}`],ans:b*a-c+d,unit:'נוסעים',
+   expl:`בהתחלה: ${b} × ${a} = ${b*a}. ירדו ${c}: ${b*a} − ${c} = ${b*a-c}. עלו ${d}: ${b*a-c} + ${d} = ${b*a-c+d}.`,tip:'שלושה שלבים: כמה היו בהתחלה (כפל), מי <b>ירד</b> (חיסור), ומי <b>עלה</b> (חיבור).'}},
+ age(L){const d=R(3,8),k=R(2,5),m=R(9,14),sis=m-k;const p=person();
+  return{em:'🎂',text:`${p.n} ${p.v('גדול','גדולה')} מאחותו הקטנה ב־<b>${d}</b> שנים. בעוד <b>${k}</b> שנים האחות תהיה בת <b>${m}</b>. בן כמה ${p.n} היום?`.replace('בן כמה',p.v('בן כמה','בת כמה')).replace('מאחותו',p.v('מאחותו','מאחותה')),
+   right:`${m} − ${k} + ${d}`,wrong:[`${m} + ${k} + ${d}`,`${m} − ${k} − ${d}`,`${m} + ${d}`],ans:m-k+d,unit:'שנים',
+   expl:`האחות היום: ${m} − ${k} = ${m-k}. ${p.n} ${p.v('גדול','גדולה')} ממנה ב־${d}: ${m-k} + ${d} = ${m-k+d}.`,tip:'קודם מגלים בת כמה האחות <b>היום</b> (מורידים את השנים שעוד לא עברו), ואז מוסיפים את ההפרש.'}},
+};
+const BYLEVEL=[['add','sub','mul','div'],['add','sub','compare','mul','div','times','missing'],['add','sub','compare','mul','div','boats','times','missing','change','boxes'],['change','boxes','share','classes','boats','compare','missing'],['fraction','unit','train','age','share','classes','change']];
+const ev=x=>Function('return '+x.replace(/×/g,'*').replace(/:/g,'/').replace(/−/g,'-'))();
+function make(L){let p,guard=0;do{p=T[pick(BYLEVEL[L])](L)}while((p.ans<=0||new Set([p.right,...p.wrong]).size<4||p.wrong.some(w=>ev(w)===ev(p.right)))&&guard++<80);
+  p.opts=shuffle([p.right,...p.wrong.filter(w=>w!==p.right)].slice(0,4));return p}
+
+/* ---------- setup ---------- */
+const cfg={level:'2',count:'5'};
+try{Object.assign(cfg,JSON.parse(localStorage.getItem('word-cfg')||'{}'))}catch(e){}
+document.querySelectorAll('.chips').forEach(g=>{const n=g.dataset.name;const sync=()=>{g.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',cfg[n]===c.dataset.v));showBest()};
+  g.addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;cfg[n]=c.dataset.v;try{localStorage.setItem('word-cfg',JSON.stringify(cfg))}catch(e){};sync()});sync()});
+const bestKey=()=>`word-best-${cfg.level}-${cfg.count}`;
+function getBest(){try{return +localStorage.getItem(bestKey())||0}catch(e){return 0}}
+function showBest(){const b=getBest();$('best').textContent=b?`השיא שלך כאן: ${b} נקודות`:''}
+const show=id=>['setup','play','end'].forEach(s=>$(s).hidden=s!==id);
+
+/* ---------- play ---------- */
+let qi=0,points=0,perfect=0,cur=null,stage=1,exTries=0,ansTries=0,typed='',gain=0,seen=new Set();
+function start(){qi=0;points=0;perfect=0;seen=new Set();show('play');next()}
+function next(){
+  const L=+cfg.level;let g=0;do{cur=make(L)}while(seen.has(cur.text)&&g++<30);seen.add(cur.text);
+  stage=1;exTries=0;ansTries=0;typed='';gain=0;
+  $('qn').textContent=`בעיה ${qi+1} מתוך ${cfg.count}`;$('pts').textContent=points;$('prog').style.width=(qi/+cfg.count*100)+'%';
+  $('em').textContent=cur.em;$('text').innerHTML=cur.text;
+  $('h1').classList.remove('done');$('tip').hidden=true;$('step2').hidden=true;$('fb').innerHTML='';$('next').hidden=true;
+  const X=$('exprs');X.innerHTML='';
+  cur.opts.forEach((o,i)=>{const b=document.createElement('button');b.type='button';b.className='ex';b.textContent=o;b.dataset.i=i;b.onclick=()=>pickEx(i);X.appendChild(b)});
+}
+function pickEx(i){
+  if(stage!==1)return;const b=$('exprs').children[i];if(b.disabled)return;
+  if(cur.opts[i]===cur.right){b.classList.add('right');[...$('exprs').children].forEach(x=>x.disabled=true);
+    gain+=exTries===0?4:exTries===1?2:0;tone(880,0,.1,'sine',.06);$('h1').classList.add('done');
+    if(exTries===0)$('tip').hidden=true;
+    toStep2()}
+  else{exTries++;b.classList.add('wrong');b.disabled=true;tone(220,0,.2,'sawtooth',.05);$('tip').hidden=false;$('tip').innerHTML='💡 '+cur.tip;
+    if(exTries>=2){const r=[...$('exprs').children].find(x=>x.textContent===cur.right);r.classList.add('right');[...$('exprs').children].forEach(x=>x.disabled=true);$('h1').classList.add('done');toStep2()}}
+}
+function toStep2(){stage=2;$('step2').hidden=false;$('eq').textContent=cur.right;$('unit').textContent=cur.unit;typed='';paintBox();
+  $('step2').scrollIntoView({block:'nearest',behavior:still?'auto':'smooth'})}
+function paintBox(){const B=$('box');B.textContent=typed||'?';B.classList.remove('bad','good')}
+const PAD=['1','2','3','4','5','6','7','8','9','0','⌫','✓'];
+$('pad').innerHTML=PAD.map(k=>`<button type="button" class="${k==='✓'?'ok':k==='⌫'?'del':''}" data-k="${k}">${k}</button>`).join('');
+$('pad').addEventListener('click',e=>{const b=e.target.closest('button');if(b)key(b.dataset.k)});
+function key(k){if(stage!==2)return;
+  if(k==='⌫'){typed=typed.slice(0,-1);paintBox();return}
+  if(k==='✓'){check();return}
+  if(typed.length<5){typed=(typed==='0'?'':typed)+k;paintBox();tone(600,0,.04,'triangle',.03)}}
+function check(){if(!typed)return;const v=+typed;
+  if(v===cur.ans){$('box').classList.add('good');gain+=ansTries===0?6:3;win()}
+  else{ansTries++;$('box').classList.add('bad');tone(220,0,.2,'sawtooth',.05);
+    if(ansTries>=2){stage=3;$('fb').innerHTML=`<span class="bad">לא נורא! התשובה היא ${cur.ans} ${cur.unit}.</span><span class="why">${cur.expl}</span>`;showNext()}
+    else{const hint=cur.rem&&v===Math.floor(cur.ans-1)?'כמעט! מה עם הילדים שנשארו בלי סירה?':v>cur.ans?'יצא לכם יותר מדי. בדקו שוב את החישוב.':'יצא לכם פחות מדי. בדקו שוב את החישוב.';
+      $('fb').innerHTML=`<span class="bad">${hint}</span>`;setTimeout(()=>{if(stage===2){typed='';paintBox()}},900)}}}
+function win(){stage=3;points+=gain;$('pts').textContent=points;if(gain===10)perfect++;
+  $('fb').innerHTML=`<span class="good">${pick(['נכון! 🎉','מעולה! ⭐','איזה פותר! 🧠','בול! 🎯'])} +${gain}</span><span class="why">${cur.expl}</span>`;
+  [660,880,1100].forEach((f,k)=>tone(f,k*.09,.2));showNext()}
+function showNext(){$('next').hidden=false;$('next').textContent=qi+1>=+cfg.count?'לסיכום ←':'לבעיה הבאה ←';$('next').focus({preventScroll:true});$('next').scrollIntoView({block:'nearest',behavior:still?'auto':'smooth'})}
+$('next').onclick=()=>{qi++;if(qi>=+cfg.count)finish();else next()};
+function finish(){
+  $('prog').style.width='100%';const n=+cfg.count,pct=points/(n*10),st=pct>=.85?3:pct>=.6?2:pct>=.3?1:0;
+  $('endT').textContent=pct>=.85?'אלוף הבעיות! 🏆':pct>=.6?'כל הכבוד! 🎉':'יפה מאוד! 💪';$('endS').textContent='★'.repeat(st)+'☆'.repeat(3-st);
+  const prev=getBest(),rec=points>prev;if(rec)try{localStorage.setItem(bestKey(),points)}catch(e){}
+  $('endP').textContent=`${points} נקודות מתוך ${n*10}. ${perfect===0?'נסו לפתור בעיה בלי אף טעות בפעם הבאה!':perfect===1?'בעיה אחת פתרתם בלי אף טעות.':perfect+' בעיות פתרתם בלי אף טעות.'}`+(rec&&prev?' שיא חדש! 🏆':'');
+  show('end');$('again').focus({preventScroll:true});showBest();if(pct>=.6){confetti();[523,659,784,1046].forEach((f,k)=>tone(f,k*.12,.35))}
+}
+$('start').onclick=start;$('again').onclick=start;$('settings').onclick=()=>{show('setup');showBest()};
+addEventListener('keydown',e=>{if($('play').hidden)return;
+  if(stage===1){const m=e.code.match(/^(?:Digit|Numpad)([1-4])$/);if(m){e.preventDefault();pickEx(+m[1]-1)}return}
+  if(stage===2){const m=e.code.match(/^(?:Digit|Numpad)(\d)$/);if(m){e.preventDefault();key(m[1])}else if(e.code==='Backspace'){e.preventDefault();key('⌫')}else if(e.code==='Enter'||e.code==='NumpadEnter'){e.preventDefault();key('✓')}return}
+  if(stage===3&&(e.code==='Enter'||e.code==='NumpadEnter')&&document.activeElement!==$('next')){e.preventDefault();$('next').click()}});
+window.__word={make};
+
+/* ---------- sound & confetti ---------- */
+let ac=null;
+function tone(f,t,d,type='triangle',v=.08){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)()}catch(e){return}const o=ac.createOscillator(),gn=ac.createGain(),s=ac.currentTime+t;
+  o.type=type;o.frequency.value=f;gn.gain.setValueAtTime(.0001,s);gn.gain.exponentialRampToValueAtTime(v,s+.005);gn.gain.exponentialRampToValueAtTime(.001,s+d);o.connect(gn).connect(ac.destination);o.start(s);o.stop(s+d+.05)}
+const cc=$('confetti'),cx=cc.getContext('2d'),COLS=['#F28C28','#2B7DE9','#FFC94A','#1E9E8A','#ff5a3c','#8B5CF6'];
+function confetti(){if(still)return;cc.width=innerWidth;cc.height=innerHeight;
+  const ps=Array.from({length:170},()=>({x:innerWidth/2,y:innerHeight/3,vx:(Math.random()-.5)*16,vy:-Math.random()*14-4,r:Math.random()*6+4,c:COLS[Math.floor(Math.random()*6)],a:Math.random()*6,va:(Math.random()-.5)*.3}));
+  let f=0;(function t(){cx.clearRect(0,0,cc.width,cc.height);ps.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillStyle=p.c;cx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);cx.restore()});
+    if(++f<140)requestAnimationFrame(t);else cx.clearRect(0,0,cc.width,cc.height)})()}
+})();
+</script>
+</body>
+</html>

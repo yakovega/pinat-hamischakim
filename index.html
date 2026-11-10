@@ -37,6 +37,12 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(36px,7vw,64px);mar
 header p{margin:0;color:var(--muted);font-size:17px}
 header p.by{font-size:16px;color:var(--paper)}
 header p.by b{color:var(--sun);font-family:var(--display);font-size:20px;font-weight:700}
+.word .art{background:#F28C28}
+.wordmini{display:flex;align-items:center;gap:12px}
+.wordmini .wn{font-size:46px;line-height:1}
+.wordmini .wq{display:flex;gap:5px;direction:ltr}
+.wordmini .wq i{font-style:normal;width:34px;height:34px;border-radius:9px;background:#FFF8EC;color:#1F2A44;display:grid;place-items:center;font-weight:700;font-size:20px}
+.wordmini .wq i:first-child{background:#1F2A44;color:#FFC94A}
 .cat-nav{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:4px 0 22px}
 .cat-nav a{background:#1F2A44;color:#FFF8EC;text-decoration:none;font-weight:600;padding:10px 18px;border-radius:99px;border:2px solid #33416A}
 .cat-nav a:hover{border-color:#FFC94A}
@@ -244,7 +250,7 @@ canvas{display:block}
     <a href="#fun">🎉 משחקי כיף והנאה</a>
   </nav>
   <section class="cat" id="learn" aria-labelledby="learn-t">
-    <div class="cat-band learn"><span class="cat-em" aria-hidden="true">📚</span><div><h2 id="learn-t">משחקים לימודיים</h2><p>חשבון, קריאה, אנגלית, חשיבה ותרגול</p></div><span class="cat-n">10</span></div>
+    <div class="cat-band learn"><span class="cat-em" aria-hidden="true">📚</span><div><h2 id="learn-t">משחקים לימודיים</h2><p>חשבון, קריאה, אנגלית, חשיבה ותרגול</p></div><span class="cat-n">11</span></div>
     <div class="doors">
     <a class="door drill" href="drill.html">
       <div class="art" aria-hidden="true">
@@ -354,6 +360,17 @@ canvas{display:block}
         <h2>אימון למבחן המחוננים</h2>
         <p>שאלות בסגנון מבחן המחוננים לכיתה ב׳: חשבון, הבנת הנקרא, חייכנים, צורות, סדרות ועוד. מבחן מלא עם שעון או תרגול לפי נושא, עם הסבר לכל שאלה.</p>
         <span class="go">להתאמן ←</span>
+      </div>
+    </a>
+    <a class="door word" href="word.html">
+      <div class="art" aria-hidden="true">
+        <div class="wordmini"><span class="wn">📝</span><span class="wq"><i>?</i><i>+</i><i>−</i><i>×</i><i>:</i></span></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · חשבון וקריאה</span>
+        <h2>בעיות מילוליות</h2>
+        <p>קוראים סיפור קצר, בוחרים איזה תרגיל מתאים לו, ופותרים. 5 רמות, מתרגיל אחד ועד בעיות של שלושה שלבים לכיתה ד׳.</p>
+        <span class="go">לפתור ←</span>
       </div>
     </a>
     </div>
