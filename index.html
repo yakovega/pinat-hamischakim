@@ -37,6 +37,17 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(36px,7vw,64px);mar
 header p{margin:0;color:var(--muted);font-size:17px}
 header p.by{font-size:16px;color:var(--paper)}
 header p.by b{color:var(--sun);font-family:var(--display);font-size:20px;font-weight:700}
+.cat-nav{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:4px 0 22px}
+.cat-nav a{background:#1F2A44;color:#FFF8EC;text-decoration:none;font-weight:600;padding:10px 18px;border-radius:99px;border:2px solid #33416A}
+.cat-nav a:hover{border-color:#FFC94A}
+.cat{margin-bottom:34px;scroll-margin-top:12px}
+.cat-band{display:flex;align-items:center;gap:14px;border-radius:18px;padding:14px 18px;margin-bottom:18px;color:#1F2A44}
+.cat-band.learn{background:linear-gradient(90deg,#7cc6ff,#2B7DE9)}
+.cat-band.fun{background:linear-gradient(90deg,#FFC94A,#F28C28)}
+.cat-band h2{margin:0;font-family:var(--display,inherit);font-size:clamp(22px,5vw,30px);line-height:1.1}
+.cat-band p{margin:2px 0 0;font-size:15px;opacity:.85}
+.cat-em{font-size:40px;line-height:1}
+.cat-n{margin-inline-start:auto;background:#1F2A44;color:#FFF8EC;font-weight:700;border-radius:99px;padding:4px 12px;font-size:15px}
 .doors{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:20px}
 .door{display:flex;flex-direction:column;border-radius:22px;overflow:hidden;text-decoration:none;color:var(--ink);
   background:var(--paper);box-shadow:0 10px 30px #0006;transition:transform .15s}
@@ -228,7 +239,128 @@ canvas{display:block}
     <p class="by">יוצר: <b>איתן וגה</b></p>
     <p>בחרו משחק ולחצו כדי להתחיל</p>
   </header>
-  <div class="doors">
+  <nav class="cat-nav" aria-label="קטגוריות">
+    <a href="#learn">📚 משחקים לימודיים</a>
+    <a href="#fun">🎉 משחקי כיף והנאה</a>
+  </nav>
+  <section class="cat" id="learn" aria-labelledby="learn-t">
+    <div class="cat-band learn"><span class="cat-em" aria-hidden="true">📚</span><div><h2 id="learn-t">משחקים לימודיים</h2><p>חשבון, קריאה, אנגלית, חשיבה ותרגול</p></div><span class="cat-n">10</span></div>
+    <div class="doors">
+    <a class="door drill" href="drill.html">
+      <div class="art" aria-hidden="true">
+        <span class="eq">7 × 8 = ?</span>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · 4 רמות</span>
+        <h2>אלוף התרגילים</h2>
+        <p>כל פעם תרגיל חדש ואקראי. בוחרים רמה, סוגי תרגילים ושעון, ובסוף מקבלים ציון.</p>
+        <span class="go">לתרגילים ←</span>
+      </div>
+    </a>
+    <a class="door spell" href="spell.html">
+      <div class="art" aria-hidden="true">
+        <div class="smile"><span class="em">🐶</span><span class="lt"><i>כ</i><i>ל</i><i>ב</i></span></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · קריאה וכתיבה</span>
+        <h2>אלוף האיות</h2>
+        <p>מופיעה תמונה, ומסדרים את האותיות המעורבבות למילה הנכונה. ארבע רמות, רמזים וציון בסוף.</p>
+        <span class="go">לאיית ←</span>
+      </div>
+    </a>
+    <a class="door timer" href="timer.html">
+      <div class="art" aria-hidden="true">
+        <div class="tmini"><b>20:00</b><span>⭐⭐☆</span></div>
+      </div>
+      <div class="body">
+        <span class="tag">כלי ללמידה · בבית</span>
+        <h2>טיימר שיעורי בית</h2>
+        <p>בוחרים כמה זמן ללמוד וכמה זמן הפסקה. עיגול גדול סופר אחורה, ובהפסקות יש רעיונות מה לעשות. כל סבב שמסיימים שווה כוכב.</p>
+        <span class="go">להתחיל ללמוד ←</span>
+      </div>
+    </a>
+    <a class="door eng" href="english.html">
+      <div class="art" aria-hidden="true">
+        <div class="enmini"><span class="em">🐶</span><span class="w">dog</span></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · אנגלית</span>
+        <h2>אנגלית בכיף</h2>
+        <p>בערך 100 מילים באנגלית עם תמונות: חיות, אוכל, צבעים, מספרים ועוד. מתאימים תמונה למילה, עברית לאנגלית, ויש גם מצב הקשבה.</p>
+        <span class="go">Let's go ←</span>
+      </div>
+    </a>
+    <a class="door seqd" href="sequence.html">
+      <div class="art" aria-hidden="true">
+        <div class="sqmini"><i>2</i><i>4</i><i>6</i><i class="q">?</i></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · חשיבה</span>
+        <h2>השלם את הסדרה</h2>
+        <p>מגלים את החוק ומשלימים מה חסר: סדרות של מספרים, צורות וצבעים. 5 רמות, מ־+1 ועד סדרות של אלופים, ואחרי כל תשובה יש הסבר.</p>
+        <span class="go">לגלות את החוק ←</span>
+      </div>
+    </a>
+    <a class="door shop" href="shop.html">
+      <div class="art" aria-hidden="true">
+        <div class="shopmini"><span class="toyem">🧸</span><span class="ptag">12 ₪</span><span class="coins"><i>10</i><i>2</i></span></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · כסף וחשבון</span>
+        <h2>חנות הצעצועים</h2>
+        <p>קונים צעצועים בשקלים ובאגורות: משלמים בדיוק, מחשבים כמה עודף, ואפילו משחקים בקופאי. 5 רמות, מעשרה שקלים ועד שני צעצועים עם אגורות.</p>
+        <span class="go">לקנות ←</span>
+      </div>
+    </a>
+    <a class="door rid" href="riddles.html">
+      <div class="art" aria-hidden="true">
+        <div class="ridmini"><span class="qm">?</span><span class="bub">יש לי ידיים<br>ואין לי אצבעות...</span></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · מילים וחשיבה</span>
+        <h2>חידות מילים</h2>
+        <p>"מי אני?" – מקבלים רמז אחרי רמז ומנחשים. ככל שמנחשים מוקדם יותר, מקבלים יותר נקודות. ברמות הקשות מסדרים את אותיות התשובה. 46 חידות!</p>
+        <span class="go">לפתור חידה ←</span>
+      </div>
+    </a>
+    <a class="door code" href="code.html">
+      <div class="art" aria-hidden="true">
+        <div class="codemini"><span class="cbot">🤖</span><span class="cmds"><i>⬆</i><i>⬆</i><i>➡</i><i>▶</i></span><span class="cflag">🏁</span></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · חשיבה ותכנות</span>
+        <h2>תכנות לקטנים</h2>
+        <p>כותבים לרובוט תוכנית של פקודות, לוחצים ▶ ורואים אם הוא מגיע לדגל. אוספים כוכבים, עוקפים קירות ומתקנים באגים. כל שלב חדש!</p>
+        <span class="go">לתכנת ←</span>
+      </div>
+    </a>
+    <a class="door triv" href="trivia.html">
+      <div class="art" aria-hidden="true">
+        <div class="trivmini"><span class="tball">⚽</span><span class="tq">?</span><span class="tgoal">🥅</span></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · טריוויה</span>
+        <h2>אצטדיון הטריוויה</h2>
+        <p>12 שאלות כדורגל, וכל תשובה נכונה היא גול! 5 רמות, מקל ועד אולטרה קשה עם שעון, ואפשר לשמוע את השאלות בקול.</p>
+        <span class="go">לעלות למגרש ←</span>
+      </div>
+    </a>
+    <a class="door gift" href="gifted.html">
+      <div class="art" aria-hidden="true">
+        <div class="giftmini"><span class="gb">🧠</span><span class="gq"><i>2,4,8,?</i><i>😊+3=7</i></span></div>
+      </div>
+      <div class="body">
+        <span class="tag">שחקן אחד · חשיבה ולמידה</span>
+        <h2>אימון למבחן המחוננים</h2>
+        <p>שאלות בסגנון מבחן המחוננים לכיתה ב׳: חשבון, הבנת הנקרא, חייכנים, צורות, סדרות ועוד. מבחן מלא עם שעון או תרגול לפי נושא, עם הסבר לכל שאלה.</p>
+        <span class="go">להתאמן ←</span>
+      </div>
+    </a>
+    </div>
+  </section>
+  <section class="cat" id="fun" aria-labelledby="fun-t">
+    <div class="cat-band fun"><span class="cat-em" aria-hidden="true">🎉</span><div><h2 id="fun-t">משחקי כיף והנאה</h2><p>משחקים, תחרויות ויצירה</p></div><span class="cat-n">24</span></div>
+    <div class="doors">
     <a class="door ball" href="kaduraish.html">
       <div class="art" aria-hidden="true">
         <canvas id="mini" width="300" height="140"></canvas>
@@ -260,17 +392,6 @@ canvas{display:block}
         <h2>שחמט תלת־ממדי</h2>
         <p>גוררים כדי להסתכל מכל הכיוונים. הלוח מסתובב לבד לצד של מי שתורו, ומדליק את המשבצות שאליהן מותר ללכת.</p>
         <span class="go">ללוח ←</span>
-      </div>
-    </a>
-    <a class="door drill" href="drill.html">
-      <div class="art" aria-hidden="true">
-        <span class="eq">7 × 8 = ?</span>
-      </div>
-      <div class="body">
-        <span class="tag">שחקן אחד · 4 רמות</span>
-        <h2>אלוף התרגילים</h2>
-        <p>כל פעם תרגיל חדש ואקראי. בוחרים רמה, סוגי תרגילים ושעון, ובסוף מקבלים ציון.</p>
-        <span class="go">לתרגילים ←</span>
       </div>
     </a>
     <a class="door about" href="about.html">
@@ -383,17 +504,6 @@ canvas{display:block}
         <span class="go">לגלגל ←</span>
       </div>
     </a>
-    <a class="door spell" href="spell.html">
-      <div class="art" aria-hidden="true">
-        <div class="smile"><span class="em">🐶</span><span class="lt"><i>כ</i><i>ל</i><i>ב</i></span></div>
-      </div>
-      <div class="body">
-        <span class="tag">שחקן אחד · קריאה וכתיבה</span>
-        <h2>אלוף האיות</h2>
-        <p>מופיעה תמונה, ומסדרים את האותיות המעורבבות למילה הנכונה. ארבע רמות, רמזים וציון בסוף.</p>
-        <span class="go">לאיית ←</span>
-      </div>
-    </a>
     <a class="door pong" href="pong.html">
       <div class="art" aria-hidden="true">
         <div class="court"><i class="pd l"></i><i class="bl"></i><i class="pd r"></i></div>
@@ -425,17 +535,6 @@ canvas{display:block}
         <h2>דמקה</h2>
         <p>זזים באלכסון ואוכלים בקפיצה, גם כמה ברצף. מי שמגיע לצד השני הופך למלך 👑. יש חוקים פשוטים ומלאים.</p>
         <span class="go">לשחק ←</span>
-      </div>
-    </a>
-    <a class="door timer" href="timer.html">
-      <div class="art" aria-hidden="true">
-        <div class="tmini"><b>20:00</b><span>⭐⭐☆</span></div>
-      </div>
-      <div class="body">
-        <span class="tag">כלי ללמידה · בבית</span>
-        <h2>טיימר שיעורי בית</h2>
-        <p>בוחרים כמה זמן ללמוד וכמה זמן הפסקה. עיגול גדול סופר אחורה, ובהפסקות יש רעיונות מה לעשות. כל סבב שמסיימים שווה כוכב.</p>
-        <span class="go">להתחיל ללמוד ←</span>
       </div>
     </a>
     <a class="door snow" href="snow.html">
@@ -493,28 +592,6 @@ canvas{display:block}
         <span class="go">לרוץ ←</span>
       </div>
     </a>
-    <a class="door eng" href="english.html">
-      <div class="art" aria-hidden="true">
-        <div class="enmini"><span class="em">🐶</span><span class="w">dog</span></div>
-      </div>
-      <div class="body">
-        <span class="tag">שחקן אחד · אנגלית</span>
-        <h2>אנגלית בכיף</h2>
-        <p>בערך 100 מילים באנגלית עם תמונות: חיות, אוכל, צבעים, מספרים ועוד. מתאימים תמונה למילה, עברית לאנגלית, ויש גם מצב הקשבה.</p>
-        <span class="go">Let's go ←</span>
-      </div>
-    </a>
-    <a class="door seqd" href="sequence.html">
-      <div class="art" aria-hidden="true">
-        <div class="sqmini"><i>2</i><i>4</i><i>6</i><i class="q">?</i></div>
-      </div>
-      <div class="body">
-        <span class="tag">שחקן אחד · חשיבה</span>
-        <h2>השלם את הסדרה</h2>
-        <p>מגלים את החוק ומשלימים מה חסר: סדרות של מספרים, צורות וצבעים. 5 רמות, מ־+1 ועד סדרות של אלופים, ואחרי כל תשובה יש הסבר.</p>
-        <span class="go">לגלות את החוק ←</span>
-      </div>
-    </a>
     <a class="door brk" href="breakout.html">
       <div class="art" aria-hidden="true">
         <div class="bkmini"><i style="background:#ff5a3c"></i><i style="background:#F28C28"></i><i style="background:#FFC94A"></i><i style="background:#2ecc71"></i><i style="background:#3ec7ff"></i><i style="background:#2B7DE9"></i><i style="background:#8b5cf6"></i><i style="background:#ec4899;visibility:hidden"></i><b></b><s></s></div>
@@ -548,62 +625,8 @@ canvas{display:block}
         <span class="go">לכתוב סיפור ←</span>
       </div>
     </a>
-    <a class="door shop" href="shop.html">
-      <div class="art" aria-hidden="true">
-        <div class="shopmini"><span class="toyem">🧸</span><span class="ptag">12 ₪</span><span class="coins"><i>10</i><i>2</i></span></div>
-      </div>
-      <div class="body">
-        <span class="tag">שחקן אחד · כסף וחשבון</span>
-        <h2>חנות הצעצועים</h2>
-        <p>קונים צעצועים בשקלים ובאגורות: משלמים בדיוק, מחשבים כמה עודף, ואפילו משחקים בקופאי. 5 רמות, מעשרה שקלים ועד שני צעצועים עם אגורות.</p>
-        <span class="go">לקנות ←</span>
-      </div>
-    </a>
-    <a class="door rid" href="riddles.html">
-      <div class="art" aria-hidden="true">
-        <div class="ridmini"><span class="qm">?</span><span class="bub">יש לי ידיים<br>ואין לי אצבעות...</span></div>
-      </div>
-      <div class="body">
-        <span class="tag">שחקן אחד · מילים וחשיבה</span>
-        <h2>חידות מילים</h2>
-        <p>"מי אני?" – מקבלים רמז אחרי רמז ומנחשים. ככל שמנחשים מוקדם יותר, מקבלים יותר נקודות. ברמות הקשות מסדרים את אותיות התשובה. 46 חידות!</p>
-        <span class="go">לפתור חידה ←</span>
-      </div>
-    </a>
-    <a class="door code" href="code.html">
-      <div class="art" aria-hidden="true">
-        <div class="codemini"><span class="cbot">🤖</span><span class="cmds"><i>⬆</i><i>⬆</i><i>➡</i><i>▶</i></span><span class="cflag">🏁</span></div>
-      </div>
-      <div class="body">
-        <span class="tag">שחקן אחד · חשיבה ותכנות</span>
-        <h2>תכנות לקטנים</h2>
-        <p>כותבים לרובוט תוכנית של פקודות, לוחצים ▶ ורואים אם הוא מגיע לדגל. אוספים כוכבים, עוקפים קירות ומתקנים באגים. כל שלב חדש!</p>
-        <span class="go">לתכנת ←</span>
-      </div>
-    </a>
-    <a class="door triv" href="trivia.html">
-      <div class="art" aria-hidden="true">
-        <div class="trivmini"><span class="tball">⚽</span><span class="tq">?</span><span class="tgoal">🥅</span></div>
-      </div>
-      <div class="body">
-        <span class="tag">שחקן אחד · טריוויה</span>
-        <h2>אצטדיון הטריוויה</h2>
-        <p>12 שאלות כדורגל, וכל תשובה נכונה היא גול! 5 רמות, מקל ועד אולטרה קשה עם שעון, ואפשר לשמוע את השאלות בקול.</p>
-        <span class="go">לעלות למגרש ←</span>
-      </div>
-    </a>
-    <a class="door gift" href="gifted.html">
-      <div class="art" aria-hidden="true">
-        <div class="giftmini"><span class="gb">🧠</span><span class="gq"><i>2,4,8,?</i><i>😊+3=7</i></span></div>
-      </div>
-      <div class="body">
-        <span class="tag">שחקן אחד · חשיבה ולמידה</span>
-        <h2>אימון למבחן המחוננים</h2>
-        <p>שאלות בסגנון מבחן המחוננים לכיתה ב׳: חשבון, הבנת הנקרא, חייכנים, צורות, סדרות ועוד. מבחן מלא עם שעון או תרגול לפי נושא, עם הסבר לכל שאלה.</p>
-        <span class="go">להתאמן ←</span>
-      </div>
-    </a>
-  </div>
+    </div>
+  </section>
 </main>
 
 <script>
